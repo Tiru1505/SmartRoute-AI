@@ -15,7 +15,8 @@ supporting modules and never block the routing system.
 | 2 | Hyderabad OSM road graph | ✅ done — 286,603 nodes / 741,203 edges |
 | 3 | Dijkstra baseline | ✅ done — verified optimal vs NetworkX |
 | 4 | Dynamic traffic model | ✅ done — 8 scenarios, Greenshields verified |
-| **5** | **QPSO** | ⬅ **next** (Option A: + constrained routing) |
+| 5a | QPSO (unconstrained) | ✅ done — 90% reach proven optimum |
+| **5b** | **QPSO + congestion budget** | ⬅ **next** (Option A) |
 | 6–8 | Benchmarking, convergence, scalability | — |
 | 9–10 | Rerouting, alerts | — |
 | 11 | Traffic prediction | blocked on TomTom collection |
