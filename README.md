@@ -14,8 +14,8 @@ supporting modules and never block the routing system.
 | 1 | Dataset inspection | ✅ done — [`results/dataset_reports/PHASE1_REPORT.md`](results/dataset_reports/PHASE1_REPORT.md) |
 | 2 | Hyderabad OSM road graph | ✅ done — 286,603 nodes / 741,203 edges |
 | 3 | Dijkstra baseline | ✅ done — verified optimal vs NetworkX |
-| **4** | **Dynamic traffic model** | ⬅ **next** |
-| 5 | QPSO | — |
+| 4 | Dynamic traffic model | ✅ done — 8 scenarios, Greenshields verified |
+| **5** | **QPSO** | ⬅ **next** (Option A: + constrained routing) |
 | 6–8 | Benchmarking, convergence, scalability | — |
 | 9–10 | Rerouting, alerts | — |
 | 11 | Traffic prediction | blocked on TomTom collection |
