@@ -16,7 +16,7 @@ supporting modules and never block the routing system.
 | 3 | Dijkstra baseline | ✅ done — verified optimal vs NetworkX |
 | 4 | Dynamic traffic model | ✅ done — 8 scenarios, Greenshields verified |
 | 5a | QPSO (unconstrained) | ✅ done — 90% reach proven optimum |
-| **5b** | **QPSO + congestion budget** | ⬅ **next** (Option A) |
+| 5b | QPSO + congestion budget | ⚠️ done — Lagrangian beat QPSO, see constraints.py |
 | 6–8 | Benchmarking, convergence, scalability | — |
 | 9–10 | Rerouting, alerts | — |
 | 11 | Traffic prediction | blocked on TomTom collection |

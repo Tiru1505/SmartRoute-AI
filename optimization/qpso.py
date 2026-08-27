@@ -114,11 +114,12 @@ class QPSO:
     feasible solutions by construction.
     """
 
-    def __init__(self, G, decoder, cost_model, config=None):
+    def __init__(self, G, decoder, cost_model, config=None, constraints=None):
         self.G = G
         self.decoder = decoder
         self.cost_model = cost_model
         self.cfg = config or QPSOConfig()
+        self.constraints = constraints          # None => unconstrained problem
         self.D = decoder.dimensions
         self._fitness_cache = {}
 
@@ -126,6 +127,12 @@ class QPSO:
     def evaluate(self, vector):
         """
         Objective value of one particle.
+
+        With constraints set, the score is the penalised objective: minimise
+        travel time, with a large penalty for exceeding the congestion budget.
+        The penalty is sized so any feasible route beats any infeasible one,
+        while still leaving a gradient among infeasible candidates so the swarm
+        can climb back into the feasible region.
 
         Decoding is deterministic, so identical vectors are cached — the swarm
         revisits the same waypoints often once it starts converging.
@@ -139,10 +146,29 @@ class QPSO:
             result = (math.inf, None)
         else:
             route = evaluate_route(self.G, nodes, self.cost_model, algorithm="QPSO")
-            result = (route.fitness if route.valid else math.inf, route)
+            if not route.valid:
+                score = math.inf
+            elif self.constraints is None:
+                score = route.fitness
+            else:
+                score = self.constraints.penalised(route, self.cost_model)
+            result = (score, route)
 
         self._fitness_cache[key] = result
         return result
+
+    def best_feasible(self):
+        """The best route in the cache that satisfies the constraints."""
+        if self.constraints is None:
+            return None
+        best, best_obj = None, math.inf
+        for _score, route in self._fitness_cache.values():
+            if route is None or not self.constraints.is_feasible(route):
+                continue
+            obj = self.constraints.objective(route, self.cost_model)
+            if obj < best_obj:
+                best, best_obj = route, obj
+        return best
 
     # -------------------------------------------------------------- run
     def run(self, seed=None, verbose=False):
