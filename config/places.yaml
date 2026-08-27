@@ -1,0 +1,27 @@
+# Named Hyderabad landmarks used as routing endpoints.
+#
+# Shared between the Python engine and the React frontend so both refer to the
+# same coordinates. If you add a place here, add it to
+# frontend/src/data/mockData.js LOCATIONS as well.
+#
+# Coordinates are [latitude, longitude] and all fall inside the metro graph.
+
+places:
+  hitec:         { name: Hitec City,                 lat: 17.4435, lon: 78.3772 }
+  gachibowli:    { name: Gachibowli,                 lat: 17.4401, lon: 78.3489 }
+  madhapur:      { name: Madhapur,                   lat: 17.4483, lon: 78.3915 }
+  kondapur:      { name: Kondapur,                   lat: 17.4640, lon: 78.3640 }
+  jubilee:       { name: Jubilee Hills,              lat: 17.4239, lon: 78.4138 }
+  banjara:       { name: Banjara Hills,              lat: 17.4126, lon: 78.4482 }
+  panjagutta:    { name: Panjagutta,                 lat: 17.4256, lon: 78.4500 }
+  ameerpet:      { name: Ameerpet,                   lat: 17.4374, lon: 78.4487 }
+  begumpet:      { name: Begumpet,                   lat: 17.4443, lon: 78.4649 }
+  secunderabad:  { name: Secunderabad,               lat: 17.4344, lon: 78.5013 }
+  mehdipatnam:   { name: Mehdipatnam,                lat: 17.3950, lon: 78.4360 }
+  charminar:     { name: Charminar,                  lat: 17.3616, lon: 78.4747 }
+  dilsukhnagar:  { name: Dilsukhnagar,               lat: 17.3687, lon: 78.5247 }
+  lbnagar:       { name: LB Nagar,                   lat: 17.3457, lon: 78.5522 }
+  uppal:         { name: Uppal,                      lat: 17.4020, lon: 78.5590 }
+  kukatpally:    { name: Kukatpally,                 lat: 17.4849, lon: 78.4138 }
+  miyapur:       { name: Miyapur,                    lat: 17.4960, lon: 78.3580 }
+  airport:       { name: RGIA Airport (Shamshabad),  lat: 17.2403, lon: 78.4294 }
