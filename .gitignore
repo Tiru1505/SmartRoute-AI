@@ -1,0 +1,35 @@
+# --- environments -----------------------------------------------------------
+.venv/
+venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+*.log
+
+# --- secrets ----------------------------------------------------------------
+.env
+.env.local
+*.key
+
+# --- generated data ---------------------------------------------------------
+# All of this is reproducible from scripts/ and preprocessing/, and far exceeds
+# GitHub's 100 MB per-file limit. Rebuild with:
+#   bash scripts/fetch_benchmarks.sh
+#   python preprocessing/osm_processor.py --city "Hyderabad, Telangana, India" --metro
+data/raw/benchmarks/
+data/raw/osm/cache/
+data/vision/
+*.graphml
+*.pkl
+*.h5
+*.parquet
+*.npy
+
+# --- keep: small, hand-curated, or not reproducible --------------------------
+# The TomTom series in particular CANNOT be re-downloaded — it accrues in
+# wall-clock time, so it must be version-controlled.
+!data/raw/india/hyderabad_segments.csv
+!data/raw/india/tomtom_*/**
+!data/processed/*/*_stats.json
+!results/dataset_reports/**

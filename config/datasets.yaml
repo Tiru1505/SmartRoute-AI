@@ -1,0 +1,105 @@
+# Registry of every data source, where it lives, and which module it is assigned to.
+# `module` is the project module the dataset legitimately serves -- NOT a wish list.
+# `trainable` records whether it can train an ML model AT ALL, decided by inspection.
+#
+# Paths outside the project (Downloads) are referenced, not copied: some are GB-scale.
+
+sources:
+
+  osm_hyderabad_metro:
+    kind: graph
+    path: data/processed/hyderabad/hyderabad_drive.pkl
+    module: road_network
+    trainable: false
+    licence: ODbL-1.0
+    note: Primary routing graph. 286,603 nodes / 741,203 edges, ORR + RGIA included.
+
+  osm_hyderabad_city:
+    kind: graph
+    path: data/processed/hyderabad-city/hyderabad_drive.pkl
+    module: road_network
+    trainable: false
+    licence: ODbL-1.0
+    note: Smaller instance, used for scalability sweeps.
+
+  mendeley_ahmedabad_flow:
+    kind: document
+    path: "~/Downloads/Data for Traffic Flow Analysis in Emerging Country (India) (1)"
+    module: congestion_model
+    trainable: false
+    licence: CC-BY-4.0
+    citation: "Tsuboi, T. & Yoshikawa, N. (2019). Traffic Flow Analysis in Emerging Country (India). Mendeley Data 2dg8xgw622"
+    note: >
+      Contains NO machine-readable data -- two .docx files only. Supplies the
+      fundamental-diagram model form (q-k-v, vf/kj/kc/qc/vc) and the
+      speed-ratio congestion definition. Calibration reference, not training data.
+
+  indore_congestion:
+    kind: tabular
+    path: data/raw/india/indore-congestion
+    module: congestion_model
+    trainable: false
+    licence: CC-BY-4.0
+    note: 437 rows, 4 road segments, 13 days. Too small for any model. Threshold sanity check only.
+
+  idd_lite:
+    kind: vision_segmentation
+    path: "~/Downloads/archive (1)/idd_lite"
+    module: vision_occupancy
+    trainable: true
+    licence: "IDD research licence (non-commercial)"
+    note: >
+      7 coarse semantic classes, NO bounding boxes, NO per-vehicle instances.
+      Cannot train multi-class detection. Can train vehicle-occupancy segmentation.
+
+  dats_2022:
+    kind: vision_detection
+    path: data/vision/dats_2022
+    module: vision_detection
+    trainable: true
+    licence: CC-BY-4.0
+    status: NOT_DOWNLOADED
+    url: https://data.mendeley.com/datasets/nfc34n8svj/2
+    note: The only dataset here with YOLO-format boxes. Needs manual browser download.
+
+  metr_la:
+    kind: timeseries
+    path: data/raw/benchmarks/metr-la/metr-la.h5
+    module: traffic_predictor
+    trainable: true
+    licence: "Research use (Caltrans PeMS); cite Li et al. 2018 DCRNN"
+    note: 34,272 x 207 sensors, 5-min. Primary training set for the LSTM/GRU.
+
+  pems_bay:
+    kind: timeseries
+    path: data/raw/benchmarks/pems-bay/pems-bay.h5
+    module: traffic_predictor
+    trainable: true
+    licence: "Research use (Caltrans PeMS)"
+    note: 52,116 x 325 sensors, 5-min. Secondary / cleaner benchmark.
+
+  tomtom_hyderabad:
+    kind: timeseries
+    path: data/raw/india/tomtom_hyderabad
+    module: traffic_predictor
+    trainable: pending
+    licence: "TomTom developer ToS"
+    status: COLLECTING
+    note: Self-collected. The only real Hyderabad traffic signal. Accrues in wall-clock time.
+
+  synthetic_hyderabad:
+    kind: tabular
+    path: data/synthetic
+    module: traffic_simulator
+    trainable: false
+    status: NOT_BUILT
+    note: Reproducible scenario generator (Phase 4). Seeded, calibrated to HMDA PCU ranges.
+
+# Present on disk but NOT part of this project.
+excluded:
+  unknown_remote_sensing_archive:
+    path: "~/Downloads/archive.zip"
+    reason: >
+      3 GB of (128,128,14) float64 tensors with binary (128,128) masks.
+      14 bands = multispectral satellite imagery, binary segmentation masks.
+      This is a remote-sensing dataset, not traffic data. Excluded.

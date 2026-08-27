@@ -1,0 +1,28 @@
+{
+  "city": "Hyderabad, Telangana, India",
+  "slug": "hyderabad",
+  "network_type": "drive",
+  "nodes": 137046,
+  "edges": 356420,
+  "total_length_km": 20370.7,
+  "strongly_connected": true,
+  "oneway_edges": 14144,
+  "highway_mix": {
+    "residential": 315645,
+    "tertiary": 20773,
+    "secondary": 7309,
+    "living_street": 3893,
+    "primary": 3487,
+    "trunk": 2019,
+    "unclassified": 1428,
+    "['residential', 'living_street']": 506,
+    "primary_link": 382,
+    "tertiary_link": 315,
+    "trunk_link": 289,
+    "secondary_link": 251,
+    "['unclassified', 'residential']": 48,
+    "motorway": 38,
+    "motorway_link": 22
+  },
+  "built_utc": "2026-08-26T15:38:38.934864+00:00"
+}

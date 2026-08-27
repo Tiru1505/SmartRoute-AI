@@ -1,0 +1,35 @@
+# --- core (Phases 1-4: data, graph, congestion, dynamic weights) ---
+osmnx>=2.0
+geopandas>=1.0
+networkx>=3.2
+pandas>=2.0
+numpy>=1.26
+scipy>=1.11
+scikit-learn>=1.4        # nearest_nodes on unprojected graphs; scalers
+pyarrow>=15.0
+pyyaml>=6.0
+requests>=2.31
+
+# --- inspection / IO ---
+openpyxl>=3.1            # Mendeley .xlsx
+tables>=3.9              # METR-LA / PEMS-BAY .h5
+h5py>=3.10
+pillow>=10.0             # IDD Lite masks
+
+# --- visualisation (Phases 8, 12, 13) ---
+matplotlib>=3.8
+plotly>=5.20
+
+# --- Phase 11: traffic prediction (only once data justifies it) ---
+# torch>=2.2
+
+# --- Phase 12: vision (only once DATS_2022 is downloaded) ---
+# ultralytics>=8.2
+# opencv-python>=4.9
+
+# --- Phase 13: API / dashboard ---
+# fastapi>=0.110
+# uvicorn[standard]>=0.29
+
+# --- optional: re-fetching the benchmark datasets ---
+# huggingface_hub>=0.23
