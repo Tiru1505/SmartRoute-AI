@@ -1,0 +1,319 @@
+{
+  "instance": "Hitec City -> Charminar",
+  "scenario": "peak_hour",
+  "budget_m": 9749.574497582478,
+  "budget_ratio": 0.6,
+  "fastest": {
+    "algorithm": "Dijkstra (time only)",
+    "hops": 298,
+    "distance_km": 19.82,
+    "time_min": 70.95,
+    "mean_congestion": 0.5337,
+    "avg_speed_kph": 16.8,
+    "fitness": 1.933573,
+    "runtime_ms": 0.0,
+    "iterations": 0,
+    "valid": true,
+    "violations": []
+  },
+  "min_exposure": {
+    "algorithm": "Dijkstra (min exposure)",
+    "hops": 418,
+    "distance_km": 24.265,
+    "time_min": 98.48,
+    "mean_congestion": 0.3506,
+    "avg_speed_kph": 14.8,
+    "fitness": 2.533176,
+    "runtime_ms": 0.0,
+    "iterations": 0,
+    "valid": true,
+    "violations": []
+  },
+  "dijkstra_balanced": {
+    "algorithm": "Dijkstra",
+    "hops": 298,
+    "distance_km": 19.82,
+    "time_min": 70.95,
+    "mean_congestion": 0.5337,
+    "avg_speed_kph": 16.8,
+    "fitness": 1.933573,
+    "runtime_ms": 1181.64,
+    "iterations": 83998,
+    "valid": true,
+    "violations": []
+  },
+  "lagrangian": {
+    "algorithm": "Dijkstra + Lagrangian",
+    "hops": 356,
+    "distance_km": 21.116,
+    "time_min": 77.87,
+    "mean_congestion": 0.4393,
+    "avg_speed_kph": 16.3,
+    "fitness": 2.07465,
+    "runtime_ms": 0.0,
+    "iterations": 0,
+    "valid": true,
+    "violations": []
+  },
+  "qpso_best": {
+    "algorithm": "QPSO",
+    "hops": 320,
+    "distance_km": 21.084,
+    "time_min": 90.66,
+    "mean_congestion": 0.4582,
+    "avg_speed_kph": 14.0,
+    "fitness": 2.341353,
+    "runtime_ms": 10999.58,
+    "iterations": 85,
+    "valid": true,
+    "violations": []
+  },
+  "qpso_feasible_trials": "5/10",
+  "qpso_objectives": [
+    4.626342089241955,
+    4.623711367615021,
+    4.626342089241955,
+    4.623711367615021,
+    4.626342089241955
+  ],
+  "lambda_trace": [
+    {
+      "lambda": 0.0,
+      "time_min": 70.94565218478256,
+      "congested_m": 10577.900143669402,
+      "feasible": false,
+      "objective": 3.6181561275149567
+    },
+    {
+      "lambda": 0.001,
+      "time_min": 70.94565218478256,
+      "congested_m": 10577.900143669402,
+      "feasible": false,
+      "objective": 3.6181561275149567
+    },
+    {
+      "lambda": 0.0017782794100389228,
+      "time_min": 70.94565218478256,
+      "congested_m": 10577.900143669402,
+      "feasible": false,
+      "objective": 3.6181561275149567
+    },
+    {
+      "lambda": 0.0031622776601683794,
+      "time_min": 70.94565218478256,
+      "congested_m": 10577.900143669402,
+      "feasible": false,
+      "objective": 3.6181561275149567
+    },
+    {
+      "lambda": 0.005623413251903491,
+      "time_min": 70.94565218478256,
+      "congested_m": 10577.900143669402,
+      "feasible": false,
+      "objective": 3.6181561275149567
+    },
+    {
+      "lambda": 0.01,
+      "time_min": 70.94565218478256,
+      "congested_m": 10577.900143669402,
+      "feasible": false,
+      "objective": 3.6181561275149567
+    },
+    {
+      "lambda": 0.01778279410038923,
+      "time_min": 70.94565218478256,
+      "congested_m": 10577.900143669402,
+      "feasible": false,
+      "objective": 3.6181561275149567
+    },
+    {
+      "lambda": 0.03162277660168379,
+      "time_min": 70.94565218478256,
+      "congested_m": 10577.900143669402,
+      "feasible": false,
+      "objective": 3.6181561275149567
+    },
+    {
+      "lambda": 0.05623413251903491,
+      "time_min": 70.94565218478256,
+      "congested_m": 10577.900143669402,
+      "feasible": false,
+      "objective": 3.6181561275149567
+    },
+    {
+      "lambda": 0.1,
+      "time_min": 70.9471573775559,
+      "congested_m": 10576.682868781481,
+      "feasible": false,
+      "objective": 3.618232890815994
+    },
+    {
+      "lambda": 0.1778279410038923,
+      "time_min": 71.32859971869173,
+      "congested_m": 10446.624718216033,
+      "feasible": false,
+      "objective": 3.637686062382867
+    },
+    {
+      "lambda": 0.31622776601683794,
+      "time_min": 72.73683041195105,
+      "congested_m": 10068.103063421157,
+      "feasible": false,
+      "objective": 3.70950439592218
+    },
+    {
+      "lambda": 0.5623413251903491,
+      "time_min": 77.86638246264263,
+      "congested_m": 9276.283413825495,
+      "feasible": true,
+      "objective": 3.971106335041398
+    },
+    {
+      "lambda": 1.0,
+      "time_min": 78.24768688181548,
+      "congested_m": 9247.884797427456,
+      "feasible": true,
+      "objective": 3.9905524727283903
+    },
+    {
+      "lambda": 1.7782794100389228,
+      "time_min": 93.04717405613283,
+      "congested_m": 8654.568859589453,
+      "feasible": true,
+      "objective": 4.745311271257285
+    },
+    {
+      "lambda": 3.1622776601683795,
+      "time_min": 97.97672704844277,
+      "congested_m": 8510.051587157932,
+      "feasible": true,
+      "objective": 4.996713461747848
+    },
+    {
+      "lambda": 5.623413251903491,
+      "time_min": 97.97672704844277,
+      "congested_m": 8510.051587157932,
+      "feasible": true,
+      "objective": 4.996713461747848
+    },
+    {
+      "lambda": 10.0,
+      "time_min": 97.97672704844277,
+      "congested_m": 8510.051587157932,
+      "feasible": true,
+      "objective": 4.996713461747848
+    },
+    {
+      "lambda": 17.78279410038923,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 31.622776601683793,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 56.23413251903491,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 100.0,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 177.82794100389228,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 316.22776601683796,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 562.341325190349,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 1000.0,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 1778.2794100389228,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 3162.2776601683795,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 5623.413251903491,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 10000.0,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 17782.794100389227,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 31622.776601683792,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 56234.13251903491,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    },
+    {
+      "lambda": 100000.0,
+      "time_min": 98.4768840930732,
+      "congested_m": 8507.086028452093,
+      "feasible": true,
+      "objective": 5.022220962489908
+    }
+  ]
+}

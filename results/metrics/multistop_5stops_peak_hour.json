@@ -1,0 +1,51 @@
+{
+  "problem": "multi-stop routing: depot + 5 stops (120 possible orders)",
+  "scenario": "peak_hour",
+  "mode": "balanced",
+  "depot": "Hitec City",
+  "stops": [
+    "Gachibowli",
+    "Jubilee Hills",
+    "Panjagutta",
+    "Ameerpet",
+    "Begumpet"
+  ],
+  "trials": 30,
+  "budget": "population 40 x 120 iterations = 4,800 evaluations per trial (identical for all algorithms)",
+  "brute_force_optimum": 4.403044273170334,
+  "results": {
+    "QPSO": {
+      "best": 4.403044273170334,
+      "mean": 4.403044273170334,
+      "worst": 4.403044273170334,
+      "std": 0.0,
+      "gap_pct": 0.0,
+      "optimal_hits": 30,
+      "mean_runtime_ms": 20.001083333302933,
+      "mean_iterations": 41,
+      "mean_iteration_of_best": 0
+    },
+    "PSO": {
+      "best": 4.403044273170334,
+      "mean": 4.443731634864769,
+      "worst": 4.809917890114689,
+      "std": 0.12206208508330656,
+      "gap_pct": 0.9240734176206411,
+      "optimal_hits": 27,
+      "mean_runtime_ms": 19.43179666659489,
+      "mean_iterations": 42.43333333333333,
+      "mean_iteration_of_best": 1.4333333333333333
+    },
+    "GA": {
+      "best": 4.403044273170334,
+      "mean": 4.416606727068479,
+      "worst": 4.809917890114689,
+      "std": 0.07303604943067556,
+      "gap_pct": 0.3080244725402137,
+      "optimal_hits": 29,
+      "mean_runtime_ms": 170.027516666687,
+      "mean_iterations": 42.9,
+      "mean_iteration_of_best": 1.9
+    }
+  }
+}
