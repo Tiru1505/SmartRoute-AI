@@ -24,7 +24,7 @@ supporting modules and never block the routing system.
 | 11 | Traffic prediction | blocked on TomTom collection |
 | 12 | YOLO perception | blocked on DriveIndia/DATS_2022 download |
 | 13 | Dashboard | ✅ done (mock data) — [`frontend/`](frontend/README.md) |
-| 13b | FastAPI backend | next after the engine |
+| 13b | FastAPI backend | owned by another team member — not built here |
 
 ## Setup
 
