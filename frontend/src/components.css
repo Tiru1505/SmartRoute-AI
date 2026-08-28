@@ -147,20 +147,64 @@
 .notif-item time { font-size: 10px; color: var(--text-faint); }
 
 /* ------------------------------------------------------------ dashboard */
+/* ------------------------------------------------------------ dashboard */
+
 .dash-grid {
   display: grid;
-  grid-template-columns: 320px 1fr 300px;
+
+  grid-template-columns:
+    320px
+    minmax(0, 1fr)
+    300px;
+
   gap: 14px;
-  align-items: start;
+
+  align-items: stretch;
+
+  min-height: calc(100vh - var(--navbar-h) - 40px);
 }
-.dash-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+.dash-col {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  min-width: 0;
+}
+
+/* ============================================================
+   FULL HEIGHT MAP
+   ============================================================ */
+
+.dash-col:nth-child(2) {
+  min-height: calc(100vh - var(--navbar-h) - 40px);
+}
+
 .map-shell {
   position: relative;
-  height: calc(100vh - var(--navbar-h) - 74px);
-  min-height: 460px;
+
+  width: 100%;
+
+  height: calc(100vh - var(--navbar-h) - 40px);
+
+  min-height: 600px;
+
   border-radius: var(--radius);
+
   overflow: hidden;
+
   border: 1px solid var(--border);
+
+  flex: 1;
+}
+
+/* Make Leaflet fill the entire map shell */
+
+.map-shell .leaflet-container {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
 }
 
 @media (max-width: 1500px) {
@@ -609,4 +653,2500 @@
     position: fixed; inset: 0; background: rgba(0,0,0,.6);
     z-index: 899;
   }
+}
+
+
+/* =========================================================
+   QRO LOGIN NETWORK ANIMATION
+   ========================================================= */
+
+.qro-network {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.qro-network-glow {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  left: 35%;
+  top: 35%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(0, 210, 255, 0.08) 0%,
+    rgba(120, 70, 255, 0.05) 35%,
+    transparent 70%
+  );
+  filter: blur(20px);
+  animation: qro-glow-pulse 5s ease-in-out infinite;
+}
+
+.qro-network-svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  opacity: 0.9;
+}
+
+.qro-roads path {
+  fill: none;
+  stroke: rgba(120, 150, 190, 0.25);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.qro-optimal-route {
+  fill: none;
+  stroke: var(--cyan);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter:
+    drop-shadow(0 0 5px rgba(0, 210, 255, 0.8))
+    drop-shadow(0 0 14px rgba(0, 210, 255, 0.35));
+}
+
+.qro-node {
+  fill: var(--cyan);
+  filter:
+    drop-shadow(0 0 5px rgba(0, 210, 255, 0.8));
+}
+
+.qro-node-ring {
+  fill: none;
+  stroke: rgba(0, 210, 255, 0.25);
+  stroke-width: 1;
+}
+
+.qro-particle {
+  fill: #ffffff;
+  filter:
+    drop-shadow(0 0 5px rgba(255, 255, 255, 1))
+    drop-shadow(0 0 12px rgba(0, 210, 255, 0.9));
+}
+
+.qro-particle-two {
+  fill: #a875ff;
+}
+
+.qro-particle-three {
+  fill: #38e8c0;
+}
+
+.qro-network-label {
+  position: absolute;
+  left: 32px;
+  bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 11px;
+  border: 1px solid rgba(0, 210, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(8, 14, 25, 0.65);
+  backdrop-filter: blur(8px);
+  color: rgba(190, 215, 235, 0.65);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.qro-label-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  animation: qro-dot-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes qro-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+@keyframes qro-dot-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.qro-network {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.qro-network-svg {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* =========================================================
+   ANIMATED AUTH FORM
+   ========================================================= */
+
+.animated-auth {
+  width: 100%;
+}
+
+.animated-auth-heading {
+  margin-bottom: 18px;
+}
+
+.animated-auth-eyebrow {
+  display: block;
+  margin-bottom: 6px;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+
+  color: var(--cyan);
+  opacity: 0.75;
+}
+
+.animated-auth-heading h2 {
+  margin: 0;
+}
+
+.animated-auth-switch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 18px;
+
+  font-size: 12px;
+}
+
+.animated-auth-switch button {
+  border: 0;
+  padding: 0;
+
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.4);
+
+  font: inherit;
+  cursor: pointer;
+
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.animated-auth-switch button:hover {
+  color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+}
+
+.animated-auth-switch button.active {
+  color: var(--cyan);
+}
+
+.animated-auth-switch span {
+  color: rgba(255, 255, 255, 0.18);
+}
+
+/* ============================================================
+   QRO ROBOT LOGIN ANIMATION
+   ============================================================ */
+
+.qro-auth-animation {
+  width: 100%;
+  text-align: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
+
+/* ============================================================
+   ANIMATED HEADLINE
+   ============================================================ */
+
+.qro-animation-headline {
+  margin-bottom: 6px;
+}
+
+.qro-animation-headline h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.qro-animation-headline h1 > span {
+  display: block;
+}
+
+.qro-headline-second {
+  color: var(--quantum);
+}
+
+
+
+
+/* ============================================================
+   SPEECH BUBBLE
+   ============================================================ */
+
+.qro-speech-bubble {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 32px;
+
+  max-width: 92%;
+
+  padding: 7px 14px;
+
+  margin: 3px auto 0;
+
+  border-radius: 18px;
+
+  background: rgba(20, 20, 29, 0.96);
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+
+  color: #d7d7e2;
+
+  font-size: 11px;
+
+  line-height: 1.3;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.35),
+    0 0 20px rgba(35, 211, 255, 0.03);
+
+  white-space: nowrap;
+
+  position: relative;
+
+  z-index: 20;
+}
+
+
+/* ============================================================
+   ROBOT ZONE
+   ============================================================ */
+
+/*
+   IMPORTANT:
+   The old version used:
+       align-items: flex-end;
+       margin-bottom: -43px;
+
+   That pushed the robot into the form area.
+
+   This version keeps the robot at the TOP of its zone.
+*/
+
+.qro-robot-zone {
+  width: 100%;
+  height: 125px;
+
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  perspective: 800px;
+
+  margin-top: 18px;
+  margin-bottom: 10px;
+
+  z-index: 10;
+
+  overflow: visible;
+
+  box-sizing: border-box;
+}
+
+
+/* ============================================================
+   ROBOT
+   ============================================================ */
+
+.qro-robot {
+  
+  width: 102px;
+
+  height: 108px;
+
+  position: relative;
+
+  transform-style: preserve-3d;
+
+
+  transition:
+    transform 0.55s cubic-bezier(
+      0.68,
+      -0.4,
+      0.27,
+      1.4
+    );
+
+  flex-shrink: 0;
+
+  will-change: transform;
+}
+
+.qro-robot.turned {
+  transform: rotateY(180deg);
+}
+
+
+/* ============================================================
+   FRONT / BACK
+   ============================================================ */
+
+.qro-robot-face,
+.qro-robot-back {
+  position: absolute;
+
+  inset: 0;
+
+  backface-visibility: hidden;
+
+  -webkit-backface-visibility: hidden;
+}
+
+.qro-robot-back {
+  transform: rotateY(180deg);
+}
+
+
+/* ============================================================
+   ANTENNA
+   ============================================================ */
+
+.qro-antenna {
+  position: absolute;
+
+  top: -11px;
+
+  left: 50%;
+
+  width: 4px;
+
+  height: 14px;
+
+  transform: translateX(-50%);
+
+  border-radius: 2px;
+
+  background:
+    linear-gradient(
+      #4be7e0,
+      #2fa8a3
+    );
+
+  z-index: 5;
+}
+
+.qro-antenna span {
+  position: absolute;
+
+  top: -7px;
+
+  left: 50%;
+
+  width: 8px;
+
+  height: 8px;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background: var(--cyan);
+
+  box-shadow:
+    0 0 10px var(--cyan),
+    0 0 20px rgba(35, 211, 255, 0.35);
+
+  animation:
+    qro-antenna-pulse
+    1.8s
+    ease-in-out
+    infinite;
+}
+
+@keyframes qro-antenna-pulse {
+  0%,
+  100% {
+    transform:
+      translateX(-50%)
+      scale(0.85);
+  }
+
+  50% {
+    transform:
+      translateX(-50%)
+      scale(1.15);
+  }
+}
+
+
+/* ============================================================
+   ROBOT HEAD
+   ============================================================ */
+
+.qro-robot-head {
+  position: absolute;
+
+  top: 5px;
+
+  left: 50%;
+
+  width: 80px;
+
+  height: 74px;
+
+  transform: translateX(-50%);
+
+  background: #f3f4f8;
+
+  border-radius:
+    42px
+    42px
+    38px
+    38px;
+
+  box-shadow:
+    inset 0 -6px 10px rgba(0, 0, 0, 0.06),
+    0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+
+/* ============================================================
+   VISOR
+   ============================================================ */
+
+.qro-visor {
+  position: absolute;
+
+  top: 15px;
+
+  left: 50%;
+
+  width: 57px;
+
+  height: 36px;
+
+  transform: translateX(-50%);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 9px;
+
+  background: #0c0c14;
+
+  border-radius: 19px;
+
+  box-shadow:
+    inset 0 0 10px rgba(35, 211, 255, 0.05),
+    0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+
+/* ============================================================
+   ROBOT EYES
+   ============================================================ */
+
+.qro-eye {
+  width: 9px;
+
+  height: 13px;
+
+  display: block;
+
+  border-radius: 5px;
+
+  background: var(--cyan);
+
+  box-shadow:
+    0 0 8px var(--cyan),
+    0 0 16px rgba(35, 211, 255, 0.35);
+
+  transition:
+    transform 0.12s ease,
+    height 0.15s ease;
+
+  will-change: transform;
+}
+
+
+/* ============================================================
+   ROBOT EARS
+   ============================================================ */
+
+.qro-ear {
+  position: absolute;
+
+  top: 27px;
+
+  width: 9px;
+
+  height: 15px;
+
+  background: #dcdde5;
+
+  border-radius: 4px;
+}
+
+.qro-ear-left {
+  left: -5px;
+}
+
+.qro-ear-right {
+  right: -5px;
+}
+
+
+/* ============================================================
+   ROBOT BODY
+   ============================================================ */
+
+.qro-robot-body {
+  position: absolute;
+
+  bottom: 0;
+
+  left: 50%;
+
+  width: 71px;
+
+  height: 33px;
+
+  transform: translateX(-50%);
+
+  background: #f3f4f8;
+
+  border-radius:
+    19px
+    19px
+    10px
+    10px;
+
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+.qro-robot-body::before {
+  content: '';
+
+  position: absolute;
+
+  top: 8px;
+
+  left: 50%;
+
+  width: 28px;
+
+  height: 6px;
+
+  transform: translateX(-50%);
+
+  background: #c9cad4;
+
+  border-radius: 4px;
+}
+
+
+/* ============================================================
+   ROBOT BODY LABEL
+   ============================================================ */
+
+.qro-body-panel {
+  position: absolute;
+
+  left: 50%;
+
+  top: 17px;
+
+  transform: translateX(-50%);
+
+  font-size: 7px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+
+  color: #636576;
+
+  opacity: 0.65;
+}
+
+
+/* ============================================================
+   ROBOT BOLTS
+   ============================================================ */
+
+.qro-bolt {
+  position: absolute;
+
+  bottom: 6px;
+
+  width: 6px;
+
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #9a9aa8;
+}
+
+.qro-bolt-left {
+  left: 8px;
+}
+
+.qro-bolt-right {
+  right: 8px;
+}
+
+
+/* ============================================================
+   ROBOT BACK
+   ============================================================ */
+
+.qro-robot-back .qro-robot-head {
+  background: #e7e8f0;
+}
+
+.qro-headband {
+  position: absolute;
+
+  top: 29px;
+
+  left: 50%;
+
+  width: 39px;
+
+  height: 8px;
+
+  transform: translateX(-50%);
+
+  background: #c9cad4;
+
+  border-radius: 4px;
+}
+
+
+/* ============================================================
+   FORM
+   ============================================================ */
+
+.qro-animation-form {
+  width: 100%;
+
+  position: relative;
+
+  z-index: 6;
+
+  box-sizing: border-box;
+}
+
+.qro-animation-form form {
+  text-align: left;
+}
+
+
+/* ============================================================
+   FORM FIELD
+   ============================================================ */
+
+.qro-animated-field {
+  margin-bottom: 12px;
+}
+
+.qro-animated-field label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #e4e4ee;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.02em;
+}
+
+
+/* ============================================================
+   INPUT
+   ============================================================ */
+
+.qro-input-wrap {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  min-height: 43px;
+
+  background:
+    rgba(8, 10, 18, 0.85);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  border-radius: 12px;
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+
+  box-sizing: border-box;
+}
+
+.qro-input-wrap.focused {
+  transform: translateY(-1px);
+
+  border-color:
+    rgba(35, 211, 255, 0.8);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(35, 211, 255, 0.11),
+
+    0 0 22px
+    rgba(35, 211, 255, 0.08);
+}
+
+.qro-input-wrap > svg {
+  margin-left: 13px;
+
+  flex-shrink: 0;
+
+  color: #aeb0c0;
+
+  opacity: 0.65;
+}
+
+.qro-input-wrap input {
+  flex: 1;
+
+  min-width: 0;
+
+  border: 0;
+
+  outline: 0;
+
+  background: transparent;
+
+  color: #f2f2f7;
+
+  padding:
+    11px
+    11px;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  box-sizing: border-box;
+}
+
+.qro-input-wrap input::placeholder {
+  color: #5c5c6c;
+}
+
+
+/* ============================================================
+   PASSWORD EYE
+   ============================================================ */
+
+.qro-eye-toggle {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #c7c7d6;
+
+  cursor: pointer;
+
+  padding:
+    0
+    12px;
+
+  opacity: 0.6;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.qro-eye-toggle:hover {
+  opacity: 1;
+
+  transform: scale(1.08);
+}
+
+
+/* ============================================================
+   SUBMIT BUTTON
+   ============================================================ */
+
+.qro-animated-submit {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 4px;
+
+  padding: 11px 0;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #398df5,
+      #20cce8
+    );
+
+  color: #061019;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 10px 26px
+    rgba(35, 211, 255, 0.18);
+
+  transition:
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.qro-animated-submit:hover {
+  filter: brightness(1.08);
+
+  box-shadow:
+    0 12px 30px
+    rgba(35, 211, 255, 0.28);
+}
+
+.qro-animated-submit:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+}
+
+
+/* ============================================================
+   SIGN IN / REGISTER SWITCH
+   ============================================================ */
+
+.qro-animation-switch {
+  margin-top: 13px;
+
+  text-align: center;
+
+  color: #77798b;
+
+  font-size: 11px;
+}
+
+.qro-animation-switch button {
+  border: 0;
+
+  background: transparent;
+
+  color: var(--cyan);
+
+  font: inherit;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  margin-left: 5px;
+}
+
+.qro-animation-switch button:hover {
+  text-decoration: underline;
+}
+
+
+/* ============================================================
+   TOP TABS
+   ============================================================ */
+
+.qro-mode-tabs {
+  display: flex;
+
+  padding: 4px;
+
+  margin-bottom: 12px;
+  
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  background:
+    rgba(8, 10, 17, 0.85);
+
+  border-radius: 11px;
+
+  position: relative;
+
+  z-index: 30;
+}
+
+.qro-mode-tabs button {
+  flex: 1;
+
+  border: 0;
+
+  padding: 8px 0;
+
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #77798b;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.qro-mode-tabs button.active {
+  color: #fff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #6859ef,
+      #3c8cf5
+    );
+
+  box-shadow:
+    0 4px 15px
+    rgba(91, 92, 238, 0.25);
+}
+
+
+/* ============================================================
+   LOGIN SCREEN CONSTRAINTS
+   ============================================================ */
+
+.login {
+  position: relative;
+
+  width: 100%;
+
+  height: 100vh;
+
+  min-height: 100vh;
+
+  overflow: hidden;
+}
+
+
+/*
+   The left side remains fixed to the viewport.
+*/
+
+.login-brand {
+  position: relative;
+
+  height: 100vh;
+
+  min-height: 0;
+
+  overflow: hidden;
+}
+
+
+/*
+   Right side can scroll internally on small screens,
+   instead of pushing the robot outside the browser.
+*/
+
+.login-form-side {
+  position: relative;
+
+  height: 100vh;
+
+  min-height: 0;
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+
+  box-sizing: border-box;
+
+  scrollbar-width: thin;
+}
+
+
+/*
+   Keep the actual card contained.
+*/
+
+.login-card {
+  box-sizing: border-box;
+
+  position: relative;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+  .qro-animation-headline h1 {
+    font-size: 23px;
+  }
+
+  .qro-type-cursor {
+    height: 22px;
+  }
+
+  .qro-speech-bubble {
+    font-size: 10px;
+
+    min-height: 30px;
+
+    padding:
+      6px
+      12px;
+  }
+
+  .qro-robot-zone {
+    height: 104px;
+
+    margin-top: 1px;
+
+    margin-bottom: 5px;
+  }
+
+  .qro-robot {
+    transform: translateY(18px) scale(0.82);
+    transform-origin:
+      top
+      center;
+  }
+
+  .qro-robot.turned {
+    transform: translateY(18px) scale(0.82) rotateY(180deg);
+  }
+
+}
+
+
+/* ============================================================
+   SHORT SCREEN
+   ============================================================ */
+
+@media (max-height: 720px) {
+
+  .qro-animation-headline {
+    margin-bottom: 3px;
+  }
+
+  .qro-animation-headline h1 {
+    font-size: 22px;
+  }
+
+  .qro-speech-bubble {
+    min-height: 28px;
+
+    padding:
+      5px
+      11px;
+  }
+
+  .qro-robot-zone {
+    height: 91px;
+
+    margin-bottom: 3px;
+  }
+
+  .qro-robot {
+    transform: translateY(18px) scale(0.76);
+
+    transform-origin:
+      top
+      center;
+  }
+
+  .qro-robot.turned {
+    transform: translateY(18px) scale(0.76) rotateY(180deg);
+  }
+
+  .qro-animated-field {
+    margin-bottom: 9px;
+  }
+
+  .qro-input-wrap {
+    min-height: 40px;
+  }
+
+  .qro-input-wrap input {
+    padding:
+      9px
+      10px;
+  }
+
+  .qro-animated-submit {
+    padding:
+      10px
+      0;
+  }
+
+}
+
+
+/* ============================================================
+   VERY SHORT SCREEN
+   ============================================================ */
+
+@media (max-height: 620px) {
+
+  .qro-animation-headline h1 {
+    font-size: 19px;
+  }
+
+  .qro-speech-bubble {
+    display: none;
+  }
+
+  .qro-robot-zone {
+    height: 76px;
+  }
+
+  .qro-robot {
+    transform: scale(0.62);
+
+    transform-origin:
+      top
+      center;
+  }
+
+  .qro-robot.turned {
+    transform:
+      scale(0.62)
+      rotateY(180deg);
+  }
+
+  .qro-animated-field {
+    margin-bottom: 7px;
+  }
+
+  .qro-animated-field label {
+    margin-bottom: 4px;
+  }
+
+}
+
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .qro-robot,
+  .qro-eye,
+  .qro-type-cursor,
+  .qro-input-wrap,
+  .qro-antenna span {
+    animation: none !important;
+
+    transition: none !important;
+  }
+
+}
+
+/* ============================================================
+   ROUTE SELECTOR INTERACTIONS
+   ============================================================ */
+
+.route-selector-card {
+  position: relative;
+  overflow: hidden;
+
+  transition:
+    transform 0.28s ease,
+    box-shadow 0.28s ease,
+    border-color 0.28s ease;
+}
+
+.route-selector-card:hover {
+  transform: translateY(-3px);
+
+  border-color:
+    rgba(35, 211, 255, 0.28);
+
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.28),
+    0 0 25px rgba(35, 211, 255, 0.06);
+}
+
+
+/* ============================================================
+   TITLE
+   ============================================================ */
+
+.route-selector-title {
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.route-selector-card:hover .route-selector-title {
+  color: var(--cyan);
+
+  transform: translateX(2px);
+}
+
+
+/* ============================================================
+   FIELDS
+   ============================================================ */
+
+.route-field {
+  transition:
+    transform 0.22s ease;
+}
+
+.route-field:hover {
+  transform: translateX(2px);
+}
+
+
+/* ============================================================
+   SELECT BOXES
+   ============================================================ */
+
+.route-select {
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.18s ease;
+}
+
+.route-select:hover {
+  border-color:
+    rgba(35, 211, 255, 0.35);
+
+  box-shadow:
+    0 0 12px rgba(35, 211, 255, 0.06);
+}
+
+.route-select:focus {
+  transform: translateY(-1px);
+
+  border-color:
+    rgba(35, 211, 255, 0.7);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(35, 211, 255, 0.08);
+}
+
+
+/* ============================================================
+   SWAP BUTTON
+   ============================================================ */
+
+.route-swap-wrapper {
+  display: flex;
+
+  justify-content: center;
+
+  margin:
+    -4px
+    0
+    4px;
+}
+
+.route-swap-btn {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.route-swap-btn:hover {
+  transform:
+    rotate(180deg)
+    scale(1.08);
+
+  box-shadow:
+    0 0 15px
+    rgba(35, 211, 255, 0.18);
+}
+
+
+/* ============================================================
+   QUANTUM BADGE
+   ============================================================ */
+
+.quantum-badge {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.quantum-badge:hover {
+  transform:
+    translateX(3px)
+    scale(1.03);
+
+  box-shadow:
+    0 0 14px
+    rgba(35, 211, 255, 0.12);
+}
+
+
+/* ============================================================
+   OPTIMIZATION OBJECTIVE
+   ============================================================ */
+
+.route-segmented button {
+  position: relative;
+
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.route-segmented button:hover {
+  transform: translateY(-1px);
+
+  color: #fff;
+
+  box-shadow:
+    0 0 12px
+    rgba(35, 211, 255, 0.07);
+}
+
+.route-segmented button[data-active="true"] {
+  box-shadow:
+    0 0 12px
+    rgba(35, 211, 255, 0.10);
+}
+
+
+/* ============================================================
+   OPTIMIZE BUTTON
+   ============================================================ */
+
+.optimize-route-btn {
+  position: relative;
+
+  overflow: hidden;
+
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.25s ease,
+    filter 0.22s ease;
+}
+
+.optimize-route-btn::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: -120%;
+
+  width: 70%;
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.18),
+      transparent
+    );
+
+  transform: skewX(-20deg);
+
+  transition:
+    left 0.55s ease;
+
+  pointer-events: none;
+}
+
+.optimize-route-btn:hover::before {
+  left: 140%;
+}
+
+.optimize-route-btn:hover {
+  transform: translateY(-2px);
+
+  filter: brightness(1.08);
+
+  box-shadow:
+    0 9px 25px
+    rgba(35, 211, 255, 0.20);
+}
+
+.optimize-route-btn:active {
+  transform:
+    translateY(0)
+    scale(0.98);
+}
+
+
+/* ============================================================
+   WARNING
+   ============================================================ */
+
+.route-warning {
+  font-size: 11px;
+
+  color: var(--moderate);
+
+  margin-top: 8px;
+
+  text-align: center;
+
+  animation:
+    routeWarningIn
+    0.25s
+    ease;
+}
+
+@keyframes routeWarningIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ============================================================
+   DEMO / RESET
+   ============================================================ */
+
+.route-actions {
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 9px;
+}
+
+.demo-btn {
+  flex: 1;
+
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.demo-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 18px
+    rgba(35, 211, 255, 0.10);
+}
+
+.reset-btn {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.22s ease;
+}
+
+.reset-btn:hover {
+  transform:
+    rotate(-90deg)
+    scale(1.08);
+
+  box-shadow:
+    0 0 14px
+    rgba(255, 255, 255, 0.08);
+}
+
+
+/* ============================================================
+   DISABLED STATE
+   ============================================================ */
+
+.optimize-route-btn:disabled {
+  transform: none;
+
+  filter: none;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+}
+
+
+/* ============================================================
+   REDUCE MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .route-selector-card,
+  .route-selector-title,
+  .route-field,
+  .route-select,
+  .route-swap-btn,
+  .quantum-badge,
+  .route-segmented button,
+  .optimize-route-btn,
+  .demo-btn,
+  .reset-btn {
+    transition: none !important;
+  }
+
+  .route-warning {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   QPSO OPTIMIZATION ANIMATION
+   ============================================================ */
+
+.qro-optimization-card {
+  position: relative;
+  overflow: hidden;
+
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.22),
+    0 0 30px rgba(168, 85, 247, 0.04);
+}
+
+.qro-optimization-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.qro-live-badge {
+  margin-left: auto;
+
+  padding: 3px 7px;
+
+  border-radius: 6px;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+
+  color: #d8b4fe;
+
+  background:
+    rgba(168, 85, 247, 0.10);
+
+  border:
+    1px solid
+    rgba(168, 85, 247, 0.22);
+
+  animation:
+    qroLivePulse
+    1.4s
+    ease-in-out
+    infinite;
+}
+
+@keyframes qroLivePulse {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+
+/* PARTICLE AREA */
+
+.qro-particle-box {
+  position: relative;
+
+  width: 100%;
+
+  height: 105px;
+
+  overflow: hidden;
+
+  border-radius: 12px;
+
+  background:
+    rgba(5, 7, 14, 0.75);
+
+  border:
+    1px solid
+    rgba(168, 85, 247, 0.12);
+
+  margin-bottom: 12px;
+}
+
+.qro-particle-grid {
+  position: absolute;
+
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(168, 85, 247, 0.06) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(168, 85, 247, 0.06) 1px,
+      transparent 1px
+    );
+
+  background-size: 22px 22px;
+
+  opacity: 0.35;
+}
+
+.qro-particle-label {
+  position: absolute;
+
+  top: 8px;
+
+  left: 10px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  font-family: var(--mono);
+
+  font-size: 8px;
+
+  letter-spacing: 0.07em;
+
+  color: #9ca3af;
+
+  z-index: 3;
+}
+
+
+/* PARTICLES */
+
+.qro-particle {
+  position: absolute;
+
+  width: 5px;
+
+  height: 5px;
+
+  border-radius: 50%;
+
+  background:
+    #a855f7;
+
+  box-shadow:
+    0 0 8px
+    rgba(168, 85, 247, 0.85);
+
+  z-index: 2;
+}
+
+
+/* BEST POSITION */
+
+.qro-best-position {
+  position: absolute;
+
+  left: 50%;
+
+  top: 55%;
+
+  width: 18px;
+
+  height: 18px;
+
+  transform:
+    translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(35, 211, 255, 0.55);
+
+  box-shadow:
+    0 0 20px
+    rgba(35, 211, 255, 0.22);
+
+  z-index: 4;
+}
+
+.qro-best-position span {
+  position: absolute;
+
+  left: 50%;
+
+  top: 50%;
+
+  width: 5px;
+
+  height: 5px;
+
+  transform:
+    translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  background:
+    var(--cyan);
+
+  box-shadow:
+    0 0 10px
+    var(--cyan);
+}
+
+
+/* METRICS */
+
+.qro-optimization-metrics {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 7px;
+
+  margin-bottom: 12px;
+}
+
+.qro-optimization-metric {
+  padding: 8px;
+
+  border-radius: 9px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.055);
+
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.qro-optimization-metric:hover {
+  transform: translateY(-2px);
+
+  border-color:
+    rgba(168, 85, 247, 0.28);
+}
+
+.qro-optimization-metric span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  font-family: var(--mono);
+
+  font-size: 7px;
+
+  letter-spacing: 0.08em;
+
+  color: var(--text-faint);
+}
+
+.qro-optimization-metric strong {
+  font-family: var(--mono);
+
+  font-size: 13px;
+
+  color: #e5e7eb;
+}
+
+.qro-optimization-metric small {
+  font-size: 8px;
+
+  color: var(--text-faint);
+}
+
+
+/* STAGES */
+
+.qro-stage-list {
+  margin-bottom: 10px;
+}
+
+
+/* PROGRESS */
+
+.qro-optimization-progress {
+  overflow: hidden;
+
+  box-shadow:
+    0 0 12px
+    rgba(168, 85, 247, 0.10);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+  .qro-particle-box {
+    height: 90px;
+  }
+
+  .qro-optimization-metric strong {
+    font-size: 11px;
+  }
+
+}
+
+
+/* REDUCED MOTION */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .qro-live-badge {
+    animation: none;
+  }
+
+}
+
+/* ============================================================
+   ANIMATED ROUTE DRAWING
+   ============================================================ */
+
+.route-flow {
+  filter:
+    drop-shadow(
+      0 0 5px
+      rgba(35, 211, 255, 0.55)
+    );
+}
+
+
+/* Moving point at the end of the route */
+
+.route-animation-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.route-draw-pulse {
+  width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    rgba(35, 211, 255, 0.12);
+
+  box-shadow:
+    0 0 12px
+    rgba(35, 211, 255, 0.45);
+
+  animation:
+    routeDrawPulse
+    0.9s
+    ease-in-out
+    infinite;
+}
+
+.route-draw-pulse span {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background:
+    var(--cyan);
+
+  box-shadow:
+    0 0 8px
+    var(--cyan);
+}
+
+@keyframes routeDrawPulse {
+
+  0% {
+    transform: scale(0.75);
+    opacity: 0.65;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.75);
+    opacity: 0.65;
+  }
+
+}
+
+/* ============================================================
+   ANIMATED ROUTE CAR
+   ============================================================ */
+
+.animated-car-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.animated-car {
+  position: relative;
+
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transform-origin: center;
+}
+
+.car-glow {
+  position: absolute;
+
+  width: 25px;
+  height: 25px;
+
+  border-radius: 50%;
+
+  background: rgba(35, 211, 255, 0.22);
+
+  box-shadow:
+    0 0 8px rgba(35, 211, 255, 0.7),
+    0 0 18px rgba(35, 211, 255, 0.45);
+
+  animation:
+    carGlow 1s ease-in-out infinite;
+}
+
+.car-body {
+  position: relative;
+
+  width: 18px;
+  height: 11px;
+
+  border-radius: 5px 5px 3px 3px;
+
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #d9f7ff 45%,
+    #8edfff 100%
+  );
+
+  border: 1px solid rgba(0, 0, 0, 0.45);
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.5),
+    0 0 7px rgba(35, 211, 255, 0.8);
+}
+
+.car-roof {
+  position: absolute;
+
+  width: 10px;
+  height: 7px;
+
+  left: 4px;
+  top: -5px;
+
+  border-radius: 5px 5px 1px 1px;
+
+  background: #dff9ff;
+
+  border: 1px solid rgba(0, 0, 0, 0.35);
+}
+
+.car-window {
+  position: absolute;
+
+  width: 7px;
+  height: 4px;
+
+  left: 5px;
+  top: -3px;
+
+  border-radius: 2px;
+
+  background:
+    rgba(25, 65, 85, 0.9);
+}
+
+.car-light {
+  position: absolute;
+
+  width: 3px;
+  height: 3px;
+
+  border-radius: 50%;
+
+  top: 4px;
+}
+
+.car-light.front {
+  right: 1px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 0 4px #ffffff;
+}
+
+.car-light.back {
+  left: 1px;
+
+  background: #ff4b4b;
+
+  box-shadow:
+    0 0 4px #ff4b4b;
+}
+
+@keyframes carGlow {
+
+  0% {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+
+}
+
+/* ============================================================
+   TRAFFIC CARS
+   ============================================================ */
+
+/* ============================================================
+   TRAFFIC VEHICLES
+   ============================================================ */
+
+.traffic-car-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.traffic-car {
+  position: relative;
+
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transform-origin: center;
+
+  pointer-events: none;
+}
+
+.traffic-car-shadow {
+  position: absolute;
+
+  width: 18px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: rgba(0, 0, 0, 0.45);
+
+  filter: blur(3px);
+
+  transform: translateY(5px);
+}
+
+.traffic-car-body {
+  position: relative;
+
+  width: 17px;
+  height: 10px;
+
+  border-radius: 4px 4px 3px 3px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f8fafc 0%,
+      var(--car-color) 48%,
+      #111827 100%
+    );
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.55);
+
+  box-shadow:
+    0 0 5px var(--car-color),
+    0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+.traffic-car-roof {
+  position: absolute;
+
+  width: 10px;
+  height: 6px;
+
+  left: 3px;
+  top: -5px;
+
+  border-radius: 5px 5px 1px 1px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #dbeafe,
+      #64748b
+    );
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.4);
+}
+
+.traffic-car-window {
+  width: 6px;
+  height: 3px;
+
+  position: absolute;
+
+  left: 1px;
+  top: 1px;
+
+  border-radius: 1px;
+
+  background:
+    rgba(15, 23, 42, 0.9);
+}
+
+.traffic-car-headlight {
+  position: absolute;
+
+  width: 3px;
+  height: 2px;
+
+  top: 4px;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 0 4px #ffffff;
+}
+
+.traffic-car-headlight.left {
+  left: 1px;
+}
+
+.traffic-car-headlight.right {
+  right: 1px;
+}
+
+.traffic-car-wheel {
+  position: absolute;
+
+  width: 3px;
+  height: 5px;
+
+  bottom: -2px;
+
+  border-radius: 1px;
+
+  background: #020617;
+}
+
+.wheel-left {
+  left: 3px;
+}
+
+.wheel-right {
+  right: 3px;
+}
+
+/* Full-screen animated login background */
+.login {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.login-brand {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.55;
+}
+
+.login-form-centered {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-card {
+  position: relative;
+  z-index: 20;
+}
+
+/* =========================================================
+   FULL SCREEN LOGIN BACKGROUND
+   ========================================================= */
+
+.login {
+  position: relative !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  display: block !important;
+}
+
+/* Remove the old left-column behavior */
+.login-brand {
+  position: absolute !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  max-width: none !important;
+  min-width: 0 !important;
+
+  border: none !important;
+  border-right: none !important;
+
+  z-index: 0 !important;
+
+  opacity: 1 !important;
+  pointer-events: none !important;
+}
+
+/* Animated network fills the entire screen */
+.login-brand .qro-network {
+  position: absolute !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  max-width: none !important;
+}
+
+/* SVG/background animation fills screen */
+.login-brand svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Login form sits above the animation */
+.login-form-side,
+.login-form-centered {
+  position: relative !important;
+
+  z-index: 10 !important;
+
+  width: 100% !important;
+  min-height: 100vh !important;
+  height: 100vh !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 24px !important;
+
+  border: none !important;
+}
+
+/* Make robot/background translucent */
+.login-brand {
+  opacity: 0.38 !important;
+}
+
+/* Keep the actual login card visible */
+.login-card {
+  position: relative !important;
+  z-index: 20 !important;
+
+  width: min(420px, 92vw) !important;
+
+  margin: 0 auto !important;
+}
+
+/* Remove any old column divider */
+.login-brand::after,
+.login-brand::before {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.login-form-centered {
+  transform: translateY(35px);
+}
+
+.navbar {
+  position: relative;
+}
+
+.navbar-page-title {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-page-title h2 {
+  margin: 0;
+}
+
+.navbar-brand-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+
+  color: var(--cyan);
+
+  text-shadow:
+    0 0 8px rgba(34, 211, 238, 0.35),
+    0 0 18px rgba(34, 211, 238, 0.18);
+
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ============================================================
+   NAVBAR / PROFILE DROPDOWN — KEEP ABOVE DASHBOARD
+   ============================================================ */
+
+.navbar {
+  position: relative;
+  z-index: 1000;
+}
+
+.navbar-right {
+  position: relative;
+  z-index: 1001;
+}
+
+.navbar-right > * {
+  position: relative;
+  z-index: 1002;
+}
+
+/* Profile / sign-out dropdown */
+.profile-menu,
+.profile-dropdown,
+.user-menu,
+.navbar-dropdown {
+  position: absolute;
+  z-index: 9999 !important;
 }
