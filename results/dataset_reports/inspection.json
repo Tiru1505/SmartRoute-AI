@@ -1,0 +1,522 @@
+{
+  "osm_hyderabad_metro": {
+    "registry": {
+      "kind": "graph",
+      "path": "data/processed/hyderabad/hyderabad_drive.pkl",
+      "module": "road_network",
+      "trainable": false,
+      "licence": "ODbL-1.0",
+      "note": "Primary routing graph. 286,603 nodes / 741,203 edges, ORR + RGIA included."
+    },
+    "path": "data\\processed\\hyderabad\\hyderabad_drive.pkl",
+    "exists": true,
+    "size": "214.0 MB",
+    "inspection": {
+      "kind": "graph",
+      "nodes": 286603,
+      "edges": 741203,
+      "edge_attributes": [
+        "bearing",
+        "capacity_pcu_h",
+        "congestion",
+        "current_speed_kph",
+        "current_time_s",
+        "free_flow_speed_kph",
+        "free_flow_time_s",
+        "highway",
+        "length",
+        "length_m",
+        "maxspeed",
+        "name",
+        "oneway",
+        "osmid",
+        "ref",
+        "reversed",
+        "road_status",
+        "speed_kph",
+        "travel_time"
+      ],
+      "bbox": [
+        78.1500395,
+        17.150001,
+        78.7499686,
+        17.6998967
+      ],
+      "extent_km": [
+        63.6,
+        61.0
+      ],
+      "highway_mix": {
+        "residential": 661948,
+        "tertiary": 40292,
+        "secondary": 15112,
+        "unclassified": 7749,
+        "primary": 5324,
+        "living_street": 4653,
+        "trunk": 3404,
+        "tertiary_link": 720,
+        "secondary_link": 648,
+        "primary_link": 515
+      }
+    }
+  },
+  "osm_hyderabad_city": {
+    "registry": {
+      "kind": "graph",
+      "path": "data/processed/hyderabad-city/hyderabad_drive.pkl",
+      "module": "road_network",
+      "trainable": false,
+      "licence": "ODbL-1.0",
+      "note": "Smaller instance, used for scalability sweeps."
+    },
+    "path": "data\\processed\\hyderabad-city\\hyderabad_drive.pkl",
+    "exists": true,
+    "size": "96.8 MB",
+    "inspection": {
+      "kind": "graph",
+      "nodes": 137046,
+      "edges": 356420,
+      "edge_attributes": [
+        "bearing",
+        "capacity_pcu_h",
+        "congestion",
+        "current_speed_kph",
+        "current_time_s",
+        "free_flow_speed_kph",
+        "free_flow_time_s",
+        "highway",
+        "length",
+        "length_m",
+        "maxspeed",
+        "name",
+        "oneway",
+        "osmid",
+        "ref",
+        "reversed",
+        "road_status",
+        "speed_kph",
+        "travel_time"
+      ],
+      "bbox": [
+        78.2398034,
+        17.3008036,
+        78.6219337,
+        17.554907
+      ],
+      "extent_km": [
+        40.5,
+        28.2
+      ],
+      "highway_mix": {
+        "residential": 316155,
+        "tertiary": 20775,
+        "secondary": 7310,
+        "living_street": 3893,
+        "primary": 3489,
+        "trunk": 2019,
+        "unclassified": 1480,
+        "primary_link": 383,
+        "tertiary_link": 315,
+        "trunk_link": 290
+      }
+    }
+  },
+  "mendeley_ahmedabad_flow": {
+    "registry": {
+      "kind": "document",
+      "path": "~/Downloads/Data for Traffic Flow Analysis in Emerging Country (India) (1)",
+      "module": "congestion_model",
+      "trainable": false,
+      "licence": "CC-BY-4.0",
+      "citation": "Tsuboi, T. & Yoshikawa, N. (2019). Traffic Flow Analysis in Emerging Country (India). Mendeley Data 2dg8xgw622",
+      "note": "Contains NO machine-readable data -- two .docx files only. Supplies the fundamental-diagram model form (q-k-v, vf/kj/kc/qc/vc) and the speed-ratio congestion definition. Calibration reference, not training data.\n"
+    },
+    "path": "C:\\Users\\tirup\\Downloads\\Data for Traffic Flow Analysis in Emerging Country (India) (1)",
+    "exists": true,
+    "size": "4.2 MB",
+    "inspection": {
+      "kind": "document",
+      "documents": [
+        {
+          "file": "COTATU_META_DATA.docx",
+          "size": "2.0 MB",
+          "embedded_images": 20,
+          "chart_objects_emf": 8,
+          "text_chars": 7447,
+          "has_data_tables": false
+        },
+        {
+          "file": "Datainbrief_CODATU.docx",
+          "size": "116.9 KB",
+          "embedded_images": 3,
+          "chart_objects_emf": 2,
+          "text_chars": 6823,
+          "has_data_tables": true
+        }
+      ],
+      "machine_readable_rows": 0
+    }
+  },
+  "indore_congestion": {
+    "registry": {
+      "kind": "tabular",
+      "path": "data/raw/india/indore-congestion",
+      "module": "congestion_model",
+      "trainable": false,
+      "licence": "CC-BY-4.0",
+      "note": "437 rows, 4 road segments, 13 days. Too small for any model. Threshold sanity check only."
+    },
+    "path": "data\\raw\\india\\indore-congestion",
+    "exists": true,
+    "size": "104.3 KB",
+    "inspection": {
+      "kind": "tabular",
+      "n_files": 3,
+      "frames": [
+        {
+          "name": "event_log.xlsx::event_log",
+          "rows": 437,
+          "cols": 4,
+          "columns": [
+            {
+              "name": "road_id",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4
+            },
+            {
+              "name": "delay",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 222
+            },
+            {
+              "name": "congestion",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4
+            },
+            {
+              "name": "timestamp",
+              "dtype": "datetime64[ns]",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 437
+            }
+          ],
+          "duplicate_rows": 0,
+          "temporal": {
+            "column": "timestamp",
+            "start": "2026-01-26 14:25:27.174000",
+            "end": "2026-02-08 17:50:42.167000",
+            "span_days": 13.14,
+            "n_timestamps": 437,
+            "median_gap_s": 1.0765,
+            "regular": false
+          },
+          "geographic": null
+        },
+        {
+          "name": "ml_dataset.xlsx::ml_dataset",
+          "rows": 437,
+          "cols": 5,
+          "columns": [
+            {
+              "name": "road_id",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4
+            },
+            {
+              "name": "hour",
+              "dtype": "int64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 17
+            },
+            {
+              "name": "day",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 7
+            },
+            {
+              "name": "delay",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 222
+            },
+            {
+              "name": "congestion",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4
+            }
+          ],
+          "duplicate_rows": 24,
+          "temporal": null,
+          "geographic": null
+        },
+        {
+          "name": "raw_traffic.xlsx::raw_traffic",
+          "rows": 437,
+          "cols": 5,
+          "columns": [
+            {
+              "name": "Column1",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4
+            },
+            {
+              "name": "Column2",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 12
+            },
+            {
+              "name": "Column3",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 270
+            },
+            {
+              "name": "Column4",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 222
+            },
+            {
+              "name": "Column5",
+              "dtype": "datetime64[ns]",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 437
+            }
+          ],
+          "duplicate_rows": 0,
+          "temporal": {
+            "column": "Column5",
+            "start": "2026-01-26 14:25:27.174000",
+            "end": "2026-02-08 17:50:42.167000",
+            "span_days": 13.14,
+            "n_timestamps": 437,
+            "median_gap_s": 1.0765,
+            "regular": false
+          },
+          "geographic": null
+        }
+      ]
+    }
+  },
+  "idd_lite": {
+    "registry": {
+      "kind": "vision_segmentation",
+      "path": "~/Downloads/archive (1)/idd_lite",
+      "module": "vision_occupancy",
+      "trainable": true,
+      "licence": "IDD research licence (non-commercial)",
+      "note": "7 coarse semantic classes, NO bounding boxes, NO per-vehicle instances. Cannot train multi-class detection. Can train vehicle-occupancy segmentation.\n"
+    },
+    "path": "C:\\Users\\tirup\\Downloads\\archive (1)\\idd_lite",
+    "exists": true,
+    "size": "30.8 MB",
+    "inspection": {
+      "kind": "vision_segmentation",
+      "splits": {
+        "train": {
+          "images": 1380,
+          "semantic_labels": 2760
+        },
+        "val": {
+          "images": 204,
+          "semantic_labels": 408
+        },
+        "test": {
+          "images": 399,
+          "semantic_labels": 0
+        }
+      },
+      "image_sizes": {
+        "(320, 227)": 150
+      },
+      "annotation_type": "per-pixel semantic mask (PNG)",
+      "bounding_boxes": false,
+      "classes": {
+        "0": {
+          "name": "drivable",
+          "frames_present": 600,
+          "frame_pct": 100.0
+        },
+        "1": {
+          "name": "non-drivable",
+          "frames_present": 382,
+          "frame_pct": 63.7
+        },
+        "2": {
+          "name": "living things",
+          "frames_present": 572,
+          "frame_pct": 95.3
+        },
+        "3": {
+          "name": "vehicles",
+          "frames_present": 598,
+          "frame_pct": 99.7
+        },
+        "4": {
+          "name": "road-side objects",
+          "frames_present": 600,
+          "frame_pct": 100.0
+        },
+        "5": {
+          "name": "far objects",
+          "frames_present": 598,
+          "frame_pct": 99.7
+        },
+        "6": {
+          "name": "sky",
+          "frames_present": 592,
+          "frame_pct": 98.7
+        },
+        "255": {
+          "name": "ignore/unlabelled",
+          "frames_present": 370,
+          "frame_pct": 61.7
+        }
+      },
+      "n_classes_excl_ignore": 7
+    }
+  },
+  "dats_2022": {
+    "registry": {
+      "kind": "vision_detection",
+      "path": "data/vision/dats_2022",
+      "module": "vision_detection",
+      "trainable": true,
+      "licence": "CC-BY-4.0",
+      "status": "NOT_DOWNLOADED",
+      "url": "https://data.mendeley.com/datasets/nfc34n8svj/2",
+      "note": "The only dataset here with YOLO-format boxes. Needs manual browser download."
+    },
+    "path": "data\\vision\\dats_2022",
+    "exists": false,
+    "status": "NOT_DOWNLOADED"
+  },
+  "metr_la": {
+    "registry": {
+      "kind": "timeseries",
+      "path": "data/raw/benchmarks/metr-la/metr-la.h5",
+      "module": "traffic_predictor",
+      "trainable": true,
+      "licence": "Research use (Caltrans PeMS); cite Li et al. 2018 DCRNN",
+      "note": "34,272 x 207 sensors, 5-min. Primary training set for the LSTM/GRU."
+    },
+    "path": "data\\raw\\benchmarks\\metr-la\\metr-la.h5",
+    "exists": true,
+    "size": "54.4 MB",
+    "inspection": {
+      "kind": "timeseries",
+      "timesteps": 34272,
+      "sensors": 207,
+      "start": "2012-03-01 00:00:00",
+      "end": "2012-06-27 23:55:00",
+      "step_s": 300.0,
+      "regular": true,
+      "value_min": 0.0,
+      "value_mean": 53.71902110241344,
+      "value_max": 70.0,
+      "zero_pct": 8.11,
+      "nan_pct": 0.0,
+      "total_observations": 7094304,
+      "geographic": {
+        "n_sensors": 207,
+        "bbox": [
+          -118.5368,
+          34.04301,
+          -118.1829,
+          34.22164
+        ]
+      }
+    }
+  },
+  "pems_bay": {
+    "registry": {
+      "kind": "timeseries",
+      "path": "data/raw/benchmarks/pems-bay/pems-bay.h5",
+      "module": "traffic_predictor",
+      "trainable": true,
+      "licence": "Research use (Caltrans PeMS)",
+      "note": "52,116 x 325 sensors, 5-min. Secondary / cleaner benchmark."
+    },
+    "path": "data\\raw\\benchmarks\\pems-bay\\pems-bay.h5",
+    "exists": true,
+    "size": "129.6 MB",
+    "inspection": {
+      "kind": "timeseries",
+      "timesteps": 52116,
+      "sensors": 325,
+      "start": "2017-01-01 00:00:00",
+      "end": "2017-06-30 23:55:00",
+      "step_s": 300.0,
+      "regular": false,
+      "value_min": 0.0,
+      "value_mean": 62.61957360798697,
+      "value_max": 85.1,
+      "zero_pct": 0.0,
+      "nan_pct": 0.0,
+      "total_observations": 16937700,
+      "geographic": {
+        "n_sensors": 325,
+        "bbox": [
+          -122.079539,
+          37.250424,
+          -121.840267,
+          37.427486
+        ]
+      }
+    }
+  },
+  "tomtom_hyderabad": {
+    "registry": {
+      "kind": "timeseries",
+      "path": "data/raw/india/tomtom_hyderabad",
+      "module": "traffic_predictor",
+      "trainable": "pending",
+      "licence": "TomTom developer ToS",
+      "status": "COLLECTING",
+      "note": "Self-collected. The only real Hyderabad traffic signal. Accrues in wall-clock time."
+    },
+    "path": "data\\raw\\india\\tomtom_hyderabad",
+    "exists": false,
+    "status": "COLLECTING"
+  },
+  "synthetic_hyderabad": {
+    "registry": {
+      "kind": "tabular",
+      "path": "data/synthetic",
+      "module": "traffic_simulator",
+      "trainable": false,
+      "status": "NOT_BUILT",
+      "note": "Reproducible scenario generator (Phase 4). Seeded, calibrated to HMDA PCU ranges."
+    },
+    "path": "data\\synthetic",
+    "exists": true,
+    "size": "0.0 B",
+    "inspection": {
+      "kind": "tabular",
+      "n_files": 0,
+      "frames": []
+    }
+  }
+}
