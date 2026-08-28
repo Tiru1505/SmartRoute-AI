@@ -1,0 +1,23 @@
+{
+  "_comment": "MOCK DATA — Sample route requests for testing the backend API.",
+  "requests": [
+    {
+      "source": {"lat": 17.3850, "lon": 78.4867},
+      "destination": {"lat": 17.4500, "lon": 78.3800},
+      "algorithm": "qpso",
+      "description": "Tank Bund to Hitech City"
+    },
+    {
+      "source": {"lat": 17.3600, "lon": 78.4700},
+      "destination": {"lat": 17.4400, "lon": 78.3800},
+      "algorithm": "dijkstra",
+      "description": "Charminar to Gachibowli"
+    },
+    {
+      "source": {"lat": 17.4250, "lon": 78.4200},
+      "destination": {"lat": 17.3750, "lon": 78.5000},
+      "algorithm": "pso",
+      "description": "Jubilee Hills to LB Nagar"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+# ─── Environment & secrets ─────────────────────────────────────
+.env
+
+# ─── Python ────────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# ─── Testing / linting ────────────────────────────────────────
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# ─── IDE ───────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+
+# ─── OS ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Docker ────────────────────────────────────────────────────
+docker-compose.override.yml
