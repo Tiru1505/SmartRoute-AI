@@ -80,7 +80,7 @@ class QPSOConfig:
     max_iterations: int = 120
     beta_start: float = 1.00      # wide clouds -> exploration
     beta_end: float = 0.50        # tight clouds -> exploitation
-    stagnation_limit: int = 40    # stop early if nothing improves for this long
+    stagnation_limit: int = 80    # stop early if nothing improves for this long
     seed: int = 42
 
     def beta(self, iteration):
@@ -114,13 +114,25 @@ class QPSO:
     feasible solutions by construction.
     """
 
-    def __init__(self, G, decoder, cost_model, config=None, constraints=None):
+    def __init__(self, G=None, decoder=None, cost_model=None, config=None,
+                 constraints=None, problem=None):
+        """
+        Two ways to pose a problem:
+
+          problem=...   a Problem object (multi-stop routing). QPSO, PSO and GA
+                        all take this, which is what lets the benchmark run all
+                        three on a provably identical search space.
+
+          G/decoder/cost_model   the single-pair waypoint formulation from
+                        Phase 5. Kept so the earlier experiments still run.
+        """
+        self.problem = problem
         self.G = G
         self.decoder = decoder
         self.cost_model = cost_model
         self.cfg = config or QPSOConfig()
         self.constraints = constraints          # None => unconstrained problem
-        self.D = decoder.dimensions
+        self.D = problem.dimensions if problem is not None else decoder.dimensions
         self._fitness_cache = {}
 
     # ----------------------------------------------------------- fitness
@@ -137,6 +149,10 @@ class QPSO:
         Decoding is deterministic, so identical vectors are cached — the swarm
         revisits the same waypoints often once it starts converging.
         """
+        if self.problem is not None:
+            res = self.problem.evaluate(vector)
+            return res.fitness, res.solution
+
         key = tuple(np.round(vector, 6))
         if key in self._fitness_cache:
             return self._fitness_cache[key]
@@ -265,7 +281,7 @@ class QPSO:
 
         runtime_ms = (time.perf_counter() - t0) * 1000
 
-        if gbest_route is not None:
+        if gbest_route is not None and hasattr(gbest_route, "algorithm"):
             gbest_route.algorithm = "QPSO"
             gbest_route.runtime_ms = runtime_ms
             gbest_route.iterations = len(convergence)
