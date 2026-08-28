@@ -20,7 +20,8 @@ supporting modules and never block the routing system.
 | 6 | **Multi-stop routing (VRP)** | ✅ done — **QPSO wins**, exact optimum 3–8 stops |
 | 7 | PSO + Genetic Algorithm | ✅ done — same encoding, same budget |
 | 8 | Benchmarking, convergence, scalability | ✅ done — [`results/plots/`](results/plots/) |
-| 9–10 | Rerouting, alerts | — |
+| 9 | Dynamic rerouting | ✅ done — recomputes from current position |
+| 10 | Intelligent alert engine | ✅ done — 5 suppression gates |
 | 11 | Traffic prediction | blocked on TomTom collection |
 | 12 | YOLO perception | blocked on DriveIndia/DATS_2022 download |
 | 13 | Dashboard | ✅ done (mock data) — [`frontend/`](frontend/README.md) |
