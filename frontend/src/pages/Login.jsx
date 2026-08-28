@@ -1,46 +1,12 @@
-/**
- * Demo sign-in.
- *
- * There is no authentication backend. Nothing here validates a credential —
- * any well-formed input is accepted and the password is never stored or sent
- * anywhere. See the notice at the bottom of the form, which is deliberately
- * visible so nobody mistakes this for real auth.
- */
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
+import AnimatedAuthForm from '../components/AnimatedAuthForm'
 import {
   ArrowRight, Atom, Bell, Eye, EyeOff, GitBranch, Loader2, Lock, Mail,
   ShieldAlert, User, Zap,
 } from 'lucide-react'
 import { useApp } from '../store/AppContext'
 import { SYSTEM_STATUS } from '../data/mockData'
-
-const FEATURES = [
-  {
-    icon: Atom,
-    color: 'var(--quantum)',
-    title: 'Quantum-inspired optimization',
-    body: 'QPSO searches the road network for near-optimal routes across travel time, distance and congestion.',
-  },
-  {
-    icon: GitBranch,
-    color: 'var(--cyan)',
-    title: 'Dynamic rerouting',
-    body: 'When congestion spikes on your corridor, the engine re-runs and offers a better path.',
-  },
-  {
-    icon: Bell,
-    color: 'var(--moderate)',
-    title: 'Predictive alerts',
-    body: 'Warns before congestion builds — and only when an alternative actually saves meaningful time.',
-  },
-  {
-    icon: Zap,
-    color: 'var(--low)',
-    title: 'Measured, not claimed',
-    body: 'Benchmarked against Dijkstra, PSO and GA on identical problem instances.',
-  },
-]
 
 export default function Login() {
   const { signIn, continueAsGuest } = useApp()
@@ -54,16 +20,7 @@ export default function Login() {
   const [busy, setBusy] = useState(false)
 
   // Fixed positions so the particles don't jump on every keystroke.
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 26 }, (_, i) => ({
-        left: (i * 37) % 100,
-        top: (i * 53) % 100,
-        delay: (i % 9) * 0.42,
-        duration: 3.4 + (i % 5) * 0.65,
-      })),
-    []
-  )
+  
 
   const submit = async (e) => {
     e.preventDefault()
@@ -91,231 +48,267 @@ export default function Login() {
       setBusy(false)
     }
   }
-
+  const switchMode = (newMode) => {
+  setMode(newMode)
+  setError(null)
+}
   return (
     <div className="login">
-      {/* ------------------------------------------------- brand panel */}
+      {/* Full-screen animated background */}
       <div className="login-brand">
-        <div className="login-particles" aria-hidden="true">
-          {particles.map((p, i) => (
-            <motion.span
-              key={i}
-              style={{ left: `${p.left}%`, top: `${p.top}%` }}
-              animate={{ y: [0, -22, 0], opacity: [0.18, 0.62, 0.18] }}
-              transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: 'easeInOut' }}
-            />
-          ))}
-        </div>
+        <div className="qro-network" aria-hidden="true">
 
-        <motion.div
-          className="login-brand-inner"
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="login-logo">
-            <div className="logo-mark">QRO</div>
-            <div>
-              <strong>Quantum Route Optimizer</strong>
-              <span>Intelligent Transportation Platform · Hyderabad</span>
-            </div>
-          </div>
+  {/* Ambient glow */}
+  <div className="qro-network-glow" />
 
-          <h1>
-            Routing that <em>rethinks itself</em> when the traffic changes.
-          </h1>
-          <p>
-            An optimization and experimentation platform for intelligent transportation
-            routing — built on Hyderabad's real road network.
-          </p>
+  <svg
+    className="qro-network-svg"
+    viewBox="0 0 800 700"
+    preserveAspectRatio="xMidYMid slice"
+  >
 
-          <div className="login-features">
-            {FEATURES.map((f, i) => (
-              <motion.div
-                key={f.title}
-                className="login-feature"
-                initial={{ opacity: 0, x: -14 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.42, delay: 0.15 + i * 0.09 }}
-              >
-                <span className="login-feature-icon" style={{ color: f.color }}>
-                  <f.icon size={15} />
-                </span>
-                <div>
-                  <h4>{f.title}</h4>
-                  <p>{f.body}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+    {/* Road network */}
+    <g className="qro-roads">
 
-          <div className="login-stats">
-            <div className="login-stat">
-              <b className="mono">286,603</b>
-              <span>Graph nodes</span>
-            </div>
-            <div className="login-stat">
-              <b className="mono">741,203</b>
-              <span>Road segments</span>
-            </div>
-            <div className="login-stat">
-              <b className="mono">52,309</b>
-              <span>km mapped</span>
-            </div>
-          </div>
-        </motion.div>
+      <motion.path
+        d="M80 150 L220 90 L390 160 L560 90 L730 170"
+        pathLength="1"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 0.65 }}
+        transition={{ duration: 2, ease: 'easeInOut' }}
+      />
+
+      <motion.path
+        d="M70 350 L210 270 L390 320 L540 240 L740 350"
+        pathLength="1"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 0.55 }}
+        transition={{ duration: 2.2, delay: 0.3, ease: 'easeInOut' }}
+      />
+
+      <motion.path
+        d="M110 560 L250 450 L400 510 L570 420 L720 540"
+        pathLength="1"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 0.5 }}
+        transition={{ duration: 2.3, delay: 0.5, ease: 'easeInOut' }}
+      />
+
+      {/* Vertical roads */}
+      <motion.path
+        d="M220 90 L210 270 L250 450"
+        pathLength="1"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.8, delay: 0.8 }}
+      />
+
+      <motion.path
+        d="M390 160 L390 320 L400 510"
+        pathLength="1"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.8, delay: 1 }}
+      />
+
+      <motion.path
+        d="M560 90 L540 240 L570 420"
+        pathLength="1"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.8, delay: 1.2 }}
+      />
+
+    </g>
+
+    {/* Animated optimal route */}
+    <motion.path
+      className="qro-optimal-route"
+      d="M80 150 L220 90 L390 160 L540 240 L570 420 L720 540"
+      pathLength="1"
+      initial={{ pathLength: 0, opacity: 0 }}
+      animate={{
+        pathLength: [0, 1, 1],
+        opacity: [0, 0.55, 0.55],
+      }}
+      transition={{
+        duration: 5,
+        delay: 1.8,
+        repeat: Infinity,
+        repeatDelay: 2,
+        ease: 'easeInOut',
+      }}
+    />
+
+    {/* Network nodes */}
+    {[
+      [80, 150],
+      [220, 90],
+      [390, 160],
+      [560, 90],
+      [730, 170],
+      [70, 350],
+      [210, 270],
+      [390, 320],
+      [540, 240],
+      [740, 350],
+      [110, 560],
+      [250, 450],
+      [400, 510],
+      [570, 420],
+      [720, 540],
+    ].map(([cx, cy], i) => (
+      <motion.g
+        key={`${cx}-${cy}`}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{
+          opacity: [0.35, 0.9, 0.35],
+          scale: [0.9, 1.15, 0.9],
+        }}
+        transition={{
+          duration: 2.5 + (i % 3) * 0.5,
+          delay: 1 + i * 0.08,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+        style={{ transformOrigin: `${cx}px ${cy}px` }}
+      >
+        <circle
+          cx={cx}
+          cy={cy}
+          r="4"
+          className="qro-node"
+        />
+
+        <circle
+          cx={cx}
+          cy={cy}
+          r="10"
+          className="qro-node-ring"
+        />
+      </motion.g>
+    ))}
+
+    {/* Moving traffic particles */}
+    <circle className="qro-particle qro-particle-one" r="5">
+      <animateMotion
+        dur="5s"
+        repeatCount="indefinite"
+        path="M80 150 L220 90 L390 160 L540 240 L570 420 L720 540"
+      />
+    </circle>
+
+    <circle className="qro-particle qro-particle-two" r="4">
+      <animateMotion
+        dur="6.5s"
+        begin="1.5s"
+        repeatCount="indefinite"
+        path="M70 350 L210 270 L390 320 L540 240 L740 350"
+      />
+    </circle>
+
+    <circle className="qro-particle qro-particle-three" r="3">
+      <animateMotion
+        dur="7s"
+        begin="3s"
+        repeatCount="indefinite"
+        path="M110 560 L250 450 L400 510 L570 420 L720 540"
+      />
+    </circle>
+
+  </svg>
+
+</div>
       </div>
 
       {/* -------------------------------------------------- form panel */}
-      <div className="login-form-side">
-        <motion.div
-          className="login-card"
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.44, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <h2>{mode === 'signin' ? 'Welcome back' : 'Create an account'}</h2>
-          <p className="sub">
-            {mode === 'signin'
-              ? 'Sign in to plan and optimize routes.'
-              : 'Set up a profile to save your routing preferences.'}
-          </p>
 
-          <div className="login-tabs" role="tablist">
-            <button
-              role="tab"
-              aria-selected={mode === 'signin'}
-              data-active={mode === 'signin'}
-              onClick={() => { setMode('signin'); setError(null) }}
-            >
-              Sign in
-            </button>
-            <button
-              role="tab"
-              aria-selected={mode === 'signup'}
-              data-active={mode === 'signup'}
-              onClick={() => { setMode('signup'); setError(null) }}
-            >
-              Sign up
-            </button>
-          </div>
+<div className="login-form-side login-form-centered">
+  <motion.div
+    className="login-card"
+    initial={{ opacity: 0, y: 18 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{
+      duration: 0.44,
+      delay: 0.1,
+      ease: [0.22, 1, 0.36, 1],
+    }}
+  >
+    <div className="qro-mode-tabs">
+      <button
+        className={mode === 'signin' ? 'active' : ''}
+        onClick={() => switchMode('signin')}
+        type="button"
+      >
+        Sign In
+      </button>
 
-          {error && (
-            <motion.div
-              className="login-error"
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <ShieldAlert size={14} />
-              {error}
-            </motion.div>
-          )}
-
-          <form onSubmit={submit}>
-            {mode === 'signup' && (
-              <div className="field">
-                <label htmlFor="name">Full name</label>
-                <div className="login-input-wrap">
-                  <User size={14} />
-                  <input
-                    id="name"
-                    className="input"
-                    type="text"
-                    autoComplete="name"
-                    placeholder="Your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="field">
-              <label htmlFor="email">Email</label>
-              <div className="login-input-wrap">
-                <Mail size={14} />
-                <input
-                  id="email"
-                  className="input"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="field">
-              <label htmlFor="password">Password</label>
-              <div className="login-input-wrap">
-                <Lock size={14} />
-                <input
-                  id="password"
-                  className="input"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
-                  placeholder="At least 4 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="peek"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-                </button>
-              </div>
-            </div>
-
-            <button className="btn btn-primary btn-block" type="submit" disabled={busy}>
-              {busy ? (
-                <>
-                  <motion.span
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    style={{ display: 'grid', placeItems: 'center' }}
-                  >
-                    <Loader2 size={15} />
-                  </motion.span>
-                  Signing in…
-                </>
-              ) : (
-                <>
-                  {mode === 'signin' ? 'Sign in' : 'Create account'}
-                  <ArrowRight size={15} />
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="login-divider">or</div>
-
-          <button className="btn btn-block" onClick={continueAsGuest} disabled={busy}>
-            Continue as guest
-          </button>
-
-          <div className="login-note">
-            <ShieldAlert size={14} style={{ color: 'var(--moderate)', flexShrink: 0, marginTop: 1 }} />
-            <p>
-              <strong style={{ color: 'var(--moderate)' }}>Demo authentication.</strong>{' '}
-              This prototype has no auth backend — no credential is checked, stored or
-              transmitted. Use “Continue as guest” for the SIH demo.
-            </p>
-          </div>
-
-          <p
-            style={{
-              textAlign: 'center', fontSize: 10.5, color: 'var(--text-faint)',
-              marginTop: 18,
-            }}
-          >
-            Quantum Route Optimizer {SYSTEM_STATUS.version} · Problem Statement 26137
-          </p>
-        </motion.div>
-      </div>
+      <button
+        className={mode === 'signup' ? 'active' : ''}
+        onClick={() => switchMode('signup')}
+        type="button"
+      >
+        Register
+      </button>
     </div>
+
+    <AnimatedAuthForm
+      mode={mode}
+      setMode={setMode}
+      name={name}
+      email={email}
+      password={password}
+      setName={setName}
+      setEmail={setEmail}
+      setPassword={setPassword}
+      showPassword={showPassword}
+      setShowPassword={setShowPassword}
+      onSubmit={submit}
+      busy={busy}
+    />
+
+    <div className="login-divider">or</div>
+
+    <button
+      className="btn btn-block"
+      onClick={continueAsGuest}
+      disabled={busy}
+    >
+      Continue as guest
+    </button>
+
+    <div className="login-note">
+      <ShieldAlert
+        size={14}
+        style={{
+          color: 'var(--moderate)',
+          flexShrink: 0,
+          marginTop: 1,
+        }}
+      />
+
+      <p>
+        <strong style={{ color: 'var(--moderate)' }}>
+          Demo authentication.
+        </strong>{' '}
+        This prototype has no auth backend — no credential is checked,
+        stored or transmitted. Use “Continue as guest” for the SIH demo.
+      </p>
+    </div>
+
+    <p
+      style={{
+        textAlign: 'center',
+        fontSize: 10.5,
+        color: 'var(--text-faint)',
+        marginTop: 18,
+      }}
+    >
+      Quantum Route Optimizer {SYSTEM_STATUS.version} · Problem Statement 26137
+    </p>
+  </motion.div>
+  </div>
+
+</div>
   )
 }

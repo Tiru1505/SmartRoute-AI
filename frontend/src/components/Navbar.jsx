@@ -43,9 +43,13 @@ export default function Navbar() {
 
   return (
     <header className="navbar">
-      <div>
-        <h2>{current?.label || 'Quantum Route Optimizer'}</h2>
-      </div>
+      <div className="navbar-page-title">
+  <h2>{current?.label || 'Dashboard'}</h2>
+</div>
+
+<div className="navbar-brand-center">
+  Quantum Route Optimizer
+</div>
 
       <div className="navbar-right" ref={ref}>
         <div className="live-chip">
