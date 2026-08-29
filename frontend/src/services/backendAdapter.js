@@ -258,6 +258,10 @@ export function mapAnalyticsResponse(payload) {
     stats: payload?.stats ?? [],
     trend: payload?.trend ?? [],
     prediction: payload?.prediction ?? [],
+    // How the forward curve was produced, straight from the backend, so the
+    // chart can label itself honestly instead of implying a trained model.
+    predictionMethod: payload?.predictionMethod ?? null,
+    predictionNote: payload?.predictionNote ?? null,
     performance: payload?.performance ?? [],
     distribution: payload?.distribution ?? [],
     isDemoData: false,

@@ -44,6 +44,25 @@ export function TrafficTrendChart({ data = [], height = 260 }) {
 }
 
 export function RoutePerformanceChart({ data = [], height = 260 }) {
+  // These are real optimisation results now, so before any route has been run
+  // there is genuinely nothing to plot. Say so, rather than drawing empty axes
+  // that look like a loading failure.
+  if (!data.length) {
+    return (
+      <div
+        style={{
+          width: '100%', height, display: 'grid', placeItems: 'center',
+          textAlign: 'center', padding: 16,
+        }}
+      >
+        <p style={{ fontSize: 11.5, color: 'var(--text-faint)', lineHeight: 1.5 }}>
+          No routes optimised yet.<br />
+          Run the optimiser and recent routes will appear here.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div style={{ width: '100%', height }}>
       <ResponsiveContainer width="100%" height="100%">

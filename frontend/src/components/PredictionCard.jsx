@@ -1,8 +1,16 @@
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { TrendingUp } from 'lucide-react'
 
-/** Actual congestion so far vs. the model's forward projection. */
-export default function PredictionCard({ series = [], title = 'Congestion Forecast' }) {
+/**
+ * Congestion now, plus a forward curve.
+ *
+ * `note` says how that curve was produced and is supplied by the backend. It
+ * matters: today the projection is current congestion grown at a fixed rate,
+ * not the output of a trained model, and a chart titled "Actual vs Predicted"
+ * with no caveat oversells that. When a real forecaster is wired in, the
+ * backend changes the note and this card follows.
+ */
+export default function PredictionCard({ series = [], title = 'Congestion Forecast', note = null }) {
   return (
     <div className="card chart-card">
       <div className="card-title">
@@ -50,12 +58,18 @@ export default function PredictionCard({ series = [], title = 'Congestion Foreca
 
       <div style={{ display: 'flex', gap: 14, marginTop: 8, fontSize: 11 }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-dim)' }}>
-          <span className="legend-swatch" style={{ background: '#2dd4bf' }} /> Actual
+          <span className="legend-swatch" style={{ background: '#2dd4bf' }} /> Measured now
         </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-dim)' }}>
-          <span className="legend-swatch" style={{ background: '#e879f9' }} /> Predicted
+          <span className="legend-swatch" style={{ background: '#e879f9' }} /> Projected
         </span>
       </div>
+
+      {note && (
+        <p style={{ fontSize: 10.5, color: 'var(--text-faint)', marginTop: 7, lineHeight: 1.45 }}>
+          {note}
+        </p>
+      )}
     </div>
   )
 }

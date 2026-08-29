@@ -66,7 +66,11 @@ export default function Analytics() {
         </div>
 
         {data ? (
-          <PredictionCard series={data.prediction} title="Actual vs Predicted Congestion" />
+          <PredictionCard
+            series={data.prediction}
+            title="Congestion Projection — next 30 min"
+            note={data.predictionNote}
+          />
         ) : (
           <CardSkeleton height={300} />
         )}

@@ -38,6 +38,73 @@ def _cached(key, build):
     return _cache[key]
 
 
+def _route_performance(limit: int = 6) -> list[dict]:
+    """
+    Distance and travel time of recently optimised routes.
+
+    This chart used to plot `congestion * 30` as "Distance (km)" and
+    `congestion * 60` as "Time (min)" for six road segments. Those were not
+    distances or times at all — nothing was measured — and the giveaway was
+    visible on screen: when every sampled segment sat at 95% congestion, all
+    six pairs of bars came out exactly the same height.
+
+    It now reads real optimisation results. An empty list is returned when no
+    routes have been run yet, which the chart renders as an empty state; that
+    is the honest answer, and better than filling the axes with arithmetic on
+    an unrelated number.
+    """
+    try:
+        from app.database.collections import get_optimization_results_col
+
+        # Over-fetch, because consecutive rows are frequently the same trip run
+        # again and those collapse to one bar below.
+        cursor = (
+            get_optimization_results_col()
+            .find({}, {"route": 1, "source_name": 1, "destination_name": 1,
+                       "request_id": 1, "created_at": 1})
+            .sort("created_at", -1)
+            .limit(limit * 10)
+        )
+    except Exception as exc:
+        _logger.warning("route performance unavailable: %s", exc)
+        return []
+
+    out, seen = [], set()
+    for doc in cursor:
+        route = doc.get("route") or {}
+        distance = route.get("distance_km")
+        minutes = route.get("travel_time_minutes")
+        if distance is None or minutes is None:
+            continue
+
+        src, dst = doc.get("source_name"), doc.get("destination_name")
+        if src and dst:
+            label = f"{src} → {dst}"
+        else:
+            # Older rows predate the endpoint names being recorded.
+            label = f"Route {str(doc.get('request_id', ''))[:8]}"
+
+        # Re-running the same trip should not draw the same bar six times. Key
+        # on the endpoints where we know them, otherwise on the geometry, and
+        # keep the most recent run of each.
+        key = (src, dst) if (src and dst) else (round(float(distance), 2),
+                                                round(float(minutes), 1))
+        if key in seen:
+            continue
+        seen.add(key)
+
+        out.append({
+            "route": label[:28],
+            "distance": round(float(distance), 2),
+            "time": round(float(minutes), 1),
+        })
+        if len(out) >= limit:
+            break
+
+    out.reverse()          # oldest on the left, so the chart reads left to right
+    return out
+
+
 @router.get("", summary="Dashboard analytics")
 @router.get("/", include_in_schema=False)
 def analytics() -> dict:
@@ -98,11 +165,16 @@ def analytics() -> dict:
                 for m in (5, 10, 15, 20, 25, 30)
             ],
         ],
-        "performance": [
-            {"route": s["name"][:22], "distance": round(s["congestion"] * 30, 1),
-             "time": round(s["congestion"] * 60, 1)}
-            for s in segments[:6]
-        ],
+        # Stated by the backend rather than assumed by the chart. The forward
+        # curve is current congestion grown at a fixed rate — there is no
+        # trained model behind it, and the UI must not imply otherwise. When an
+        # LSTM/GRU is wired in, this string changes and the label follows.
+        "predictionMethod": "linear",
+        "predictionNote": (
+            "Projection only: current congestion extended at a fixed rate. "
+            "No trained forecasting model is wired in yet."
+        ),
+        "performance": _route_performance(),
         "distribution": [
             {"name": "Low", "value": round(counts["low"] / total * 100), "color": "#34d399"},
             {"name": "Moderate", "value": round(counts["moderate"] / total * 100), "color": "#fbbf24"},
