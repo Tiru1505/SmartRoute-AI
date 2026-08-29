@@ -168,6 +168,7 @@ Base path `/api`.
 | GET | `/places/search?q=` | Free-text place search, restricted to the metro box and the graph |
 | POST | `/routes/optimize` | Optimise between two coordinates |
 | POST | `/routes/alternatives` | Genuinely different corridors, via edge-penalty re-solve |
+| POST | `/routes/reroute` | Re-evaluate the active trip from the driver's current position |
 | GET | `/routes/history` | Past optimisations |
 | GET | `/traffic/current` | Live congestion sample |
 | POST | `/traffic/update` | Ingest observed congestion onto the graph |
@@ -237,8 +238,12 @@ Things a reader — or a judge — should know, rather than discover:
 - **Constrained routing was a negative result.** Lagrangian relaxation beat
   QPSO at every congestion budget we tried. It is kept in the repo, documented,
   and not claimed as a win.
-- **Prediction is a placeholder.** No LSTM/GRU is wired in; `/status` reports
-  `prediction: "mock"`. Everything else reports `osm`.
+- **Prediction is a placeholder, and the UI says so.** No LSTM/GRU is wired
+  in; `/status` reports `prediction: "mock"` while everything else reports
+  `osm`. The Analytics chart is titled "Congestion Projection", not a forecast,
+  and carries a caption stating that the curve is current congestion extended
+  at a fixed rate. The wording comes from the backend, so it cannot drift away
+  from the implementation.
 - **Traffic is simulated**, from a Greenshields fundamental diagram with
   capacities derived from road class, not invented numbers. `POST
   /traffic/update` is the hook for a live feed — ingested observations are
@@ -249,6 +254,10 @@ Things a reader — or a judge — should know, rather than discover:
 - **Place search uses Nominatim**, throttled to one request per second per its
   usage policy and cached. Add a contact address to `CONTACT` in
   `app/api/places.py` before any public deployment.
+- **Every chart plots something measured.** Route Performance previously
+  plotted congestion multiplied by 30 and 60 under "Distance (km)" and "Time
+  (min)" labels; it now reads real optimisation results, and shows an empty
+  state before any route has been run rather than inventing bars.
 - **Google Maps data is deliberately not used.** Its terms forbid storing or
   training on it, and doing so would risk disqualification.
 
