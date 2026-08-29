@@ -23,7 +23,13 @@ def test_status_returns_version_and_environment() -> None:
     assert "adapters" in data
 
 
-def test_route_optimization_uses_mock_adapter() -> None:
+def test_route_optimization_reports_its_data_source() -> None:
+    """
+    Was test_route_optimization_uses_mock_adapter, back when every adapter was
+    a placeholder. The services now default to the real OSM engine, so the
+    assertion is inverted: the response must say which adapter produced it,
+    and "mock" is exactly what we no longer want to see in a real run.
+    """
     response = client.post(
         "/api/routes/optimize",
         json={
@@ -33,7 +39,7 @@ def test_route_optimization_uses_mock_adapter() -> None:
         },
     )
     assert response.status_code == 200
-    assert response.json()["metadata"]["data_source"] == "mock"
+    assert response.json()["metadata"]["data_source"] == "osm"
 
 
 def test_invalid_coordinates_use_consistent_error_shape() -> None:

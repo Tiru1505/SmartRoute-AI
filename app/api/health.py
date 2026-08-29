@@ -32,11 +32,31 @@ def status() -> dict:
         "version": settings.app_version,
         "environment": settings.app_env,
         "database": db_status,
-        "adapters": {
-            "graph": "mock",
-            "optimization": "mock",
-            "traffic": "mock",
-            "prediction": "mock",
-            "benchmark": "mock",
-        },
+        # Reported from the adapters actually wired in, not hardcoded. graph,
+        # optimization and traffic run on the real OSM engine now; prediction
+        # is still a placeholder and says so.
+        "adapters": _adapter_status(),
     }
+
+
+def _adapter_status() -> dict[str, str]:
+    """Which implementation is behind each adapter right now."""
+    from app.integrations.graph_adapter import get_graph_adapter
+    from app.integrations.qpso_adapter import get_optimization_adapter
+    from app.integrations.traffic_adapter import get_traffic_adapter
+
+    def label(obj) -> str:
+        return getattr(obj, "data_source", "unknown")
+
+    try:
+        return {
+            "graph": label(get_graph_adapter()),
+            "optimization": label(get_optimization_adapter("qpso")),
+            "traffic": label(get_traffic_adapter()),
+            "prediction": "mock",          # no LSTM/GRU wired in yet
+            "benchmark": "osm",            # served from real benchmark runs
+        }
+    except Exception:                      # never let /status fail on this
+        return {"graph": "unknown", "optimization": "unknown",
+                "traffic": "unknown", "prediction": "mock",
+                "benchmark": "unknown"}

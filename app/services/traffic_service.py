@@ -24,7 +24,7 @@ class TrafficService:
             return TrafficSnapshot(
                 records=records,
                 timestamp=utc_now_iso(),
-                metadata={"data_source": "mock"},
+                metadata={"data_source": getattr(self.adapter, "data_source", "unknown")},
             )
         except Exception as exc:
             _logger.error("Failed to fetch traffic data: %s", exc)

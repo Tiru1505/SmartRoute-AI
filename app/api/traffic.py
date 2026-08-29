@@ -37,7 +37,12 @@ def current_traffic() -> dict:
 )
 def update_traffic(payload: TrafficUpdate) -> dict:
     count = _traffic_service.update(payload.records)
-    return {"updated": count, "metadata": {"data_source": "mock"}}
+    return {
+        "updated": count,
+        "metadata": {
+            "data_source": getattr(_traffic_service.adapter, "data_source", "unknown"),
+        },
+    }
 
 
 @router.get(

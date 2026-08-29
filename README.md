@@ -1,165 +1,215 @@
-# SmartRoute AI Backend
+# Q Route — Quantum-Inspired Traffic Route Optimization
 
-> **SIH26137** — Quantum-Inspired Dynamic Traffic Route Optimization Platform with Predictive Alerts and Intelligent Rerouting.
+> **SIH PS 26137** — Quantum-Inspired Intelligent Traffic Route Optimization in
+> Transportation Systems Using Metaheuristic Optimization. Built on the real
+> Hyderabad road network.
 
-FastAPI integration backend that exposes route optimization, traffic data, prediction, benchmarking, and alert APIs for a React + Leaflet frontend.  All domain modules (QPSO, graph/routing, traffic, prediction, benchmarking) connect through **adapter interfaces** so team members can plug in their real implementations without changing the API layer.
+Three parts, one repository:
 
----
+| Part | What it is | Where |
+|---|---|---|
+| **Optimisation engine** | QPSO, PSO, GA, Dijkstra + Lagrangian, traffic simulation, rerouting, alerts | `optimization/`, `graph/`, `traffic/`, `routing/`, `alerts/`, `engine.py` |
+| **API** | FastAPI service over the engine, with MongoDB persistence | `app/` |
+| **Web app** | React + Vite + Leaflet dashboard | `frontend/` |
 
-## 1. Project Overview
-
-| Item | Detail |
-|---|---|
-| **Hackathon** | Smart India Hackathon 2026 |
-| **Problem ID** | SIH26137 |
-| **Theme** | Sport & Fitness |
-| **Objective** | Model transportation networks as weighted graphs and use QPSO to dynamically find near-optimal routes while minimising travel time, distance, and congestion |
-
----
-
-## 2. Architecture
-
-```
-React Frontend (Vite + Leaflet)
-          │  HTTP / JSON
-          ▼
-      FastAPI  ─── Swagger/OpenAPI at /docs
-          │
-    ┌─────┴──────────────────────┐
-    │      Service Layer         │
-    │  route · optimization ·    │
-    │  traffic · prediction ·    │
-    │  benchmark · alert         │
-    └─────┬──────────────────────┘
-          │
-    ┌─────┴──────────────────────┐
-    │    Adapter / Integration   │
-    │  graph · qpso · traffic ·  │
-    │  prediction · benchmark    │
-    └─────┬──────────────────────┘
-          │
-    ┌─────┴──────────┐
-    │   MongoDB      │
-    └────────────────┘
-```
-
-Each adapter has an **ABC base class** and a **mock implementation**.  Replace the mock with the real module — the service layer and API stay untouched.
+The road graph is real: **286,603 nodes, 741,203 edges**, extracted from
+OpenStreetMap across the Hyderabad metro area (ORR and a margin), with Indian
+urban free-flow speeds rather than OSMnx's Western defaults.
 
 ---
 
-## 3. Backend Responsibilities (Person 5)
+## The headline result
 
-- FastAPI server, REST APIs, Swagger docs
-- MongoDB connection, collections, indexes
-- Pydantic request/response models
-- Service layer orchestrating all domain modules
-- Adapter interfaces for QPSO, Graph, Traffic, Prediction, Benchmark
-- Error handling, logging, validation
-- Testing (pytest)
-- Docker, deployment preparation
+The brief mandates QPSO. On **single-pair** routing with additively combined
+weights, Dijkstra is provably optimal, so no metaheuristic can beat it — we say
+so in the UI rather than hiding it. QPSO's genuine advantage is **multi-stop
+routing**, which the brief also names and which Dijkstra cannot express at all:
+it finds a path between two points and has no notion of ordering stops.
 
----
+6-stop delivery round, peak-hour traffic, 30 independent trials per algorithm,
+identical budget (population 40 × 120 iterations = 4,800 evaluations each),
+measured against the exact optimum from brute force over all 720 orderings:
 
-## 4. Folder Structure
+| Algorithm | Mean | Std | Gap vs optimum | Hit optimum | Runtime |
+|---|---|---|---|---|---|
+| **QPSO** | **4.093213** | **0.000000** | **+0.000 %** | **30 / 30** | 16.2 ms |
+| GA | 4.117775 | 0.132271 | +0.600 % | 29 / 30 | 127.4 ms |
+| PSO | 4.224006 | 0.262111 | +3.195 % | 24 / 30 | 14.4 ms |
+| Dijkstra | — | — | cannot express the problem | — | — |
 
-```
-backend/
-├── app/
-│   ├── main.py                  # FastAPI app with lifespan
-│   ├── api/                     # Route handlers
-│   │   ├── health.py
-│   │   ├── routes.py
-│   │   ├── optimization.py
-│   │   ├── traffic.py
-│   │   ├── prediction.py
-│   │   ├── benchmark.py
-│   │   └── alerts.py
-│   ├── models/                  # Pydantic schemas
-│   │   ├── route_models.py
-│   │   ├── traffic_models.py
-│   │   ├── optimization_models.py
-│   │   ├── benchmark_models.py
-│   │   └── alert_models.py
-│   ├── services/                # Business logic
-│   │   ├── route_service.py
-│   │   ├── optimization_service.py
-│   │   ├── traffic_service.py
-│   │   ├── prediction_service.py
-│   │   ├── benchmark_service.py
-│   │   └── alert_service.py
-│   ├── integrations/            # Adapter interfaces + mocks
-│   │   ├── graph_adapter.py
-│   │   ├── qpso_adapter.py
-│   │   ├── traffic_adapter.py
-│   │   ├── prediction_adapter.py
-│   │   └── benchmark_adapter.py
-│   ├── database/
-│   │   ├── mongodb.py
-│   │   └── collections.py
-│   ├── core/
-│   │   ├── config.py
-│   │   ├── logging.py
-│   │   └── errors.py
-│   └── utils/
-│       ├── geo.py
-│       └── time_helpers.py
-├── data/
-│   ├── loaders.py
-│   ├── mock_provider.py
-│   └── sample/
-│       ├── sample_traffic.json
-│       ├── sample_routes.json
-│       └── sample_graph_nodes.json
-├── tests/
-│   ├── conftest.py
-│   ├── test_health.py
-│   ├── test_routes.py
-│   ├── test_optimization.py
-│   ├── test_traffic.py
-│   ├── test_benchmark.py
-│   ├── test_alerts.py
-│   ├── test_models.py
-│   └── test_adapters.py
-├── requirements.txt
-├── .env.example
-├── .gitignore
-├── .dockerignore
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
-```
-
----
-
-## 5. Installation
+Reproduce it:
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-org/SmartRoute-AI-Backend.git
-cd SmartRoute-AI-Backend
+python scripts/run_multistop.py --stops 6 --trials 30
 ```
+
+Fairness is enforced structurally, not by convention: all three metaheuristics
+receive the same problem object, the same random-key encoding, the same
+evaluation budget, the same seeds, and the same bound handling. Beyond 9 stops
+brute force becomes intractable (3.6 M orderings) while the metaheuristics stay
+flat — `--scalability` sweeps that.
 
 ---
 
-## 6. Python Environment
+## Quick start
 
-```powershell
+### 1. Python environment
+
+```bash
 python -m venv .venv
-.venv\Scripts\Activate.ps1      # Windows PowerShell
-# source .venv/bin/activate     # Linux / macOS
+```
 
+```bash
+.venv\Scripts\Activate.ps1
+```
+
+```bash
 pip install -r requirements.txt
 ```
 
+### 2. Build the road graph (required, once)
+
+The graph is **not** in the repository — the GraphML is 575 MB, far past
+GitHub's limit. Build it:
+
+```bash
+python preprocessing/osm_processor.py --city "Hyderabad, Telangana, India" --metro
+```
+
+Takes a few minutes and downloads from OpenStreetMap. The `--metro` flag
+matters: `graph_from_place("Hyderabad")` returns only the municipal boundary,
+which silently excludes the airport, Medchal and Patancheru and produces routes
+shorter than the straight-line distance between their endpoints.
+
+### 3. MongoDB
+
+Optional — the API degrades gracefully without it, losing only history.
+
+```bash
+docker compose up mongodb -d
+```
+
+### 4. Run the API
+
+```bash
+uvicorn app.main:app --reload --port 8010
+```
+
+Port 8010 rather than 8000 because another service commonly holds 8000; the
+Vite proxy targets 8010 by default (override with `VITE_API_TARGET`). The first
+request pays a ~30 s graph load, which `app/main.py` warms at startup.
+
+Swagger UI: `http://localhost:8010/docs`
+
+### 5. Run the web app
+
+```bash
+cd frontend && npm install && npm run dev
+```
+
+Opens at `http://localhost:5173`. Set `VITE_USE_MOCK=true` in `frontend/.env`
+to run the whole UI on mock data with no backend at all.
+
 ---
 
-## 7. Environment Variables
+## Using it
 
-Copy the example file and edit as needed:
+Type any place into **Start location** and **Destination** — they are free-text
+search boxes, not a fixed list. Suggestions merge the curated Hyderabad
+landmarks with live OpenStreetMap results, and anything more than 1.5 km from
+the nearest road node in our extract is dropped, because routing from a point
+that is not on the graph would silently start somewhere else.
 
-```powershell
-Copy-Item .env.example .env
+Pages: Dashboard, Route Optimizer, Live Traffic, Analytics, Benchmark, Alerts,
+History, Settings. **Demo Mode** plays a scripted scenario — optimise, then a
+congestion spike, then a predictive alert, then an automatic reroute.
+
+---
+
+## Architecture
+
 ```
+React + Vite + Leaflet  (frontend/)
+          │  HTTP / JSON, proxied /api -> :8010
+          ▼
+      FastAPI  (app/)              Swagger at /docs
+          │
+    Service layer      route · optimization · traffic · prediction
+          │            benchmark · alert
+          ▼
+    Adapter layer      abstract base + mock + REAL implementation
+          │            app/integrations/engine_bridge.py
+          ▼
+    QROEngine  (engine.py)         one object, loaded once
+          │
+    ┌─────┴─────┬──────────┬──────────┬─────────┐
+  graph/    optimization/  traffic/  routing/  alerts/
+```
+
+The adapter layer is why the backend could be built and tested before the
+engine existed. `engine_bridge.py` implements the same abstract interfaces
+against the real engine, so the API surface, models and tests never changed
+when the numbers became real.
+
+Two caches matter for latency: a KD-tree over all 286,603 nodes (osmnx rebuilds
+its spatial index on *every* `nearest_nodes` call, and one request makes four),
+and per-endpoint cost-model calibration. Together they take a cold
+`/routes/optimize` from ~57 s to ~11 s, and a warm one to under 2 s.
+
+---
+
+## API
+
+Base path `/api`.
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/health`, `/status` | Liveness; `/status` reports which adapter backs each module |
+| GET | `/places/search?q=` | Free-text place search, restricted to the metro box and the graph |
+| POST | `/routes/optimize` | Optimise between two coordinates |
+| POST | `/routes/alternatives` | Genuinely different corridors, via edge-penalty re-solve |
+| GET | `/routes/history` | Past optimisations |
+| GET | `/traffic/current` | Live congestion sample |
+| POST | `/traffic/update` | Ingest observed congestion onto the graph |
+| GET | `/traffic/predict` | Congestion forecast |
+| GET | `/analytics`, `/analytics/scalability` | Dashboard aggregates |
+| GET | `/benchmark/results` | Live algorithm comparison (`?source=stored` for saved runs) |
+| GET | `/benchmark/convergence/all` | Convergence curves for QPSO, PSO, GA |
+| GET | `/alerts/` | Active alerts |
+
+Example:
+
+```bash
+curl -X POST http://localhost:8010/api/routes/optimize -H "Content-Type: application/json" -d '{"source":{"lat":17.4435,"lon":78.3772},"destination":{"lat":17.3616,"lon":78.4747},"algorithm":"qpso","source_name":"Hitec City","destination_name":"Charminar"}'
+```
+
+---
+
+## Command-line experiments
+
+| Script | What it does |
+|---|---|
+| `scripts/run_multistop.py` | **The headline experiment** — QPSO vs PSO vs GA vs brute force |
+| `scripts/run_qpso.py` | Single-pair QPSO against Dijkstra |
+| `scripts/run_dijkstra.py` | Shortest path, verified against NetworkX |
+| `scripts/run_constrained.py` | Congestion-budget routing vs Lagrangian relaxation |
+| `scripts/run_traffic.py` | Traffic scenarios on the network |
+| `scripts/run_rerouting.py` | Mid-trip reroute on a congestion spike |
+| `scripts/run_demo.py` | End-to-end scripted scenario |
+
+---
+
+## Tests
+
+```bash
+pytest tests/ -q
+```
+
+64 tests covering models, adapters, services and every endpoint.
+
+---
+
+## Environment variables
 
 | Variable | Description | Default |
 |---|---|---|
@@ -168,270 +218,65 @@ Copy-Item .env.example .env
 | `ALLOWED_ORIGINS` | Comma-separated CORS origins | `http://localhost:5173` |
 | `APP_ENV` | `development` or `production` | `development` |
 | `LOG_LEVEL` | Python log level | `INFO` |
-| `DEBUG` | Enable debug mode | `false` |
-| `FCM_SERVER_KEY` | Firebase Cloud Messaging key (optional) | *(empty)* |
+| `TOMTOM_API_KEY` | For live traffic collection (`scripts/collect_tomtom_hyderabad.py`) | *(unset)* |
+| `VITE_USE_MOCK` | `true` runs the frontend with no backend | `false` |
+| `VITE_API_TARGET` | Where the Vite proxy sends `/api` | `http://127.0.0.1:8010` |
 
-> **Never commit `.env` to version control.**
-
----
-
-## 8. MongoDB Setup
-
-**Option A — Docker (recommended for development):**
-
-```bash
-docker compose up mongodb -d
-```
-
-**Option B — Local install:**
-
-Install MongoDB 8.x from https://www.mongodb.com/try/download/community and start `mongod`.
-
-**Option C — MongoDB Atlas:**
-
-Set `MONGODB_URI` in `.env` to your Atlas connection string.
-
-Indexes are automatically created on application startup.
+Never commit `.env`.
 
 ---
 
-## 9. Running Locally
+## Honest notes
 
-```powershell
-uvicorn app.main:app --reload
-```
+Things a reader — or a judge — should know, rather than discover:
 
-The server starts at `http://localhost:8000`.
-
----
-
-## 10. API Documentation
-
-Interactive Swagger UI is available at:
-
-- **Swagger UI:** http://localhost:8000/docs
-- **ReDoc:** http://localhost:8000/redoc
-- **OpenAPI JSON:** http://localhost:8000/openapi.json
-
-### API Summary
-
-| Group | Method | Endpoint | Description |
-|---|---|---|---|
-| System | `GET` | `/api/health` | Liveness probe |
-| System | `GET` | `/api/status` | Detailed status + DB check |
-| Routes | `POST` | `/api/routes/optimize` | Optimize a route |
-| Routes | `POST` | `/api/routes/alternatives` | Get alternative routes |
-| Routes | `GET` | `/api/routes/{request_id}` | Get route by ID |
-| Routes | `GET` | `/api/routes/history` | Route history |
-| Optimization | `POST` | `/api/optimization/{algorithm}` | Run specific algorithm |
-| Traffic | `GET` | `/api/traffic/current` | Current traffic data |
-| Traffic | `POST` | `/api/traffic/update` | Push traffic records |
-| Traffic | `GET` | `/api/traffic/predict` | Predict future congestion |
-| Prediction | `GET` | `/api/prediction/status` | Module readiness |
-| Benchmark | `POST` | `/api/benchmark/run` | Run algorithm benchmark |
-| Benchmark | `GET` | `/api/benchmark/results` | Benchmark history |
-| Benchmark | `GET` | `/api/benchmark/convergence` | Convergence data |
-| Alerts | `GET` | `/api/alerts/` | Get alerts |
-| Alerts | `POST` | `/api/alerts/subscribe` | Subscribe to alerts |
-
-### Example Request
-
-```bash
-curl -X POST http://localhost:8000/api/routes/optimize \
-  -H "Content-Type: application/json" \
-  -d '{
-    "source": {"lat": 17.3850, "lon": 78.4867},
-    "destination": {"lat": 17.4500, "lon": 78.3800},
-    "algorithm": "qpso"
-  }'
-```
-
-### Example Response
-
-```json
-{
-  "success": true,
-  "request_id": "abc123-...",
-  "algorithm": "qpso",
-  "route": {
-    "coordinates": [{"lat": 17.385, "lon": 78.4867}, ...],
-    "nodes": ["mock-0000", "mock-0001", ...],
-    "distance_km": 12.4,
-    "travel_time_minutes": 24.5
-  },
-  "congestion": 0.38,
-  "fitness": 0.82,
-  "execution_time_ms": 145,
-  "eta": "2026-08-28T10:30:00+00:00",
-  "metadata": {"data_source": "mock"}
-}
-```
+- **Dijkstra wins single-pair routing, and the UI says so.** `RealQpsoAdapter`
+  runs genuine QPSO and reports its true fitness and convergence, but returns
+  the optimal geometry. Presenting a marginally worse path as an improvement
+  would be dishonest. QPSO's real win is multi-stop.
+- **Constrained routing was a negative result.** Lagrangian relaxation beat
+  QPSO at every congestion budget we tried. It is kept in the repo, documented,
+  and not claimed as a win.
+- **Prediction is a placeholder.** No LSTM/GRU is wired in; `/status` reports
+  `prediction: "mock"`. Everything else reports `osm`.
+- **Traffic is simulated**, from a Greenshields fundamental diagram with
+  capacities derived from road class, not invented numbers. `POST
+  /traffic/update` is the hook for a live feed — ingested observations are
+  written onto the graph and the next optimisation routes around them.
+- **Authentication is not real.** The login screen stores a name and email in
+  `localStorage`; no password is stored or transmitted. Replace `signIn()` in
+  `frontend/src/store/AppContext.jsx` before deploying anywhere public.
+- **Place search uses Nominatim**, throttled to one request per second per its
+  usage policy and cached. Add a contact address to `CONTACT` in
+  `app/api/places.py` before any public deployment.
+- **Google Maps data is deliberately not used.** Its terms forbid storing or
+  training on it, and doing so would risk disqualification.
 
 ---
 
-## 11. Connecting React Frontend
-
-The React frontend (Vite) should:
-
-1. Set the API base URL to `http://localhost:8000/api`
-2. Use standard `fetch` or `axios` for HTTP requests
-3. CORS is pre-configured for `http://localhost:5173` (Vite default)
-4. All responses are JSON — compatible with Leaflet map rendering
-
-To allow additional origins, update `ALLOWED_ORIGINS` in `.env`:
+## Repository layout
 
 ```
-ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+├── engine.py                 # QROEngine — the single object the API calls
+├── app/                      # FastAPI service
+│   ├── api/                  # Endpoints
+│   ├── services/             # Orchestration
+│   ├── integrations/         # Adapters, incl. engine_bridge.py (the real one)
+│   ├── models/               # Pydantic schemas
+│   └── database/             # MongoDB
+├── optimization/             # qpso · pso · ga · dijkstra · encoding · multistop
+├── graph/                    # graph_loader · edge_weights (the cost model)
+├── traffic/                  # congestion_model · simulator
+├── routing/                  # route · rerouting · validator
+├── alerts/                   # alert_engine
+├── benchmarking/             # benchmark harness · convergence plots
+├── preprocessing/            # osm_processor — builds the graph
+├── scripts/                  # Runnable experiments
+├── config/                   # places.yaml · datasets.yaml
+├── frontend/                 # React + Vite + Leaflet
+├── tests/                    # pytest
+└── results/                  # Reports and plots
 ```
 
----
-
-## 11b. The optimisation engine
-
-The algorithms this backend serves live in this same repository, above `app/`:
-
-| Module | What it does |
-|---|---|
-| `engine.py` | **`QROEngine`** — one object exposing plan / traffic / reroute / benchmark, already returning frontend-shaped JSON |
-| `graph/` | Hyderabad OSM graph (286,603 nodes, 741,203 edges), multi-objective cost model |
-| `traffic/` | Greenshields congestion model, 8 seeded traffic scenarios |
-| `optimization/` | QPSO, PSO, GA, Dijkstra, multi-stop VRP encoding |
-| `routing/`, `alerts/` | Dynamic rerouting, alert-suppression engine |
-| `benchmarking/` | Fair-comparison harness, convergence and scalability |
-
-Headline result: on multi-stop routing QPSO reaches the exact brute-force
-optimum for 3–8 stops, beating PSO at every size. Dijkstra cannot express that
-problem at all. See [`INTEGRATION.md`](INTEGRATION.md) for endpoint mapping and
-live sample payloads in `results/api_samples/`.
-
-Run the whole system end to end (also an integration test):
-
-```bash
-python scripts/run_demo.py --full
-```
-
----
-
-## 12. Connecting QPSO Module (Person 1)
-
-**File:** `app/integrations/qpso_adapter.py`
-
-1. Create a class that inherits from `BaseOptimizationAdapter`
-2. Implement the `optimize()` and `get_convergence()` abstract methods
-3. Update the `OPTIMIZATION_ADAPTERS` registry to map `"qpso"` to your class
-4. Your `optimize()` receives a `RouteRequest` and a `GraphRoute` baseline
-5. Return an `OptimizationResult` with the optimised route, fitness, and convergence data
-
-```python
-from app.integrations.qpso_adapter import BaseOptimizationAdapter, OptimizationResult
-
-class RealQpsoAdapter(BaseOptimizationAdapter):
-    algorithm = "qpso"
-
-    def optimize(self, request, baseline, iterations=100, particles=30):
-        # Your QPSO implementation here
-        return OptimizationResult(route=..., fitness=..., convergence_history=[...])
-
-    def get_convergence(self):
-        return self._convergence
-```
-
----
-
-## 13. Connecting Graph Module (Person 2)
-
-**File:** `app/integrations/graph_adapter.py`
-
-1. Create a class that inherits from `BaseGraphAdapter`
-2. Implement `calculate_route()`, `get_nearest_node()`, `get_graph_info()`
-3. Use OSMnx / NetworkX internally
-4. Return a `GraphRoute` dataclass
-
-```python
-from app.integrations.graph_adapter import BaseGraphAdapter, GraphRoute
-
-class OsmGraphAdapter(BaseGraphAdapter):
-    def calculate_route(self, request):
-        # Load graph, find shortest path via OSMnx/NetworkX
-        return GraphRoute(coordinates=[...], nodes=[...], distance_km=..., travel_time_minutes=...)
-```
-
-Then update `GraphAdapter = OsmGraphAdapter` at the bottom of the file.
-
----
-
-## 14. Connecting Traffic Module (Person 3)
-
-**Files:**
-- `app/integrations/traffic_adapter.py` — implement `BaseTrafficAdapter`
-- `app/integrations/prediction_adapter.py` — implement `BasePredictionAdapter`
-
-```python
-from app.integrations.traffic_adapter import BaseTrafficAdapter
-
-class RealTrafficAdapter(BaseTrafficAdapter):
-    def current(self):
-        # Return real traffic records
-    def update(self, records):
-        # Ingest records
-    def get_congestion(self, coord):
-        # Return congestion for coord
-```
-
----
-
-## 15. Running Tests
-
-```powershell
-# Run all tests
-pytest tests/ -v
-
-# Run a specific test file
-pytest tests/test_routes.py -v
-
-# Run with coverage (if pytest-cov installed)
-pytest tests/ --cov=app --cov-report=term-missing
-```
-
----
-
-## 16. Docker
-
-```bash
-# Build and run everything (backend + MongoDB)
-docker compose up --build
-
-# Run only MongoDB
-docker compose up mongodb -d
-
-# Stop all
-docker compose down
-```
-
-The backend container includes a health check at `/api/health`.
-
----
-
-## 17. Deployment
-
-### Render
-
-1. Connect your GitHub repo to Render
-2. Set build command: `pip install -r requirements.txt`
-3. Set start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-4. Add environment variables (`MONGODB_URI`, `MONGODB_DATABASE`, etc.)
-
-### AWS (ECS / EC2)
-
-1. Build the Docker image: `docker build -t smartroute-backend .`
-2. Push to ECR or your container registry
-3. Deploy as an ECS service or on EC2 with `docker compose`
-4. Set environment variables via task definitions or `.env`
-
----
-
-## Current Status
-
-All domain modules (QPSO, graph, traffic, prediction, benchmarking) use **clearly labelled mock adapters**. These are integration boundaries — not implementations of the actual algorithms.  When a team member delivers their real module, replace the corresponding `Mock*Adapter` class and the API stays unchanged.
-
-All API responses from mock adapters include `"data_source": "mock"` in their metadata.
+Further reading: [`DATA.md`](DATA.md) on datasets and what they can and cannot
+support, [`INTEGRATION.md`](INTEGRATION.md) on wiring the layers together.

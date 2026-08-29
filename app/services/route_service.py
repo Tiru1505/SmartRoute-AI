@@ -189,6 +189,8 @@ class RouteService:
             doc["user_id"] = request.user_id
             doc["source"] = request.source.model_dump()
             doc["destination"] = request.destination.model_dump()
+            doc["source_name"] = request.source_name
+            doc["destination_name"] = request.destination_name
             get_optimization_results_col().update_one(
                 {"request_id": response.request_id},
                 {"$set": doc},

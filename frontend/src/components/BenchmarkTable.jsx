@@ -16,6 +16,14 @@ export default function BenchmarkTable({ data }) {
   const bestFitness = Math.min(...data.rows.map((r) => r.fitness))
   const fastest = Math.min(...data.rows.map((r) => r.runtimeMs))
 
+  // The footnote below has to describe the table that is actually on screen.
+  // Multi-stop runs have no Dijkstra row — it cannot order stops — so claiming
+  // it is the provable optimum there would be wrong. The trial count comes
+  // from the data for the same reason: it was hardcoded to 30 and the API
+  // defaults to 20.
+  const hasDijkstra = data.rows.some((r) => /dijkstra/i.test(r.algorithm || ''))
+  const trials = data.rows.find((r) => r.trials)?.trials ?? null
+
   return (
     <div className="card">
       <div className="row-between" style={{ marginBottom: 12 }}>
@@ -63,7 +71,7 @@ export default function BenchmarkTable({ data }) {
                         <span
                           className="badge badge-grey"
                           style={{ padding: '1px 6px' }}
-                          title="Stochastic — results averaged over 30 trials"
+                          title={`Stochastic — results averaged over ${r.trials ?? trials ?? 'multiple'} independent trials`}
                         >
                           stoch
                         </span>
@@ -105,10 +113,24 @@ export default function BenchmarkTable({ data }) {
       >
         <Info size={14} style={{ color: 'var(--blue)', flexShrink: 0, marginTop: 1 }} />
         <p style={{ fontSize: 11.5, color: 'var(--text-dim)', lineHeight: 1.5 }}>
-          Lower objective is better. On single-pair routing with additively combined weights,
-          Dijkstra is provably optimal, so it is expected to attain the best objective value —
-          the meaningful result is how close the metaheuristics get, and how consistently.
-          Stochastic algorithms are averaged over 30 trials.
+          Lower objective is better.{' '}
+          {hasDijkstra ? (
+            <>
+              On single-pair routing with additively combined weights, Dijkstra is provably
+              optimal, so it is expected to attain the best objective value — the meaningful
+              result is how close the metaheuristics get, and how consistently.
+            </>
+          ) : (
+            <>
+              This is multi-stop routing: Dijkstra cannot express it, because it finds a path
+              between two points and has no notion of ordering stops. The comparison is
+              therefore between the metaheuristics, measured against the exact optimum from
+              brute force.
+            </>
+          )}{' '}
+          {trials
+            ? `Stochastic algorithms are averaged over ${trials} trials.`
+            : 'Stochastic algorithms are averaged over repeated independent trials.'}
         </p>
       </div>
     </div>

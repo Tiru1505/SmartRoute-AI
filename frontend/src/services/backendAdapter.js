@@ -170,6 +170,12 @@ export function mapBenchmarkResponse(payload) {
       fitnessBest: r.best ?? r.fitness ?? 0,
       fitnessWorst: r.worst ?? r.fitness ?? 0,
       iterations: r.iterations ?? null,
+      // Carried through so the table's footnote can state the real trial count
+      // instead of a hardcoded one, and so the gap to the exact optimum is
+      // available to the UI.
+      trials: r.trials ?? null,
+      gapPct: r.gap_pct ?? r.gapPct ?? null,
+      optimalHits: r.optimal_hits ?? r.optimalHits ?? null,
       validity: r.validity ?? 100,
     })),
   }
@@ -192,7 +198,7 @@ export function mapConvergenceResponse(payload) {
           iterations: payload.fitness_values.length,
           bestFitness: Math.min(...payload.fitness_values),
           executionMs: payload.execution_time_ms ?? 0,
-          converged: 100,
+          convergedAt: null,        // single-run payloads do not report it
         },
       },
       isDemoData: false,
@@ -220,7 +226,7 @@ export function mapConvergenceResponse(payload) {
       iterations: arr.length,
       bestFitness: Math.min(...arr),
       executionMs: payload?.execution_time_ms ?? 0,
-      converged: 100,
+      convergedAt: null,
     }
   })
 

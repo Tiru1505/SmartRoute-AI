@@ -121,6 +121,11 @@ export async function getRouteOptimization({ start, end, algorithm = 'qpso', mod
       source: coordsFor(start),
       destination: coordsFor(end),
       algorithm,
+      // Sent so the history page can show where the trip actually went.
+      // Endpoints are free text now, so the name cannot be looked up from a
+      // coordinate after the fact.
+      source_name: start?.name ?? null,
+      destination_name: end?.name ?? null,
     })
     const primary = await request('/routes/optimize', { method: 'POST', body })
 

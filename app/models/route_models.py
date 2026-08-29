@@ -34,6 +34,12 @@ class RouteRequest(BaseModel):
     departure_time: str | None = Field(
         default=None, description="ISO-8601 departure time for ETA calculation"
     )
+    # What the user actually typed. Routing works purely on coordinates, but
+    # without these the history page can only show a pair of lat/lons — and
+    # since endpoints are now free text rather than a fixed list of landmarks,
+    # there is no lookup table to recover the name from afterwards.
+    source_name: str | None = Field(default=None, max_length=200)
+    destination_name: str | None = Field(default=None, max_length=200)
     user_id: str | None = None
 
     @model_validator(mode="after")

@@ -33,20 +33,31 @@ def run_benchmark(request: BenchmarkRequest) -> BenchmarkResult:
     description="Retrieve past benchmark results from the database.",
 )
 def benchmark_results(
-    limit: int = Query(default=50, ge=1, le=200, description="Max results"),
+    limit: int = Query(default=50, ge=1, le=200, description="Max stored results"),
     stops: int = Query(default=6, ge=3, le=8, description="Stops in the test problem"),
     trials: int = Query(default=20, ge=1, le=50, description="Trials per algorithm"),
+    source: str = Query(
+        default="live",
+        pattern="^(live|stored)$",
+        description="'live' runs the real comparison; 'stored' returns saved run documents",
+    ),
 ) -> dict:
     """
-    Stored results if any exist, otherwise run the real comparison.
+    The algorithm comparison the Benchmark page renders.
 
-    Previously this returned {"results": []} on a fresh database, so the
-    Benchmark page — the centrepiece of the project — rendered an empty table.
-    Falling back to a live run means the page always has something true to show.
+    This used to prefer stored MongoDB documents and only fall back to a live
+    run on an empty database. That was wrong in two ways once the database had
+    anything in it: the stored documents have a completely different shape
+    (each one wraps its own `results` list), so the table rendered "?" rows of
+    zeros; and the saved rows were left over from the mock era, carrying
+    `status: "mock_completed"` and random fitness values.
+
+    The comparison is now always computed live from the engine and cached, so
+    one shape comes out of this endpoint and the numbers are real. Saved run
+    documents are still reachable with ?source=stored.
     """
-    results = _service.get_results(limit=limit)
-    if results:
-        return {"results": results}
+    if source == "stored":
+        return {"results": _service.get_results(limit=limit), "source": "stored"}
 
     from app.api.analytics import _cached
 

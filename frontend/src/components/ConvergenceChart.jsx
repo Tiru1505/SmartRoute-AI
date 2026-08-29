@@ -87,9 +87,17 @@ export default function ConvergenceChart({ data = [], summary = {}, height = 300
                   <span>Execution</span>
                   <span className="mono" style={{ color: 'var(--text)' }}>{d.executionMs} ms</span>
                 </div>
+                {/* The engine reports convergedAt: the mean iteration at which the
+                    best solution was found, so lower is faster. It was being read
+                    as `converged` and rendered with a % sign, which printed a bare
+                    "%" — wrong field and wrong unit. */}
                 <div className="row-between" style={{ fontSize: 11, color: 'var(--text-faint)' }}>
-                  <span>Converged by</span>
-                  <span className="mono" style={{ color: 'var(--text)' }}>{d.converged}%</span>
+                  <span>Best found at</span>
+                  <span className="mono" style={{ color: 'var(--text)' }}>
+                    {d.convergedAt === null || d.convergedAt === undefined
+                      ? '—'
+                      : `iter ${Number(d.convergedAt).toFixed(1)}`}
+                  </span>
                 </div>
               </div>
             )

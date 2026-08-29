@@ -22,7 +22,7 @@
       "std": 0.0,
       "gap_pct": 0.0,
       "optimal_hits": 30,
-      "mean_runtime_ms": 39.515563333285776,
+      "mean_runtime_ms": 16.232769999987795,
       "mean_iterations": 81,
       "mean_iteration_of_best": 0
     },
@@ -33,7 +33,7 @@
       "std": 0.2621105109867199,
       "gap_pct": 3.195357257270981,
       "optimal_hits": 24,
-      "mean_runtime_ms": 34.449033333339685,
+      "mean_runtime_ms": 14.386763333216853,
       "mean_iterations": 84.53333333333333,
       "mean_iteration_of_best": 3.533333333333333
     },
@@ -44,7 +44,7 @@
       "std": 0.1322714137213276,
       "gap_pct": 0.6000709777070234,
       "optimal_hits": 29,
-      "mean_runtime_ms": 324.5947900000222,
+      "mean_runtime_ms": 127.42161999982879,
       "mean_iterations": 84.3,
       "mean_iteration_of_best": 3.3
     }

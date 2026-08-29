@@ -236,6 +236,7 @@ class _EngineOptimizationAdapter(BaseOptimizationAdapter):
     """Shared plumbing for the real optimiser adapters."""
 
     algorithm = "unknown"
+    data_source = "osm"
 
     def __init__(self) -> None:
         self._last_convergence: list[float] = []
@@ -349,6 +350,8 @@ class RealGaAdapter(RealQpsoAdapter):
 class RealTrafficAdapter(BaseTrafficAdapter):
     """Live congestion from the simulator's current scenario."""
 
+    data_source = "osm"
+
     def current(self):
         from app.models.traffic_models import TrafficRecord
 
@@ -369,10 +372,47 @@ class RealTrafficAdapter(BaseTrafficAdapter):
         return out
 
     def update(self, records) -> int:
-        # Congestion is produced by the simulator, not ingested. Accepting and
-        # discarding would be a lie, so report nothing was stored.
-        _logger.info("update() ignored: congestion comes from the simulator")
-        return 0
+        """
+        Write observed congestion onto the graph.
+
+        Each record is snapped to its nearest junction and applied to the edges
+        meeting there, which is the same neighbourhood get_congestion() reads
+        back. Speed and travel time are recomputed through the Greenshields
+        model rather than set directly, so an ingested observation is
+        indistinguishable from a simulated one and routing responds to it.
+
+        This is the hook for a live feed (TomTom, HMDA cameras): POST records
+        here and the next optimize() call routes around them. Cached cost
+        models are calibrated against the current traffic, so they have to go.
+        """
+        from traffic.congestion_model import CongestionModel
+
+        engine = get_engine()
+        model = CongestionModel()
+
+        applied = 0
+        for rec in records:
+            coord = getattr(rec, "location", None)
+            congestion = getattr(rec, "congestion", None)
+            if coord is None or congestion is None:
+                continue
+
+            node = _nearest(engine, coord)
+            touched = False
+            # Both directions: congestion on a junction is not one-way.
+            for _u, _v, data in engine.G.edges(node, data=True):
+                model.apply_edge(data, congestion)
+                touched = True
+            for _u, _v, data in engine.G.in_edges(node, data=True):
+                model.apply_edge(data, congestion)
+                touched = True
+            if touched:
+                applied += 1
+
+        if applied:
+            invalidate_caches()
+            _logger.info("Applied %d traffic observations to the graph", applied)
+        return applied
 
     def get_congestion(self, coord: Coordinate) -> float:
         engine = get_engine()

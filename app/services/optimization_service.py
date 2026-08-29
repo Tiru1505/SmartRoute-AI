@@ -58,7 +58,10 @@ class OptimizationService:
             ),
             fitness=opt_result.fitness,
             execution_time_ms=round(elapsed_ms, 3),
-            metadata={"data_source": "mock", "optimization_status": "completed"},
+            metadata={
+                "data_source": getattr(adapter, "data_source", "unknown"),
+                "optimization_status": "completed",
+            },
         )
 
         response = OptimizationResponse(
