@@ -33,6 +33,20 @@ async def lifespan(_app: FastAPI):
     from app.database.mongodb import startup_db, shutdown_db
     startup_db()
 
+    # Warm the optimisation engine. Loading the 286,603-node Hyderabad graph
+    # takes ~25 s; doing it here means the FIRST request is fast instead of
+    # being the one that pays for it. Failure is non-fatal — the adapters fall
+    # back to their mock implementations and the API still serves.
+    try:
+        from app.integrations.engine_bridge import get_engine
+        engine = get_engine()
+        logger.info(
+            "Optimisation engine ready: %s nodes, %s edges",
+            f"{engine.G.number_of_nodes():,}", f"{engine.G.number_of_edges():,}",
+        )
+    except Exception as exc:
+        logger.warning("Engine unavailable, serving mock adapters: %s", exc)
+
     yield  # ← application runs here
 
     logger.info("SmartRoute AI Backend shutting down …")

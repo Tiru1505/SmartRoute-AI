@@ -12,10 +12,21 @@
  */
 import {
   ALERTS, BENCHMARK, CONVERGENCE, CONVERGENCE_CHART_DATA, INCIDENTS,
-  PREDICTION_SERIES, REROUTED_ROUTE, ROUTES, SCALABILITY, TRAFFIC_SEGMENTS,
-  ROUTE_HISTORY, TRAFFIC_TREND, TRAFFIC_DISTRIBUTION, ROUTE_PERFORMANCE,
-  ANALYTICS_STATS,
+  LOCATIONS, PREDICTION_SERIES, REROUTED_ROUTE, ROUTES, SCALABILITY,
+  TRAFFIC_SEGMENTS, ROUTE_HISTORY, TRAFFIC_TREND, TRAFFIC_DISTRIBUTION,
+  ROUTE_PERFORMANCE, ANALYTICS_STATS,
 } from '../data/mockData'
+import {
+  mapAlertsResponse, mapBenchmarkResponse, mapConvergenceResponse,
+  mapOptimizeResponse, mapTrafficResponse,
+} from './backendAdapter'
+
+/** Place id -> {lat, lon}, since the backend routes by coordinate. */
+function coordsFor(id) {
+  const place = LOCATIONS.find((l) => l.id === id)
+  if (!place) throw new ApiError(`Unknown location: ${id}`, 400)
+  return { lat: place.coords[0], lon: place.coords[1] }
+}
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
 const BASE = import.meta.env.VITE_API_BASE || '/api'
@@ -55,10 +66,25 @@ async function request(path, options = {}) {
  */
 export async function getRouteOptimization({ start, end, algorithm = 'qpso', mode = 'balanced' } = {}) {
   if (!USE_MOCK) {
-    return request('/optimize-route', {
-      method: 'POST',
-      body: JSON.stringify({ start, end, algorithm, mode }),
+    const body = JSON.stringify({
+      source: coordsFor(start),
+      destination: coordsFor(end),
+      algorithm,
     })
+    const primary = await request('/routes/optimize', { method: 'POST', body })
+
+    // Alternatives are best-effort: the map is still useful with one route.
+    let alternatives = []
+    try {
+      const alt = await request('/routes/alternatives', { method: 'POST', body })
+      alternatives = Array.isArray(alt) ? alt : (alt?.alternatives ?? alt?.routes ?? [])
+    } catch {
+      alternatives = []
+    }
+
+    const mapped = mapOptimizeResponse(primary, alternatives, { from: start, to: end, mode })
+    if (import.meta.env.DEV) window.__qroLast = { primary, alternatives, mapped }
+    return mapped
   }
   await delay(400)
   const routes = clone(ROUTES)
@@ -102,7 +128,7 @@ export async function reroute({ routeId, reason = 'congestion_spike' } = {}) {
 /* ----------------------------------------------------------------- traffic */
 
 export async function getTrafficData() {
-  if (!USE_MOCK) return request('/traffic')
+  if (!USE_MOCK) return mapTrafficResponse(await request('/traffic/current'))
   await delay(300)
   return {
     segments: clone(TRAFFIC_SEGMENTS),
@@ -119,7 +145,7 @@ export async function getPrediction() {
 }
 
 export async function getAlerts() {
-  if (!USE_MOCK) return request('/alerts')
+  if (!USE_MOCK) return mapAlertsResponse(await request('/alerts/'))
   await delay(250)
   return clone(ALERTS)
 }
@@ -140,13 +166,13 @@ export async function getAnalytics() {
 }
 
 export async function getBenchmark() {
-  if (!USE_MOCK) return request('/benchmark')
+  if (!USE_MOCK) return mapBenchmarkResponse(await request('/benchmark/results'))
   await delay(400)
   return clone(BENCHMARK)
 }
 
 export async function getConvergence() {
-  if (!USE_MOCK) return request('/convergence')
+  if (!USE_MOCK) return mapConvergenceResponse(await request('/benchmark/convergence'))
   await delay(400)
   return {
     ...clone(CONVERGENCE),
@@ -167,7 +193,7 @@ export async function getRouteHistory() {
 }
 
 export async function getHealth() {
-  if (!USE_MOCK) return request('/health')
+  if (!USE_MOCK) return request('/health')  // backend mounts this at /api/health
   await delay(120)
   return { status: 'ok', backend: 'mock' }
 }

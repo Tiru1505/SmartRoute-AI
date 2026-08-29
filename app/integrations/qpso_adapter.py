@@ -170,6 +170,8 @@ class MockDijkstraAdapter(BaseOptimizationAdapter):
 # Registry — maps algorithm name → adapter class
 # ---------------------------------------------------------------------------
 
+# The Mock* classes above are kept deliberately: the test-suite uses them, and
+# they are the fallback when the road graph cannot be loaded.
 OPTIMIZATION_ADAPTERS: dict[str, type[BaseOptimizationAdapter]] = {
     "qpso": MockQpsoAdapter,
     "pso": MockPsoAdapter,
@@ -177,11 +179,29 @@ OPTIMIZATION_ADAPTERS: dict[str, type[BaseOptimizationAdapter]] = {
     "dijkstra": MockDijkstraAdapter,
 }
 
+# Real implementations live in engine_bridge, which imports THIS module for its
+# base classes. Importing it back at module level would be circular, so the
+# lookup below resolves it lazily on first use.
+_REAL_ADAPTERS = {
+    "qpso": "RealQpsoAdapter",
+    "pso": "RealPsoAdapter",
+    "ga": "RealGaAdapter",
+    "dijkstra": "RealDijkstraAdapter",
+}
+
 
 def get_optimization_adapter(algorithm: str) -> BaseOptimizationAdapter:
     """Return an adapter instance for the given algorithm name."""
-    adapter_cls = OPTIMIZATION_ADAPTERS.get(algorithm)
-    if adapter_cls is None:
+    if algorithm not in OPTIMIZATION_ADAPTERS:
         from app.core.errors import InvalidAlgorithmError
         raise InvalidAlgorithmError(algorithm)
-    return adapter_cls()
+
+    name = _REAL_ADAPTERS.get(algorithm)
+    if name:
+        try:
+            from app.integrations import engine_bridge
+            return getattr(engine_bridge, name)()
+        except Exception as exc:                  # graph missing, deps absent
+            _logger.warning("Falling back to mock %s adapter: %s", algorithm, exc)
+
+    return OPTIMIZATION_ADAPTERS[algorithm]()

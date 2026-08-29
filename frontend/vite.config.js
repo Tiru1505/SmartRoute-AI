@@ -8,10 +8,11 @@ export default defineConfig({
     // The FastAPI backend will live here later. Until it exists, src/services/api.js
     // serves mock data and never actually hits this proxy.
     proxy: {
+      // NOTE: no rewrite. The backend's own routes are already mounted under
+      // /api (see app/main.py), so stripping the prefix here produced 404s.
       '/api': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
-        rewrite: (p) => p.replace(/^\/api/, ''),
       },
     },
   },

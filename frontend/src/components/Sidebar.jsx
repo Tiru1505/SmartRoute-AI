@@ -81,7 +81,11 @@ export default function Sidebar() {
             </div>
             <div className="row-between">
               <span>Backend</span>
-              <span className="badge badge-yellow" style={{ padding: '1px 7px' }}>
+              <span
+                className={`badge ${SYSTEM_STATUS.backend === 'live'
+                  ? 'badge-green' : 'badge-yellow'}`}
+                style={{ padding: '1px 7px' }}
+              >
                 {SYSTEM_STATUS.backend}
               </span>
             </div>

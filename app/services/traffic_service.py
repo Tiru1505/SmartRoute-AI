@@ -2,7 +2,9 @@
 
 from app.core.errors import TrafficDataUnavailableError
 from app.core.logging import get_logger
-from app.integrations.traffic_adapter import BaseTrafficAdapter, MockTrafficAdapter
+from app.integrations.traffic_adapter import (
+    BaseTrafficAdapter, MockTrafficAdapter, get_traffic_adapter,
+)
 from app.models.traffic_models import TrafficRecord, TrafficSnapshot
 from app.utils.time_helpers import utc_now_iso
 
@@ -13,7 +15,7 @@ class TrafficService:
     """Service for traffic data operations."""
 
     def __init__(self, adapter: BaseTrafficAdapter | None = None):
-        self.adapter = adapter or MockTrafficAdapter()
+        self.adapter = adapter or get_traffic_adapter()
 
     def get_current(self) -> TrafficSnapshot:
         """Fetch current traffic data from the adapter."""

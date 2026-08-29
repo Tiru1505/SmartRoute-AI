@@ -401,7 +401,9 @@ export const OPTIMIZATION_MODES = [
 
 export const SYSTEM_STATUS = {
   version: 'v0.1.0',
-  backend: 'mock',
+  // Reflects reality rather than a hardcoded string: the sidebar badge said
+  // "MOCK" even when the app was talking to the live FastAPI backend.
+  backend: import.meta.env.VITE_USE_MOCK === 'false' ? 'live' : 'mock',
   graph: 'Hyderabad · 286,603 nodes · 741,203 edges',
   lastUpdated: new Date().toISOString(),
 }

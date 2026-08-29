@@ -27,3 +27,33 @@ Thumbs.db
 
 # ─── Docker ────────────────────────────────────────────────────
 docker-compose.override.yml
+
+# Backend runtime log
+backend.log
+
+# ─── Node / frontend ───────────────────────────────────────────
+node_modules/
+frontend/dist/
+
+# ─── Generated data ────────────────────────────────────────────
+# All of this is reproducible from scripts/ and preprocessing/, and a single
+# file (hyderabad_drive.graphml, 575 MB) is far beyond GitHub's 100 MB limit.
+# Rebuild with:
+#   bash scripts/fetch_benchmarks.sh
+#   python preprocessing/osm_processor.py --city "Hyderabad, Telangana, India" --metro
+#   python scripts/run_traffic.py --all --save
+data/raw/benchmarks/
+data/raw/osm/
+data/vision/
+*.graphml
+*.pkl
+*.h5
+*.parquet
+*.npy
+
+# Keep: small, hand-curated, or NOT reproducible. The TomTom series in
+# particular cannot be re-downloaded — it accrues in wall-clock time.
+!data/raw/india/hyderabad_segments.csv
+!data/raw/india/tomtom_*/**
+!data/processed/*/*_stats.json
+!results/**

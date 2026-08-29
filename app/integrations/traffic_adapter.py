@@ -69,5 +69,15 @@ class MockTrafficAdapter(BaseTrafficAdapter):
         return round(random.uniform(0.1, 0.9), 2)
 
 
-# Default adapter instance
+# See the note in graph_adapter.py — resolved lazily to avoid a circular import.
 TrafficAdapter = MockTrafficAdapter
+
+
+def get_traffic_adapter() -> BaseTrafficAdapter:
+    """Real simulator-backed adapter, falling back to the mock."""
+    try:
+        from app.integrations.engine_bridge import RealTrafficAdapter
+        return RealTrafficAdapter()
+    except Exception as exc:
+        _logger.warning("Falling back to MockTrafficAdapter: %s", exc)
+        return MockTrafficAdapter()

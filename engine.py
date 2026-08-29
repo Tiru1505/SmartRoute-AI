@@ -147,7 +147,7 @@ class QROEngine:
         segs = []
         for u, v, k, d in self.G.edges(keys=True, data=True):
             c = float(d.get("congestion", 0.0) or 0.0)
-            if c < 0.25:
+            if c < 0.05:
                 continue
             hw = d.get("highway")
             hw = str(hw[0] if isinstance(hw, list) else hw)
@@ -156,9 +156,32 @@ class QROEngine:
                 continue
             segs.append((c, u, v, k, d, hw))
 
-        segs.sort(key=lambda t: -t[0])
+        # Stratified sample, not simply the worst N.
+        #
+        # Sorting by congestion and taking the top 200 made every segment on the
+        # map "severe" during peak hour — a uniform wall of red that shows
+        # nothing and makes the legend pointless. Taking a share from each band
+        # gives the overlay its actual job back: showing where traffic differs.
+        buckets = {"low": [], "moderate": [], "heavy": [], "severe": []}
+        for item in segs:
+            buckets[self.model.level(item[0])].append(item)
+
+        per_band = max(limit // 4, 1)
+        chosen = []
+        for band in ("severe", "heavy", "moderate", "low"):
+            rows = sorted(buckets[band], key=lambda t: -t[0])
+            chosen.extend(rows[:per_band])
+        # Backfill from whatever is left if some bands were sparse.
+        if len(chosen) < limit:
+            picked = {(u, v, k) for _c, u, v, k, _d, _h in chosen}
+            for item in sorted(segs, key=lambda t: -t[0]):
+                if (item[1], item[2], item[3]) not in picked:
+                    chosen.append(item)
+                    if len(chosen) >= limit:
+                        break
+
         out = []
-        for c, u, v, k, d, hw in segs[:limit]:
+        for c, u, v, k, d, hw in chosen[:limit]:
             level = self.model.level(c)
             out.append({
                 "id": f"{u}_{v}_{k}",

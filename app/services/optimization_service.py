@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from app.core.errors import InvalidAlgorithmError, OptimizationError
 from app.core.logging import get_logger
-from app.integrations.graph_adapter import MockGraphAdapter, BaseGraphAdapter
+from app.integrations.graph_adapter import MockGraphAdapter, BaseGraphAdapter, get_graph_adapter
 from app.integrations.qpso_adapter import get_optimization_adapter
 from app.models.optimization_models import OptimizationRequest, OptimizationResponse
 from app.models.route_models import RouteResponse, RouteSummary
@@ -20,7 +20,7 @@ class OptimizationService:
     """Service for running individual optimization algorithms."""
 
     def __init__(self, graph_adapter: BaseGraphAdapter | None = None):
-        self.graph = graph_adapter or MockGraphAdapter()
+        self.graph = graph_adapter or get_graph_adapter()
 
     def run(self, algorithm: str, request: OptimizationRequest) -> OptimizationResponse:
         """Execute the specified optimization algorithm."""

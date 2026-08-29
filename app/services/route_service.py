@@ -5,9 +5,9 @@ from uuid import uuid4
 
 from app.core.errors import GraphUnavailableError, NoRouteFoundError, OptimizationError
 from app.core.logging import get_logger
-from app.integrations.graph_adapter import GraphRoute, MockGraphAdapter, BaseGraphAdapter
+from app.integrations.graph_adapter import GraphRoute, MockGraphAdapter, BaseGraphAdapter, get_graph_adapter
 from app.integrations.qpso_adapter import get_optimization_adapter
-from app.integrations.traffic_adapter import MockTrafficAdapter, BaseTrafficAdapter
+from app.integrations.traffic_adapter import MockTrafficAdapter, BaseTrafficAdapter, get_traffic_adapter
 from app.models.route_models import RouteRequest, RouteResponse, RouteSummary, Coordinate
 from app.utils.geo import estimate_eta
 from app.utils.time_helpers import utc_now_iso
@@ -26,8 +26,8 @@ class RouteService:
         graph_adapter: BaseGraphAdapter | None = None,
         traffic_adapter: BaseTrafficAdapter | None = None,
     ):
-        self.graph = graph_adapter or MockGraphAdapter()
-        self.traffic = traffic_adapter or MockTrafficAdapter()
+        self.graph = graph_adapter or get_graph_adapter()
+        self.traffic = traffic_adapter or get_traffic_adapter()
 
     # ------------------------------------------------------------------
     # Public API
@@ -98,7 +98,34 @@ class RouteService:
         return response
 
     def get_alternatives(self, request: RouteRequest, count: int = 3) -> list[RouteResponse]:
-        """Generate alternative routes by running different algorithms."""
+        """
+        Generate alternative routes.
+
+        Preferred: ask the graph adapter for genuinely different CORRIDORS.
+        Running the same request through different algorithms (the fallback
+        below) returns identical paths once every optimiser converges on the
+        same optimum, which makes the "alternatives" list useless to the user.
+        """
+        if hasattr(self.graph, "alternative_routes"):
+            try:
+                primary = self.optimize(request)
+                out = [primary]
+                for alt in self.graph.alternative_routes(request, count)[: count - 1]:
+                    resp = primary.model_copy(deep=True)
+                    resp.request_id = str(uuid4())
+                    resp.route = RouteSummary(
+                        coordinates=alt.coordinates,
+                        nodes=alt.nodes,
+                        distance_km=alt.distance_km,
+                        travel_time_minutes=alt.travel_time_minutes,
+                    )
+                    resp.eta = estimate_eta(alt.travel_time_minutes)
+                    out.append(resp)
+                if len(out) > 1:
+                    return out
+            except Exception as exc:
+                _logger.warning("Corridor alternatives failed, falling back: %s", exc)
+
         alternatives: list[RouteResponse] = []
         algorithms = ["dijkstra", "pso", "qpso"]
         for algo in algorithms[:count]:

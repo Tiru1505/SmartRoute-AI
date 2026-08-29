@@ -98,5 +98,18 @@ class MockGraphAdapter(BaseGraphAdapter):
         return {"status": "mock", "nodes": 0, "edges": 0, "data_source": "mock"}
 
 
-# Default adapter instance — swap this when real module is integrated
+# NOTE: the real implementation lives in app/integrations/engine_bridge.py.
+# It is NOT imported here — engine_bridge imports this module for its base
+# classes, so an import back would be circular. Services resolve the real
+# adapter lazily via get_graph_adapter() below.
 GraphAdapter = MockGraphAdapter
+
+
+def get_graph_adapter() -> BaseGraphAdapter:
+    """Real OSM adapter, falling back to the mock if the graph is unavailable."""
+    try:
+        from app.integrations.engine_bridge import OsmGraphAdapter
+        return OsmGraphAdapter()
+    except Exception as exc:                      # graph missing, deps absent
+        _logger.warning("Falling back to MockGraphAdapter: %s", exc)
+        return MockGraphAdapter()
