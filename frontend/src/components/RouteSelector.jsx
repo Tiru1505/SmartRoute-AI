@@ -1,12 +1,28 @@
-import { ArrowUpDown, MapPin, Navigation, Play, RotateCcw, Zap } from 'lucide-react'
+import {
+  ArrowUpDown,
+  MapPin,
+  Navigation,
+  Play,
+  RotateCcw,
+  Zap,
+} from 'lucide-react'
 import { ALGORITHMS, LOCATIONS, OPTIMIZATION_MODES } from '../data/mockData'
 import { useApp } from '../store/AppContext'
 
 export default function RouteSelector({ onOptimize, busy }) {
   const {
-    start, setStart, end, setEnd,
-    algorithm, setAlgorithm, mode, setMode,
-    demoMode, startDemo, stopDemo, resetScenario,
+    start,
+    setStart,
+    end,
+    setEnd,
+    algorithm,
+    setAlgorithm,
+    mode,
+    setMode,
+    demoMode,
+    startDemo,
+    stopDemo,
+    resetScenario,
   } = useApp()
 
   const swap = () => {
@@ -17,68 +33,92 @@ export default function RouteSelector({ onOptimize, busy }) {
   const activeAlgo = ALGORITHMS.find((a) => a.id === algorithm)
 
   return (
-    <div className="card">
-      <div className="card-title">
+    <div className="card route-selector-card">
+
+      {/* HEADER */}
+      <div className="card-title route-selector-title">
         <Navigation size={13} />
-        Route Planner
+        <span>Route Planner</span>
       </div>
 
-      <div className="field">
+      {/* START LOCATION */}
+      <div className="field route-field">
         <label htmlFor="start">Start location</label>
+
         <select
           id="start"
-          className="select"
+          className="select route-select"
           value={start}
           onChange={(e) => setStart(e.target.value)}
         >
           {LOCATIONS.map((l) => (
-            <option key={l.id} value={l.id}>{l.name}</option>
+            <option key={l.id} value={l.id}>
+              {l.name}
+            </option>
           ))}
         </select>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', margin: '-4px 0 4px' }}>
-        <button className="icon-btn" onClick={swap} aria-label="Swap start and destination">
+      {/* SWAP BUTTON */}
+      <div className="route-swap-wrapper">
+        <button
+          className="icon-btn route-swap-btn"
+          onClick={swap}
+          aria-label="Swap start and destination"
+          title="Swap locations"
+        >
           <ArrowUpDown size={14} />
         </button>
       </div>
 
-      <div className="field">
+      {/* DESTINATION */}
+      <div className="field route-field">
         <label htmlFor="end">Destination</label>
+
         <select
           id="end"
-          className="select"
+          className="select route-select"
           value={end}
           onChange={(e) => setEnd(e.target.value)}
         >
           {LOCATIONS.map((l) => (
-            <option key={l.id} value={l.id}>{l.name}</option>
+            <option key={l.id} value={l.id}>
+              {l.name}
+            </option>
           ))}
         </select>
       </div>
 
-      <div className="field">
+      {/* ALGORITHM */}
+      <div className="field route-field">
         <label htmlFor="algo">Algorithm</label>
+
         <select
           id="algo"
-          className="select"
+          className="select route-select"
           value={algorithm}
           onChange={(e) => setAlgorithm(e.target.value)}
         >
           {ALGORITHMS.map((a) => (
-            <option key={a.id} value={a.id}>{a.full}</option>
+            <option key={a.id} value={a.id}>
+              {a.full}
+            </option>
           ))}
         </select>
+
         {activeAlgo?.quantum && (
-          <div className="badge badge-quantum" style={{ marginTop: 7 }}>
-            <Zap size={9} /> Quantum-inspired
+          <div className="badge badge-quantum quantum-badge">
+            <Zap size={9} />
+            Quantum-inspired
           </div>
         )}
       </div>
 
-      <div className="field">
+      {/* OPTIMIZATION OBJECTIVE */}
+      <div className="field route-field">
         <label>Optimization objective</label>
-        <div className="segmented">
+
+        <div className="segmented route-segmented">
           {OPTIMIZATION_MODES.map((m) => (
             <button
               key={m.id}
@@ -92,34 +132,51 @@ export default function RouteSelector({ onOptimize, busy }) {
         </div>
       </div>
 
+      {/* OPTIMIZE BUTTON */}
       <button
-        className="btn btn-primary btn-block"
+        className="btn btn-primary btn-block optimize-route-btn"
         onClick={onOptimize}
         disabled={busy || start === end}
-        style={{ marginTop: 4 }}
       >
         <MapPin size={15} />
-        {busy ? 'Optimizing…' : 'Optimize Route'}
+
+        <span>
+          {busy ? 'Optimizing…' : 'Optimize Route'}
+        </span>
       </button>
 
+      {/* SAME LOCATION WARNING */}
       {start === end && (
-        <p style={{ fontSize: 11, color: 'var(--moderate)', marginTop: 8, textAlign: 'center' }}>
+        <p className="route-warning">
           Start and destination must differ.
         </p>
       )}
 
-      <div style={{ display: 'flex', gap: 8, marginTop: 9 }}>
+      {/* DEMO + RESET */}
+      <div className="route-actions">
+
         <button
-          className={`btn btn-sm ${demoMode ? '' : 'btn-quantum'}`}
-          style={{ flex: 1 }}
+          className={`btn btn-sm demo-btn ${
+            demoMode ? '' : 'btn-quantum'
+          }`}
           onClick={demoMode ? stopDemo : startDemo}
         >
           <Play size={13} />
-          {demoMode ? 'Stop Demo' : 'Demo Mode'}
+
+          <span>
+            {demoMode ? 'Stop Demo' : 'Demo Mode'}
+          </span>
         </button>
-        <button className="btn btn-sm" onClick={resetScenario} aria-label="Reset scenario">
+
+        <button
+          className="btn btn-sm reset-btn"
+          onClick={resetScenario}
+          aria-label="Reset scenario"
+          title="Reset scenario"
+        >
           <RotateCcw size={13} />
         </button>
+
       </div>
     </div>
   )

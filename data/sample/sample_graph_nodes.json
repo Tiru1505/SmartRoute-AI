@@ -1,0 +1,20 @@
+{
+  "_comment": "MOCK DATA — Sample graph nodes representing a simplified Hyderabad road network. NOT derived from OSM.",
+  "nodes": [
+    {"id": "node-0001", "lat": 17.3850, "lon": 78.4867, "name": "Tank Bund Junction"},
+    {"id": "node-0002", "lat": 17.3950, "lon": 78.4700, "name": "Necklace Road Junction"},
+    {"id": "node-0003", "lat": 17.4100, "lon": 78.4500, "name": "Begumpet Junction"},
+    {"id": "node-0004", "lat": 17.4250, "lon": 78.4200, "name": "Jubilee Hills Junction"},
+    {"id": "node-0005", "lat": 17.4400, "lon": 78.3900, "name": "Madhapur Junction"},
+    {"id": "node-0006", "lat": 17.4500, "lon": 78.3800, "name": "Hitech City Junction"}
+  ],
+  "edges": [
+    {"from": "node-0001", "to": "node-0002", "distance_km": 2.1, "travel_time_min": 6.5},
+    {"from": "node-0002", "to": "node-0003", "distance_km": 2.8, "travel_time_min": 8.0},
+    {"from": "node-0003", "to": "node-0004", "distance_km": 3.5, "travel_time_min": 10.2},
+    {"from": "node-0004", "to": "node-0005", "distance_km": 2.2, "travel_time_min": 7.0},
+    {"from": "node-0005", "to": "node-0006", "distance_km": 1.5, "travel_time_min": 4.5},
+    {"from": "node-0001", "to": "node-0003", "distance_km": 4.5, "travel_time_min": 13.0},
+    {"from": "node-0002", "to": "node-0004", "distance_km": 5.0, "travel_time_min": 15.5}
+  ]
+}

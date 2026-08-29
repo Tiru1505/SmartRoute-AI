@@ -1,0 +1,13 @@
+{
+  "_comment": "MOCK DATA — Synthetic traffic records for Hyderabad area. NOT real traffic data.",
+  "records": [
+    {"location": {"lat": 17.3850, "lon": 78.4867}, "congestion": 0.72, "speed_kmh": 15.3, "segment_id": "seg-0001", "road_name": "Tank Bund Road", "recorded_at": "2026-08-28T10:00:00Z"},
+    {"location": {"lat": 17.4100, "lon": 78.4500}, "congestion": 0.45, "speed_kmh": 35.0, "segment_id": "seg-0002", "road_name": "Begumpet Road", "recorded_at": "2026-08-28T10:00:00Z"},
+    {"location": {"lat": 17.4400, "lon": 78.3800}, "congestion": 0.88, "speed_kmh": 8.5, "segment_id": "seg-0003", "road_name": "Hitech City Main Road", "recorded_at": "2026-08-28T10:00:00Z"},
+    {"location": {"lat": 17.3950, "lon": 78.4700}, "congestion": 0.30, "speed_kmh": 45.2, "segment_id": "seg-0004", "road_name": "Necklace Road", "recorded_at": "2026-08-28T10:00:00Z"},
+    {"location": {"lat": 17.4250, "lon": 78.4200}, "congestion": 0.55, "speed_kmh": 25.0, "segment_id": "seg-0005", "road_name": "Jubilee Hills Road No. 36", "recorded_at": "2026-08-28T10:00:00Z"},
+    {"location": {"lat": 17.3600, "lon": 78.4700}, "congestion": 0.62, "speed_kmh": 20.1, "segment_id": "seg-0006", "road_name": "Charminar Road", "recorded_at": "2026-08-28T10:00:00Z"},
+    {"location": {"lat": 17.4500, "lon": 78.3900}, "congestion": 0.40, "speed_kmh": 38.7, "segment_id": "seg-0007", "road_name": "Gachibowli ORR", "recorded_at": "2026-08-28T10:00:00Z"},
+    {"location": {"lat": 17.3750, "lon": 78.5000}, "congestion": 0.78, "speed_kmh": 12.0, "segment_id": "seg-0008", "road_name": "LB Nagar Ring Road", "recorded_at": "2026-08-28T10:00:00Z"}
+  ]
+}

@@ -1,35 +1,25 @@
-# --- core (Phases 1-4: data, graph, congestion, dynamic weights) ---
-osmnx>=2.0
-geopandas>=1.0
-networkx>=3.2
-pandas>=2.0
-numpy>=1.26
-scipy>=1.11
-scikit-learn>=1.4        # nearest_nodes on unprojected graphs; scalers
-pyarrow>=15.0
-pyyaml>=6.0
-requests>=2.31
+# ─── Core ──────────────────────────────────────────────────────
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+pydantic-settings>=2.6,<3
+python-dotenv>=1.0,<2
 
-# --- inspection / IO ---
-openpyxl>=3.1            # Mendeley .xlsx
-tables>=3.9              # METR-LA / PEMS-BAY .h5
-h5py>=3.10
-pillow>=10.0             # IDD Lite masks
+# ─── Database ──────────────────────────────────────────────────
+pymongo>=4.9,<5
 
-# --- visualisation (Phases 8, 12, 13) ---
-matplotlib>=3.8
-plotly>=5.20
+# ─── Graph & computation ──────────────────────────────────────
+networkx>=3.3,<4
+numpy>=2.1,<3
 
-# --- Phase 11: traffic prediction (only once data justifies it) ---
-# torch>=2.2
+# ─── Data processing (used by data loaders) ───────────────────
+pandas>=2.2,<3
+scipy>=1.13,<2
 
-# --- Phase 12: vision (only once DATS_2022 is downloaded) ---
-# ultralytics>=8.2
-# opencv-python>=4.9
+# ─── Testing ──────────────────────────────────────────────────
+pytest>=8.3,<9
+httpx>=0.27,<1
 
-# --- Phase 13: API / dashboard ---
-# fastapi>=0.110
-# uvicorn[standard]>=0.29
-
-# --- optional: re-fetching the benchmark datasets ---
-# huggingface_hub>=0.23
+# ─── Optional: uncomment when team modules need them ──────────
+# osmnx>=2.0,<3
+# torch>=2.3
+# firebase-admin>=6.5,<7
