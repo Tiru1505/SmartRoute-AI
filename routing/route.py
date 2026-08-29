@@ -11,6 +11,11 @@ from dataclasses import dataclass, field
 from graph.edge_weights import edge_components, is_closed
 
 
+def _sq(a, b):
+    """Squared distance between two (lat, lon) points — ordering only."""
+    return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2
+
+
 @dataclass
 class Route:
     nodes: list                       # ordered OSM node ids, source .. target
@@ -55,8 +60,51 @@ class Route:
 
     # ------------------------------------------------------------- output
     def coordinates(self, G):
-        """[[lat, lon], ...] for the map."""
-        return [[float(G.nodes[n]["y"]), float(G.nodes[n]["x"])] for n in self.nodes]
+        """
+        [[lat, lon], ...] for the map, FOLLOWING THE ROAD.
+
+        Joining node positions with straight lines is wrong and it shows: OSMnx
+        simplifies a graph by collapsing a curved road between two junctions
+        into one edge, storing the bend in the edge's `geometry`. About a third
+        of Hyderabad's edges carry such geometry, averaging ~4.6 points each.
+        Ignoring it makes the drawn route cut corners and sit visibly off the
+        road — overlapping buildings on the map instead of tracing the street.
+
+        So we walk the edge geometry where it exists and fall back to the node
+        positions where it does not.
+        """
+        if len(self.nodes) < 2:
+            return [[float(G.nodes[n]["y"]), float(G.nodes[n]["x"])] for n in self.nodes]
+
+        out = []
+        for u, v in zip(self.nodes, self.nodes[1:]):
+            pu = (float(G.nodes[u]["y"]), float(G.nodes[u]["x"]))
+            pv = (float(G.nodes[v]["y"]), float(G.nodes[v]["x"]))
+
+            geom = None
+            if G.has_edge(u, v):
+                # Parallel edges may differ; take the one actually routed on,
+                # i.e. the cheapest by length, matching best_edge().
+                data = min(G[u][v].values(),
+                           key=lambda d: float(d.get("length_m", d.get("length", 0)) or 0))
+                geom = data.get("geometry")
+
+            if geom is not None and hasattr(geom, "coords"):
+                # Shapely stores (lon, lat); Leaflet wants (lat, lon).
+                pts = [(y, x) for x, y in geom.coords]
+                # Geometry is stored in the underlying way's direction, which is
+                # not always u -> v. Flip it when it starts nearer to v.
+                if pts and (_sq(pts[0], pv) < _sq(pts[0], pu)):
+                    pts.reverse()
+            else:
+                pts = [pu, pv]
+
+            if not out:
+                out.append([pts[0][0], pts[0][1]])
+            for p in pts[1:]:
+                out.append([p[0], p[1]])
+
+        return out
 
     def to_dict(self, G=None):
         d = {

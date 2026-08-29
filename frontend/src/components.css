@@ -3150,3 +3150,20 @@
   position: absolute;
   z-index: 9999 !important;
 }
+/* ---------------------------------------------- sidebar fold affordances */
+/* Collapsed is the resting state, so it must still read as a usable rail:
+   icons centred, labels gone, and a clear hover cue that it will open. */
+.sidebar[data-collapsed='true'] .nav-item { justify-content: center; padding: 9px 0; }
+.sidebar[data-collapsed='true'] .logo-mark { margin: 0 auto; }
+.sidebar[data-collapsed='true'] .sidebar-head { justify-content: center; padding: 16px 8px; }
+
+/* Overlay the main column while expanded, so opening the menu does not shove
+   the map sideways — that reflow is what makes auto-folding sidebars feel
+   broken. */
+.sidebar:not([data-collapsed='true']):not([data-pinned='true']) {
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  box-shadow: 8px 0 32px rgba(0, 0, 0, .45);
+}
+
+.sidebar[data-pinned='true'] .collapse-btn { color: var(--cyan); border-color: var(--cyan); }

@@ -4,8 +4,8 @@
     {
       "name": "qro-backend",
       "runtimeExecutable": ".venv/Scripts/python.exe",
-      "runtimeArgs": ["-m", "uvicorn", "app.main:app", "--port", "8000"],
-      "port": 8000
+      "runtimeArgs": ["-m", "uvicorn", "app.main:app", "--port", "8010"],
+      "port": 8010
     },
     {
       "name": "qro-frontend",

@@ -155,6 +155,9 @@ export function mapBenchmarkResponse(payload) {
   return {
     isDemoData: false,
     problem: payload?.problem ?? 'Algorithm comparison',
+    budget: payload?.budget ?? null,
+    exactOptimum: payload?.exact_optimum ?? null,
+    classical: payload?.classical ?? [],
     rows: (Array.isArray(rows) ? rows : []).map((r) => ({
       algorithm: r.algorithm ?? r.name ?? '?',
       deterministic: (r.algorithm ?? '').toLowerCase() === 'dijkstra',
@@ -174,6 +177,28 @@ export function mapBenchmarkResponse(payload) {
 
 /** GET /api/benchmark/convergence -> Recharts series. */
 export function mapConvergenceResponse(payload) {
+  // /benchmark/convergence/all already returns { chartData, summary } ready for
+  // Recharts. The single-algorithm /convergence endpoint returns
+  // { algorithm, iterations, fitness_values } instead, so both are handled.
+  if (Array.isArray(payload?.chartData)) {
+    return { chartData: payload.chartData, summary: payload.summary ?? {}, isDemoData: false }
+  }
+  if (Array.isArray(payload?.fitness_values)) {
+    const name = (payload.algorithm ?? 'QPSO').toUpperCase()
+    return {
+      chartData: payload.fitness_values.map((v, i) => ({ iteration: i, [name]: v })),
+      summary: {
+        [name]: {
+          iterations: payload.fitness_values.length,
+          bestFitness: Math.min(...payload.fitness_values),
+          executionMs: payload.execution_time_ms ?? 0,
+          converged: 100,
+        },
+      },
+      isDemoData: false,
+    }
+  }
+
   const series = payload?.convergence ?? payload?.series ?? payload ?? {}
   const names = Object.keys(series).filter((k) => Array.isArray(series[k]))
   if (!names.length) return { chartData: [], summary: {}, isDemoData: false }
@@ -217,5 +242,36 @@ export function mapAlertsResponse(payload) {
     current: a.current_congestion ?? a.current,
     predicted: a.predicted_congestion ?? a.predicted,
     etaMinutes: a.eta_minutes ?? a.etaMinutes,
+  }))
+}
+
+
+/** GET /api/analytics -> the Analytics page. */
+export function mapAnalyticsResponse(payload) {
+  return {
+    stats: payload?.stats ?? [],
+    trend: payload?.trend ?? [],
+    prediction: payload?.prediction ?? [],
+    performance: payload?.performance ?? [],
+    distribution: payload?.distribution ?? [],
+    isDemoData: false,
+  }
+}
+
+/** GET /api/routes/history -> the History table. */
+export function mapHistoryResponse(payload) {
+  const rows = payload?.results ?? payload ?? []
+  return (Array.isArray(rows) ? rows : []).map((r, i) => ({
+    id: r.request_id ?? `h${i}`,
+    date: (r.eta ?? r.created_at ?? '').toString().replace('T', ' ').slice(0, 16),
+    start: r.source_name ?? 'Start',
+    end: r.destination_name ?? 'Destination',
+    algorithm: (r.algorithm ?? 'qpso').toUpperCase(),
+    distanceKm: r.route?.distance_km ?? 0,
+    etaMin: Math.round(r.route?.travel_time_minutes ?? 0),
+    traffic: (r.congestion ?? 0) < 0.3 ? 'low'
+      : (r.congestion ?? 0) < 0.5 ? 'moderate'
+      : (r.congestion ?? 0) < 0.7 ? 'heavy' : 'severe',
+    status: 'completed',
   }))
 }

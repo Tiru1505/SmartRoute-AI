@@ -11,7 +11,8 @@ export default defineConfig({
       // NOTE: no rewrite. The backend's own routes are already mounted under
       // /api (see app/main.py), so stripping the prefix here produced 404s.
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        // 8010, not 8000: another project on this machine already binds 8000.
+        target: process.env.VITE_API_TARGET || 'http://127.0.0.1:8010',
         changeOrigin: true,
       },
     },

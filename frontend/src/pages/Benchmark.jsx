@@ -14,14 +14,18 @@ export default function Benchmark() {
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([getBenchmark(), getConvergence(), getScalability()])
-      .then(([b, c, s]) => {
-        if (cancelled) return
-        setBench(b)
-        setConv(c)
-        setScale(s)
-      })
+
+    // Fetched independently, NOT with Promise.all. The scalability sweep runs
+    // brute force over every problem size and takes the best part of a minute
+    // on a cold cache; bundling it meant the benchmark table — the point of
+    // this page — sat behind a skeleton until the slowest call finished. Each
+    // panel now appears as soon as its own data lands, and one failing does
+    // not blank the others.
+    getBenchmark().then((d) => !cancelled && setBench(d))
       .catch((e) => !cancelled && setError(e.message))
+    getConvergence().then((d) => !cancelled && setConv(d)).catch(() => {})
+    getScalability().then((d) => !cancelled && setScale(d)).catch(() => {})
+
     return () => { cancelled = true }
   }, [])
 
@@ -44,11 +48,28 @@ export default function Benchmark() {
         <p>QPSO measured against Dijkstra, PSO and GA on identical problem instances.</p>
       </div>
 
-      <div className="demo-notice">
-        <Info size={13} />
-        Demo data — these are placeholder figures, not a validated benchmark run.
-        Replace them with real results from <code>benchmarking/benchmark.py</code>.
-      </div>
+      {/* The notice must track reality: these are live engine results once the
+          backend is connected, and claiming otherwise undersells a real run. */}
+      {bench?.isDemoData === false ? (
+        <div
+          className="demo-notice"
+          style={{
+            background: 'rgba(16,185,129,.09)',
+            borderColor: 'rgba(16,185,129,.26)',
+            color: 'var(--low)',
+          }}
+        >
+          <Info size={13} />
+          Live results from the optimisation engine —
+          {bench.problem ? ` ${bench.problem}` : ''}
+          {bench.budget ? `, ${bench.budget}` : ''}.
+        </div>
+      ) : (
+        <div className="demo-notice">
+          <Info size={13} />
+          Demo data — placeholder figures, not a validated benchmark run.
+        </div>
+      )}
 
       <div style={{ marginBottom: 14 }}>
         {bench ? <BenchmarkTable data={bench} /> : <CardSkeleton height={300} />}

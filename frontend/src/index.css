@@ -113,7 +113,7 @@ input, select { font-family: inherit; }
 .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
 
 /* ---------------------------------------------------------------- layout */
-.app { display: flex; height: 100vh; position: relative; z-index: 1; }
+.app { display: flex; height: 100vh; position: relative; z-index: 1; overflow: hidden; }
 
 /* The sidebar is a real flex item rather than a fixed overlay, so the main
    column can never sit underneath it. Below 900px it becomes a fixed drawer. */

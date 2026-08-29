@@ -474,8 +474,14 @@ class QROEngine:
 
         rows = []
         for name, s in sorted(summaries.items(), key=lambda kv: kv[1].mean):
+            # The table has distance/time/congestion columns; without these they
+            # rendered as zeros. Taken from each algorithm's best tour.
+            sol = s.best_solution
             rows.append({
                 "algorithm": name,
+                "distanceKm": _round(sol.distance_km, 2) if sol else None,
+                "timeMin": _round(sol.time_min, 1) if sol else None,
+                "congestion": _round(sol.mean_congestion, 4) if sol else None,
                 "best": _round(s.best, 6),
                 "mean": _round(s.mean, 6),
                 "worst": _round(s.worst, 6),

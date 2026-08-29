@@ -17,8 +17,9 @@ import {
   ROUTE_PERFORMANCE, ANALYTICS_STATS,
 } from '../data/mockData'
 import {
-  mapAlertsResponse, mapBenchmarkResponse, mapConvergenceResponse,
-  mapOptimizeResponse, mapTrafficResponse,
+  mapAlertsResponse, mapAnalyticsResponse, mapBenchmarkResponse,
+  mapConvergenceResponse, mapHistoryResponse, mapOptimizeResponse,
+  mapTrafficResponse,
 } from './backendAdapter'
 
 /** Place id -> {lat, lon}, since the backend routes by coordinate. */
@@ -139,7 +140,7 @@ export async function getTrafficData() {
 }
 
 export async function getPrediction() {
-  if (!USE_MOCK) return request('/prediction')
+  if (!USE_MOCK) return request('/prediction/status')
   await delay(300)
   return { series: clone(PREDICTION_SERIES), isDemoData: true }
 }
@@ -153,7 +154,7 @@ export async function getAlerts() {
 /* --------------------------------------------------------------- analytics */
 
 export async function getAnalytics() {
-  if (!USE_MOCK) return request('/analytics')
+  if (!USE_MOCK) return mapAnalyticsResponse(await request('/analytics'))
   await delay(350)
   return {
     stats: clone(ANALYTICS_STATS),
@@ -172,7 +173,7 @@ export async function getBenchmark() {
 }
 
 export async function getConvergence() {
-  if (!USE_MOCK) return mapConvergenceResponse(await request('/benchmark/convergence'))
+  if (!USE_MOCK) return mapConvergenceResponse(await request('/benchmark/convergence/all'))
   await delay(400)
   return {
     ...clone(CONVERGENCE),
@@ -181,13 +182,13 @@ export async function getConvergence() {
 }
 
 export async function getScalability() {
-  if (!USE_MOCK) return request('/scalability')
+  if (!USE_MOCK) return await request('/analytics/scalability')
   await delay(400)
   return clone(SCALABILITY)
 }
 
 export async function getRouteHistory() {
-  if (!USE_MOCK) return request('/history')
+  if (!USE_MOCK) return mapHistoryResponse(await request('/routes/history'))
   await delay(250)
   return clone(ROUTE_HISTORY)
 }

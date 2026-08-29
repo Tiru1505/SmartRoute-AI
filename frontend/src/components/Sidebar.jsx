@@ -1,8 +1,10 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Activity, BarChart3, Bell, ChevronLeft, ChevronRight, FlaskConical,
-  History as HistoryIcon, LayoutDashboard, Route as RouteIcon, Settings as SettingsIcon,
+  History as HistoryIcon, LayoutDashboard, Pin, Route as RouteIcon,
+  Settings as SettingsIcon,
 } from 'lucide-react'
 import { useApp } from '../store/AppContext'
 import { SYSTEM_STATUS } from '../data/mockData'
@@ -21,10 +23,58 @@ export const NAV_ITEMS = [
 export default function Sidebar() {
   const { collapsed, setCollapsed, alerts, theme } = useApp()
   const location = useLocation()
+  const closeTimer = useRef(null)
+
+  /**
+   * Fold behaviour: the sidebar opens on hover or focus and folds itself away
+   * again shortly after you leave, so it is a slim icon rail while you work and
+   * a full menu the moment you reach for it. The map is the point of this
+   * screen, and a permanently expanded sidebar eats 244px of it.
+   *
+   * The pin button still wins: once pinned open, hovering away does nothing.
+   * Auto-fold would be infuriating for someone who deliberately opened it.
+   */
+  const [pinned, setPinned] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('qro.sidebarPinned') ?? 'false') }
+    catch { return false }
+  })
+
+  useEffect(() => {
+    try { localStorage.setItem('qro.sidebarPinned', JSON.stringify(pinned)) } catch {}
+  }, [pinned])
+
+  const open = useCallback(() => {
+    clearTimeout(closeTimer.current)
+    setCollapsed(false)
+  }, [setCollapsed])
+
+  const scheduleClose = useCallback(() => {
+    if (pinned) return
+    clearTimeout(closeTimer.current)
+    // Small delay so crossing a gap or overshooting the edge does not slam it
+    // shut mid-gesture.
+    closeTimer.current = setTimeout(() => setCollapsed(true), 450)
+  }, [pinned, setCollapsed])
+
+  // Fold once a destination is chosen — the click is the end of the gesture.
+  useEffect(() => {
+    if (!pinned) setCollapsed(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname])
+
+  useEffect(() => () => clearTimeout(closeTimer.current), [])
 
   return (
     <>
-      <aside className="sidebar" data-collapsed={collapsed}>
+      <aside
+        className="sidebar"
+        data-collapsed={collapsed}
+        data-pinned={pinned}
+        onMouseEnter={open}
+        onMouseLeave={scheduleClose}
+        onFocusCapture={open}
+        onBlurCapture={scheduleClose}
+      >
         <div className="sidebar-head">
           <div className="logo-mark">QRO</div>
           <AnimatePresence initial={false}>
@@ -44,10 +94,14 @@ export default function Sidebar() {
 
           <button
             className="collapse-btn"
-            onClick={() => setCollapsed(!collapsed)}
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            onClick={() => {
+              setPinned((p) => !p)
+              setCollapsed(pinned)     // unpinning folds it away immediately
+            }}
+            aria-label={pinned ? 'Unpin sidebar' : 'Keep sidebar open'}
+            title={pinned ? 'Unpin — fold automatically' : 'Pin sidebar open'}
           >
-            {collapsed ? <ChevronRight size={13} /> : <ChevronLeft size={13} />}
+            {pinned ? <Pin size={12} /> : <ChevronRight size={13} />}
           </button>
         </div>
 
