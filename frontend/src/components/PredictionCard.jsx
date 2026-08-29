@@ -32,6 +32,7 @@ export default function PredictionCard({ series = [], title = 'Congestion Foreca
                 border: '1px solid var(--border-strong)',
                 borderRadius: 10,
                 fontSize: 12,
+                color: 'var(--text)',
               }}
               labelStyle={{ color: 'var(--text)' }}
             />

@@ -277,24 +277,11 @@ export default function Login() {
       Continue as guest
     </button>
 
-    <div className="login-note">
-      <ShieldAlert
-        size={14}
-        style={{
-          color: 'var(--moderate)',
-          flexShrink: 0,
-          marginTop: 1,
-        }}
-      />
-
-      <p>
-        <strong style={{ color: 'var(--moderate)' }}>
-          Demo authentication.
-        </strong>{' '}
-        This prototype has no auth backend — no credential is checked,
-        stored or transmitted. Use “Continue as guest” for the SIH demo.
-      </p>
-    </div>
+    {/* NOTE FOR DEVELOPERS (removed from the UI at the team's request):
+        there is no auth backend. Nothing here validates a credential, and the
+        password is never stored or transmitted — only a name/email/initials
+        object goes into localStorage. Replace signIn() in store/AppContext.jsx
+        with a real backend call before this is deployed anywhere public. */}
 
     <p
       style={{

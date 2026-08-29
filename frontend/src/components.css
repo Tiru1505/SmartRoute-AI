@@ -3279,3 +3279,110 @@
 
 .collapse-btn { transition: color .18s, border-color .18s, transform .2s var(--ease); }
 .collapse-btn:hover { transform: translateY(-50%) scale(1.12); }
+
+/* ============================================================
+   SIDEBAR vs LEAFLET STACKING
+   ============================================================ */
+/* Leaflet gives its control corners z-index 1000, so the zoom +/- buttons drew
+   THROUGH the expanded sidebar on the Live Traffic page. The sidebar has to
+   outrank them, but stay below the navbar dropdowns (9999). */
+.sidebar { z-index: 1200; }
+.sidebar:not([data-collapsed='true']):not([data-pinned='true']) { z-index: 1250; }
+
+.leaflet-top, .leaflet-bottom { z-index: 600 !important; }
+.leaflet-control-zoom { margin-left: 12px !important; }
+
+/* Nudge the zoom cluster clear of the collapsed rail so the two never sit
+   edge-to-edge even while folded. */
+.map-shell .leaflet-top.leaflet-left { padding-left: 4px; }
+
+/* ============================================================
+   PAGE BACKDROP — depth and motion
+   ============================================================ */
+/* Each page gets a soft, slowly drifting aurora behind the cards. It is one
+   pseudo-element on a container that already exists, so it costs no extra DOM
+   and cannot intercept clicks. */
+.page { position: relative; isolation: isolate; }
+
+.page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(46rem 30rem at 78% -6%, color-mix(in srgb, var(--quantum) 12%, transparent), transparent 62%),
+    radial-gradient(40rem 26rem at 4% 12%, color-mix(in srgb, var(--blue) 15%, transparent), transparent 60%),
+    radial-gradient(36rem 24rem at 52% 106%, color-mix(in srgb, var(--cyan) 11%, transparent), transparent 60%);
+  animation: aurora 26s ease-in-out infinite alternate;
+}
+
+@keyframes aurora {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-1.5%, 1.2%, 0) scale(1.05); }
+  100% { transform: translate3d(1.5%, -1%, 0) scale(1.02); }
+}
+
+/* A faint grid, so the dark areas read as a control surface rather than a void.
+   Masked to fade out toward the bottom and never compete with content. */
+.page::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, .028) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, .028) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(circle at 50% 0%, #000 12%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle at 50% 0%, #000 12%, transparent 72%);
+}
+
+:root[data-theme='light'] .page::after {
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, .04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, .04) 1px, transparent 1px);
+}
+
+/* Cards lift slightly on hover — enough to feel responsive, not enough to
+   distract while reading a table. */
+.card {
+  transition: border-color .22s var(--ease), transform .22s var(--ease),
+              box-shadow .22s var(--ease);
+}
+.card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .28);
+}
+/* Tables and charts should not float when you are trying to read them. */
+.chart-card:hover, .table-wrap:hover { transform: none; }
+
+/* Stat cards get a thin accent edge that lights up on hover. */
+.stat-card::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--cyan), var(--quantum));
+  opacity: .5;
+  transition: opacity .22s var(--ease);
+}
+.stat-card:hover::after { opacity: 1; }
+
+/* Page headings get a subtle gradient rule beneath them. */
+.page-head { position: relative; padding-bottom: 12px; }
+.page-head::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 96px; height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--quantum), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page::before { animation: none; }
+  .card:hover { transform: none; }
+}

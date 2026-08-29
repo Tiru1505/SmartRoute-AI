@@ -3,11 +3,18 @@ import {
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts'
 
+/* Recharts defaults its legend and label text to a near-black (#333) that
+   disappears against a dark panel — this was why the traffic-distribution
+   legend was unreadable. Every chart passes an explicit colour instead. */
+const legendStyle = { fontSize: 11, color: 'var(--text-dim)' }
+const axisTick = { fill: 'var(--text-faint)', fontSize: 11 }
+
 const tooltipStyle = {
   background: 'var(--panel-solid)',
   border: '1px solid var(--border-strong)',
   borderRadius: 10,
   fontSize: 12,
+  color: 'var(--text)',
 }
 
 export function TrafficTrendChart({ data = [], height = 260 }) {
@@ -45,7 +52,7 @@ export function RoutePerformanceChart({ data = [], height = 260 }) {
           <XAxis dataKey="route" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} interval={0} angle={-12} height={44} />
           <YAxis axisLine={false} tickLine={false} />
           <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,.04)' }} />
-          <Legend wrapperStyle={{ fontSize: 11 }} />
+          <Legend wrapperStyle={legendStyle} />
           <Bar dataKey="distance" name="Distance (km)" fill="#6366f1" radius={[4, 4, 0, 0]} animationDuration={900} />
           <Bar dataKey="time" name="Time (min)" fill="#e879f9" radius={[4, 4, 0, 0]} animationDuration={900} animationBegin={160} />
         </BarChart>
@@ -68,13 +75,15 @@ export function TrafficDistributionChart({ data = [], height = 260 }) {
             paddingAngle={3}
             stroke="none"
             animationDuration={900}
+            label={({ name, value }) => `${name} ${value}%`}
+            labelLine={{ stroke: 'var(--border-strong)' }}
           >
             {data.map((d) => (
               <Cell key={d.name} fill={d.color} />
             ))}
           </Pie>
           <Tooltip contentStyle={tooltipStyle} formatter={(v) => `${v}%`} />
-          <Legend wrapperStyle={{ fontSize: 11 }} />
+          <Legend wrapperStyle={legendStyle} />
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -93,7 +102,7 @@ export function ScalabilityChart({ data = [], height = 280 }) {
           />
           <YAxis axisLine={false} tickLine={false} unit="ms" />
           <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,.04)' }} />
-          <Legend wrapperStyle={{ fontSize: 11 }} />
+          <Legend wrapperStyle={legendStyle} />
           <Bar dataKey="dijkstra" name="Dijkstra" fill="#34d399" radius={[4, 4, 0, 0]} />
           <Bar dataKey="qpso" name="QPSO" fill="#e879f9" radius={[4, 4, 0, 0]} />
           <Bar dataKey="pso" name="PSO" fill="#2dd4bf" radius={[4, 4, 0, 0]} />

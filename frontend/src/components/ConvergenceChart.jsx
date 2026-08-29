@@ -35,9 +35,10 @@ export default function ConvergenceChart({ data = [], summary = {}, height = 300
                 border: '1px solid var(--border-strong)',
                 borderRadius: 10,
                 fontSize: 12,
+                color: 'var(--text)',
               }}
             />
-            <Legend wrapperStyle={{ fontSize: 11 }} />
+            <Legend wrapperStyle={{ fontSize: 11, color: 'var(--text-dim)' }} />
             {SERIES.map((s, i) => (
               <Line
                 key={s.key}

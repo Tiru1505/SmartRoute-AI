@@ -289,12 +289,8 @@ export default function AnimatedAuthForm({
       <div className="qro-animation-headline">
 
         <h1>
-          <span>
-            Real-Time Animated
-          </span>
-
           <span className="qro-headline-second">
-            Login Page
+            Q Route
             <span className="qro-type-cursor" />
           </span>
         </h1>
