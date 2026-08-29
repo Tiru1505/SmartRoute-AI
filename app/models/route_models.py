@@ -49,6 +49,35 @@ class RouteRequest(BaseModel):
         return self
 
 
+class RerouteRequest(BaseModel):
+    """
+    Ask whether a better route exists from where the driver is now.
+
+    Rerouting is only meaningful part-way through a journey — the road already
+    travelled cannot be re-decided — so `progress` says how far along the driver
+    is. `spike` congests the road *ahead* of that point, which is what gives the
+    demo something real to react to: without it the network is unchanged since
+    the route was planned, and the honest answer is always "no better route".
+    """
+
+    progress: float = Field(
+        default=0.4, ge=0.0, le=1.0,
+        description="Fraction of the planned route already driven",
+    )
+    spike: bool = Field(
+        default=True,
+        description="Congest the road ahead before evaluating (demo trigger)",
+    )
+    spike_level: float = Field(
+        default=0.92, ge=0.0, le=1.0,
+        description="Congestion level to apply to the road ahead",
+    )
+    force: bool = Field(
+        default=False,
+        description="Evaluate even when the route has not degraded past the threshold",
+    )
+
+
 class RouteSummary(BaseModel):
     coordinates: list[Coordinate]
     nodes: list[str]

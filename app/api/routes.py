@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException, Query
 
-from app.models.route_models import RouteRequest, RouteResponse
+from app.models.route_models import RerouteRequest, RouteRequest, RouteResponse
 from app.services.route_service import RouteService
 
 router = APIRouter(prefix="/routes", tags=["routes"])
@@ -59,6 +59,43 @@ def optimize_route(request: RouteRequest) -> RouteResponse:
 )
 def alternative_routes(request: RouteRequest) -> list[RouteResponse]:
     return _service.get_alternatives(request)
+
+
+@router.post(
+    "/reroute",
+    summary="Re-evaluate the active trip",
+    description=(
+        "Decide whether a better route exists from where the driver is now. "
+        "Advances the active trip to `progress`, optionally congests the road "
+        "ahead, then re-solves with Dijkstra from the current position. "
+        "Requires a route to have been optimised first — the trip it creates "
+        "is what this re-evaluates."
+    ),
+    responses={
+        200: {
+            "description": "The comparison. shouldReroute may be false, which "
+                           "is a real answer, not a failure.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "shouldReroute": True,
+                        "reason": "congestion ahead: remaining journey is +64% off plan",
+                        "previousEtaMin": 21.4,
+                        "currentEtaMin": 35.1,
+                        "newEtaMin": 24.8,
+                        "timeSavedMin": 10.3,
+                        "savedPct": 29.3,
+                        "algorithm": "Dijkstra",
+                        "blocked": False,
+                    }
+                }
+            },
+        },
+        404: {"description": "No active trip — optimise a route first"},
+    },
+)
+def reroute(request: RerouteRequest) -> dict:
+    return _service.reroute(request)
 
 
 @router.get(

@@ -216,6 +216,49 @@ class OsmGraphAdapter(BaseGraphAdapter):
 
         return [_to_graph_route(engine, r) for r in routes[1:]]
 
+    def reroute(self, progress=0.4, spike=True, spike_level=0.92, force=False) -> dict:
+        """
+        Mid-trip rerouting against the trip left behind by the last optimise.
+
+        The engine has had `RerouteEngine`, `ActiveTrip` and `spike_route` since
+        the routing phase; none of it was reachable from the API, so the UI's
+        reroute step called an endpoint that did not exist. This exposes it.
+
+        Order matters. The driver is advanced first, then congestion is applied
+        to the road *ahead* of that position — spiking the whole route would
+        include road already driven, and rerouting cannot undo that. Dijkstra
+        then re-solves from the current node, which is provably optimal for a
+        single destination and fast enough to run live.
+        """
+        engine = get_engine()
+        if engine.trip is None:
+            raise ValueError(
+                "No active trip. Optimise a route before asking for a reroute."
+            )
+
+        planned = engine.trip.remaining_on_current_route(engine.G, engine.cost_model)
+        planned_eta = round(planned.time_min, 1) if planned else None
+
+        engine.advance(progress)
+        if spike:
+            engine.spike_route(level=spike_level)
+            # Congestion changed, so every calibrated cost model is now stale.
+            invalidate_caches()
+
+        payload = engine.check_reroute(force=force)
+
+        # The two ETAs shown side by side have to measure the same journey.
+        # `plannedEtaMin` is the WHOLE trip as promised at departure, while
+        # `newEtaMin` covers only the road still ahead — putting those next to
+        # each other would show a difference that disagrees with timeSavedMin.
+        # What the driver compares is: finishing on the current route from here
+        # (currentEtaMin) against the proposed one (newEtaMin).
+        payload["plannedEtaMin"] = planned_eta
+        payload["previousEtaMin"] = payload.get("currentEtaMin")
+        payload["progress"] = round(progress, 3)
+        payload["spikeApplied"] = bool(spike)
+        return payload
+
     def get_nearest_node(self, coord: Coordinate) -> str:
         return str(_nearest(get_engine(), coord))
 

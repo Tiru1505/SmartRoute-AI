@@ -203,10 +203,15 @@ export function AppProvider({ children }) {
   const runReroute = useCallback(async () => {
     setRerouting(true)
     try {
-      const res = await api.reroute({ routeId: selectedRoute?.id })
+      const res = await api.reroute({ progress: 0.4, spike: true, oldRoute: selectedRoute })
       setRerouteResult(res)
-      setRoutes((prev) => [res.newRoute, ...prev.filter((r) => r.id !== 'r1')])
-      setSelectedRouteId(res.newRoute.id)
+      // shouldReroute === false means the current route is genuinely still the
+      // best one. That is a result worth showing, not an error, and there is no
+      // replacement route to swap in.
+      if (res.newRoute) {
+        setRoutes((prev) => [res.newRoute, ...prev.filter((r) => r.id !== res.newRoute.id)])
+        setSelectedRouteId(res.newRoute.id)
+      }
       return res
     } catch (err) {
       setError(err.message || 'Rerouting failed.')
@@ -254,12 +259,23 @@ export function AppProvider({ children }) {
     at(9600, async () => {
       setDemoStep('rerouting')
       setRerouting(true)
-      const r = await api.reroute({ routeId: 'r1' })
-      setRerouteResult(r)
-      setRoutes((prev) => [r.newRoute, ...prev.filter((x) => x.id !== 'r1')])
-      setSelectedRouteId(r.newRoute.id)
-      setRerouting(false)
-      setDemoStep('done')
+      // Wrapped because this runs inside a timer: an unhandled rejection here
+      // would skip both setRerouting(false) and setDemoStep('done'), leaving
+      // the demo spinning on "rerouting" with no way out. A failed reroute
+      // should end the demo, not freeze it.
+      try {
+        const r = await api.reroute({ progress: 0.45, spike: true })
+        setRerouteResult(r)
+        if (r.newRoute) {
+          setRoutes((prev) => [r.newRoute, ...prev.filter((x) => x.id !== r.newRoute.id)])
+          setSelectedRouteId(r.newRoute.id)
+        }
+      } catch (err) {
+        setError(err.message || 'Rerouting failed.')
+      } finally {
+        setRerouting(false)
+        setDemoStep('done')
+      }
     })
   }, [clearTimers, injectCongestion, start, mode])
 

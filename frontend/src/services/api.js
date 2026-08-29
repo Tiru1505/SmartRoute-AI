@@ -166,21 +166,44 @@ export async function getAlternativeRoutes({ start, end } = {}) {
   return clone(ROUTES.filter((r) => !r.recommended))
 }
 
-/** Recompute after a congestion spike on the active route. */
-export async function reroute({ routeId, reason = 'congestion_spike' } = {}) {
+/**
+ * Recompute from where the driver is now.
+ *
+ * Hits POST /routes/reroute, which advances the active trip, congests the road
+ * ahead and re-solves with Dijkstra from the current position. It needs a route
+ * to have been optimised first — that call is what creates the trip.
+ *
+ * The backend already answers in the shape the UI wants (camelCase, with the
+ * new route serialised for the map), so only the old route is added here.
+ */
+export async function reroute({ progress = 0.4, spike = true, force = false, oldRoute = null } = {}) {
   if (!USE_MOCK) {
-    return request('/reroute', { method: 'POST', body: JSON.stringify({ routeId, reason }) })
+    const res = await request('/routes/reroute', {
+      method: 'POST',
+      body: JSON.stringify({ progress, spike, force }),
+    })
+    return {
+      ...res,
+      oldRoute,
+      // shouldReroute false is a real answer — the current route is still best.
+      // The panel needs newRoute to exist before it renders a comparison.
+      newRoute: res.newRoute ?? null,
+      isDemoData: false,
+    }
   }
   await delay(600)
-  const oldRoute = clone(ROUTES[0])
-  const newRoute = clone(REROUTED_ROUTE)
+  const mockNew = clone(REROUTED_ROUTE)
   return {
-    oldRoute,
-    newRoute,
+    shouldReroute: true,
+    oldRoute: oldRoute ?? clone(ROUTES[0]),
+    newRoute: mockNew,
+    // Kept internally consistent: 24 - 17 = 7.
     previousEtaMin: 24,
-    newEtaMin: newRoute.etaMin > 24 ? 17 : 17,
+    newEtaMin: 17,
     timeSavedMin: 7,
-    reason,
+    savedPct: 29.2,
+    algorithm: 'Dijkstra',
+    reason: 'congestion ahead on the current corridor',
     isDemoData: true,
   }
 }

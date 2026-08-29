@@ -154,6 +154,29 @@ class RouteService:
             _logger.warning("DB lookup failed for %s: %s", request_id, exc)
             return None
 
+    def reroute(self, request) -> dict:
+        """
+        Is a better route available from where the driver is now?
+
+        Delegates to the graph adapter when it can actually do this. The mock
+        adapter cannot — it has no notion of a trip in progress — so rather than
+        inventing a saving, we say plainly that rerouting is unavailable.
+        """
+        if not hasattr(self.graph, "reroute"):
+            raise NoRouteFoundError(
+                "Rerouting needs the real routing engine; the active graph "
+                "adapter does not support it."
+            )
+        try:
+            return self.graph.reroute(
+                progress=request.progress,
+                spike=request.spike,
+                spike_level=request.spike_level,
+                force=request.force,
+            )
+        except ValueError as exc:
+            raise NoRouteFoundError(str(exc)) from exc
+
     def get_history(self, user_id: str | None = None, limit: int = 50) -> list[dict]:
         """Return recent route results from MongoDB."""
         try:
