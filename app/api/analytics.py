@@ -104,10 +104,10 @@ def analytics() -> dict:
             for s in segments[:6]
         ],
         "distribution": [
-            {"name": "Low", "value": round(counts["low"] / total * 100), "color": "#10b981"},
-            {"name": "Moderate", "value": round(counts["moderate"] / total * 100), "color": "#eab308"},
-            {"name": "Heavy", "value": round(counts["heavy"] / total * 100), "color": "#f97316"},
-            {"name": "Severe", "value": round(counts["severe"] / total * 100), "color": "#ef4444"},
+            {"name": "Low", "value": round(counts["low"] / total * 100), "color": "#34d399"},
+            {"name": "Moderate", "value": round(counts["moderate"] / total * 100), "color": "#fbbf24"},
+            {"name": "Heavy", "value": round(counts["heavy"] / total * 100), "color": "#fb923c"},
+            {"name": "Severe", "value": round(counts["severe"] / total * 100), "color": "#f43f5e"},
         ],
         "scenario": engine.scenario,
         "isDemoData": False,

@@ -304,7 +304,7 @@ export default function Login() {
         marginTop: 18,
       }}
     >
-      Quantum Route Optimizer {SYSTEM_STATUS.version} · Problem Statement 26137
+      Q Route {SYSTEM_STATUS.version} · Problem Statement 26137
     </p>
   </motion.div>
   </div>

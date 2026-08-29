@@ -2,9 +2,9 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, X
 import { Activity } from 'lucide-react'
 
 const SERIES = [
-  { key: 'QPSO', color: '#a855f7', width: 2.4 },
-  { key: 'PSO', color: '#22d3ee', width: 1.8 },
-  { key: 'GA', color: '#f97316', width: 1.8 },
+  { key: 'QPSO', color: '#e879f9', width: 2.4 },
+  { key: 'PSO', color: '#2dd4bf', width: 1.8 },
+  { key: 'GA', color: '#fb923c', width: 1.8 },
 ]
 
 export default function ConvergenceChart({ data = [], summary = {}, height = 300 }) {

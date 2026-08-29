@@ -76,7 +76,7 @@ export default function Sidebar() {
         onBlurCapture={scheduleClose}
       >
         <div className="sidebar-head">
-          <div className="logo-mark">QRO</div>
+          <div className="logo-mark">QR</div>
           <AnimatePresence initial={false}>
             {!collapsed && (
               <motion.div
@@ -86,7 +86,7 @@ export default function Sidebar() {
                 exit={{ opacity: 0, width: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <strong>Quantum Route</strong>
+                <strong>Q Route</strong>
                 <span>Optimizer</span>
               </motion.div>
             )}

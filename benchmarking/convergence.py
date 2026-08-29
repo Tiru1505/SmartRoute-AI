@@ -16,7 +16,7 @@ matplotlib.use("Agg")                      # no display on a build machine
 import matplotlib.pyplot as plt            # noqa: E402
 import numpy as np                         # noqa: E402
 
-COLORS = {"QPSO": "#a855f7", "PSO": "#22d3ee", "GA": "#f97316"}
+COLORS = {"QPSO": "#e879f9", "PSO": "#2dd4bf", "GA": "#fb923c"}
 PLOTS = Path(__file__).resolve().parent.parent / "results" / "plots"
 
 
@@ -48,7 +48,7 @@ def plot_convergence(summaries, optimum=None, title="Convergence", filename=None
         ax.fill_between(x, lo, hi, color=color, alpha=0.13)
 
     if optimum is not None and np.isfinite(optimum):
-        ax.axhline(optimum, color="#10b981", ls="--", lw=1.4,
+        ax.axhline(optimum, color="#34d399", ls="--", lw=1.4,
                    label="exact optimum (brute force)")
 
     ax.set_xlabel("Iteration")
@@ -84,7 +84,7 @@ def plot_scalability(rows, filename="scalability.png"):
     if any(b for b in brute):
         xs = [s for s, b in zip(stops, brute) if b]
         ys = [b for b in brute if b]
-        ax1.plot(xs, ys, marker="s", ls="--", color="#ef4444",
+        ax1.plot(xs, ys, marker="s", ls="--", color="#f43f5e",
                  label="brute force (exact)", lw=2)
 
     ax1.set_xlabel("Number of stops")
@@ -101,7 +101,7 @@ def plot_scalability(rows, filename="scalability.png"):
         if xs:
             ax2.plot(xs, ys, marker="o", label=name, color=COLORS[name], lw=2)
 
-    ax2.axhline(0, color="#10b981", ls="--", lw=1.2, label="exact optimum")
+    ax2.axhline(0, color="#34d399", ls="--", lw=1.2, label="exact optimum")
     ax2.set_xlabel("Number of stops")
     ax2.set_ylabel("Mean gap above optimum (%)")
     ax2.set_title("Solution quality vs problem size")
@@ -134,7 +134,7 @@ def plot_boxplot(summaries, optimum=None, filename="distribution.png"):
         median.set_color("#111")
 
     if optimum is not None and np.isfinite(optimum):
-        ax.axhline(optimum, color="#10b981", ls="--", lw=1.4, label="exact optimum")
+        ax.axhline(optimum, color="#34d399", ls="--", lw=1.4, label="exact optimum")
         ax.legend(frameon=False)
 
     ax.set_ylabel("Final fitness (lower is better)")

@@ -55,7 +55,7 @@ export const ROUTES = [
     score: 91,
     timeSavedMin: 6,
     via: 'Jubilee Hills → Banjara Hills → Mehdipatnam',
-    color: '#10b981',
+    color: '#34d399',
     path: [
       [17.4435, 78.3772], [17.44, 78.39], [17.431, 78.402], [17.4239, 78.4138],
       [17.418, 78.429], [17.4126, 78.4482], [17.405, 78.445], [17.395, 78.436],
@@ -75,7 +75,7 @@ export const ROUTES = [
     score: 78,
     timeSavedMin: 0,
     via: 'Madhapur → Panjagutta → Khairatabad → Abids',
-    color: '#eab308',
+    color: '#fbbf24',
     path: [
       [17.4435, 78.3772], [17.4483, 78.3915], [17.44, 78.405], [17.43, 78.43],
       [17.4256, 78.45], [17.418, 78.456], [17.409, 78.465], [17.399, 78.47],
@@ -94,7 +94,7 @@ export const ROUTES = [
     score: 71,
     timeSavedMin: 0,
     via: 'Manikonda → Tolichowki → Attapur',
-    color: '#f97316',
+    color: '#fb923c',
     path: [
       [17.4435, 78.3772], [17.43, 78.38], [17.415, 78.385], [17.403, 78.376],
       [17.396, 78.405], [17.39, 78.42], [17.361, 78.423], [17.355, 78.44],
@@ -116,7 +116,7 @@ export const REROUTED_ROUTE = {
   score: 94,
   timeSavedMin: 7,
   via: 'Madhapur → Panjagutta → Masab Tank → Nampally',
-  color: '#22d3ee',
+  color: '#2dd4bf',
   path: [
     [17.4435, 78.3772], [17.4483, 78.3915], [17.442, 78.408], [17.4374, 78.4487],
     [17.4256, 78.45], [17.415, 78.452], [17.4026, 78.4535], [17.3935, 78.4485],
@@ -154,10 +154,10 @@ export const TRAFFIC_SEGMENTS = [
 ]
 
 export const TRAFFIC_COLORS = {
-  low: '#10b981',
-  moderate: '#eab308',
-  heavy: '#f97316',
-  severe: '#ef4444',
+  low: '#34d399',
+  moderate: '#fbbf24',
+  heavy: '#fb923c',
+  severe: '#f43f5e',
 }
 
 export const TRAFFIC_LABELS = {
@@ -247,10 +247,10 @@ export const ROUTE_PERFORMANCE = [
 ]
 
 export const TRAFFIC_DISTRIBUTION = [
-  { name: 'Low', value: 34, color: '#10b981' },
-  { name: 'Moderate', value: 29, color: '#eab308' },
-  { name: 'Heavy', value: 24, color: '#f97316' },
-  { name: 'Severe', value: 13, color: '#ef4444' },
+  { name: 'Low', value: 34, color: '#34d399' },
+  { name: 'Moderate', value: 29, color: '#fbbf24' },
+  { name: 'Heavy', value: 24, color: '#fb923c' },
+  { name: 'Severe', value: 13, color: '#f43f5e' },
 ]
 
 export const ANALYTICS_STATS = [

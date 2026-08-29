@@ -46,9 +46,9 @@ from traffic.simulator import SCENARIO_IDS, TrafficSimulator
 ROOT = Path(__file__).resolve().parent
 
 # Route colours, matching the frontend's traffic palette.
-ROUTE_COLORS = ["#10b981", "#eab308", "#f97316", "#22d3ee", "#a855f7"]
-LEVEL_COLORS = {"low": "#10b981", "moderate": "#eab308",
-                "heavy": "#f97316", "severe": "#ef4444"}
+ROUTE_COLORS = ["#34d399", "#fbbf24", "#fb923c", "#2dd4bf", "#e879f9"]
+LEVEL_COLORS = {"low": "#34d399", "moderate": "#fbbf24",
+                "heavy": "#fb923c", "severe": "#f43f5e"}
 
 
 def _round(v, n=3):

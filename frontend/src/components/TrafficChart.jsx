@@ -17,8 +17,8 @@ export function TrafficTrendChart({ data = [], height = 260 }) {
         <AreaChart data={data} margin={{ top: 6, right: 8, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="gTrend" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#22d3ee" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#22d3ee" stopOpacity={0} />
+              <stop offset="0%" stopColor="#2dd4bf" stopOpacity={0.4} />
+              <stop offset="100%" stopColor="#2dd4bf" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,.06)" vertical={false} />
@@ -27,7 +27,7 @@ export function TrafficTrendChart({ data = [], height = 260 }) {
           <Tooltip contentStyle={tooltipStyle} />
           <Area
             type="monotone" dataKey="congestion" name="Congestion"
-            stroke="#22d3ee" strokeWidth={2} fill="url(#gTrend)"
+            stroke="#2dd4bf" strokeWidth={2} fill="url(#gTrend)"
             animationDuration={1000}
           />
         </AreaChart>
@@ -46,8 +46,8 @@ export function RoutePerformanceChart({ data = [], height = 260 }) {
           <YAxis axisLine={false} tickLine={false} />
           <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,.04)' }} />
           <Legend wrapperStyle={{ fontSize: 11 }} />
-          <Bar dataKey="distance" name="Distance (km)" fill="#3b82f6" radius={[4, 4, 0, 0]} animationDuration={900} />
-          <Bar dataKey="time" name="Time (min)" fill="#a855f7" radius={[4, 4, 0, 0]} animationDuration={900} animationBegin={160} />
+          <Bar dataKey="distance" name="Distance (km)" fill="#6366f1" radius={[4, 4, 0, 0]} animationDuration={900} />
+          <Bar dataKey="time" name="Time (min)" fill="#e879f9" radius={[4, 4, 0, 0]} animationDuration={900} animationBegin={160} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -94,10 +94,10 @@ export function ScalabilityChart({ data = [], height = 280 }) {
           <YAxis axisLine={false} tickLine={false} unit="ms" />
           <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,.04)' }} />
           <Legend wrapperStyle={{ fontSize: 11 }} />
-          <Bar dataKey="dijkstra" name="Dijkstra" fill="#10b981" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="qpso" name="QPSO" fill="#a855f7" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="pso" name="PSO" fill="#22d3ee" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="ga" name="GA" fill="#f97316" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="dijkstra" name="Dijkstra" fill="#34d399" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="qpso" name="QPSO" fill="#e879f9" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="pso" name="PSO" fill="#2dd4bf" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="ga" name="GA" fill="#fb923c" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

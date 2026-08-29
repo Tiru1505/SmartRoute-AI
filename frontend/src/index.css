@@ -5,31 +5,44 @@
    ========================================================================== */
 
 :root {
-  /* surfaces — deep navy, not pure black, so glows read properly */
-  --bg: #0b1120;
-  --bg-2: #111827;
-  --panel: rgba(255, 255, 255, 0.032);
-  --panel-solid: #0d1425;
-  --panel-hover: rgba(255, 255, 255, 0.055);
-  --border: rgba(148, 163, 184, 0.10);
-  --border-strong: rgba(148, 163, 184, 0.18);
+  /* --------------------------------------------------------------------
+     Q ROUTE palette.
+
+     Variable NAMES are kept (--cyan, --blue, --quantum, --low ...) so nothing
+     downstream breaks; only their values change. The scheme moves from the old
+     navy-and-cyan to a deeper indigo base with a teal primary and a fuchsia
+     accent reserved for quantum/QPSO elements.
+
+     The four traffic colours stay semantically ordered green -> amber ->
+     orange -> rose, because that ramp IS the map legend and users read it as a
+     scale rather than as decoration.
+     -------------------------------------------------------------------- */
+
+  /* surfaces — indigo-black, warm enough that glows read cleanly */
+  --bg: #070812;
+  --bg-2: #0d0f20;
+  --panel: rgba(255, 255, 255, 0.036);
+  --panel-solid: #131630;
+  --panel-hover: rgba(255, 255, 255, 0.065);
+  --border: rgba(255, 255, 255, 0.085);
+  --border-strong: rgba(255, 255, 255, 0.16);
 
   /* text */
-  --text: #e8eefb;
-  --text-dim: #93a1b8;
-  --text-faint: #5f6d84;
+  --text: #eaeaf7;
+  --text-dim: #9a9ac0;
+  --text-faint: #6b6b94;
 
   /* accents */
-  --cyan: #22d3ee;
-  --blue: #2563eb;
-  --quantum: #8b5cf6; /* reserved for QPSO elements only */
-  --quantum-dim: #6d28d9;
+  --cyan: #2dd4bf;          /* teal — primary accent */
+  --blue: #6366f1;          /* indigo — gradients and depth */
+  --quantum: #e879f9;       /* fuchsia — QPSO elements only */
+  --quantum-dim: #a855f7;
 
   /* traffic scale */
-  --low: #10b981;
-  --moderate: #eab308;
-  --heavy: #f97316;
-  --severe: #ef4444;
+  --low: #34d399;
+  --moderate: #fbbf24;
+  --heavy: #fb923c;
+  --severe: #f43f5e;
 
   --radius: 14px;
   --radius-sm: 10px;
@@ -38,11 +51,14 @@
   --sidebar-w-collapsed: 72px;
   --navbar-h: 62px;
 
-  --shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
-  --glow-cyan: 0 0 12px rgba(34, 211, 238, 0.12);
-  --glow-quantum: 0 0 12px rgba(139, 92, 246, 0.10);
+  --shadow: 0 10px 34px rgba(0, 0, 0, 0.5);
+  --glow-cyan: 0 0 24px rgba(45, 212, 191, 0.3);
+  --glow-quantum: 0 0 26px rgba(232, 121, 249, 0.32);
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Slightly springier curve for the sidebar, which is the one element the
+     user watches move. */
+  --ease-fold: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* light mode is a deliberate secondary; the product is dark-first */
@@ -92,9 +108,9 @@ body::before {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(900px 520px at 12% -8%, rgba(37, 99, 235, 0.13), transparent 65%),
-    radial-gradient(760px 460px at 92% 4%, rgba(139, 92, 246, 0.11), transparent 62%),
-    radial-gradient(680px 400px at 50% 108%, rgba(34, 211, 238, 0.07), transparent 60%);
+    radial-gradient(900px 520px at 10% -10%, rgba(99, 102, 241, 0.17), transparent 64%),
+    radial-gradient(780px 470px at 92% 2%, rgba(232, 121, 249, 0.12), transparent 62%),
+    radial-gradient(700px 420px at 50% 110%, rgba(45, 212, 191, 0.09), transparent 60%);
   z-index: 0;
 }
 
@@ -174,12 +190,12 @@ input, select { font-family: inherit; }
   border: 1px solid transparent;
   white-space: nowrap;
 }
-.badge-green   { background: rgba(16,185,129,.14); color: var(--low);      border-color: rgba(16,185,129,.32); }
-.badge-cyan    { background: rgba(34,211,238,.14); color: var(--cyan);     border-color: rgba(34,211,238,.32); }
-.badge-quantum { background: rgba(168,85,247,.15); color: var(--quantum);  border-color: rgba(168,85,247,.34); }
-.badge-yellow  { background: rgba(234,179,8,.14);  color: var(--moderate); border-color: rgba(234,179,8,.32); }
-.badge-orange  { background: rgba(249,115,22,.14); color: var(--heavy);    border-color: rgba(249,115,22,.32); }
-.badge-red     { background: rgba(239,68,68,.14);  color: var(--severe);   border-color: rgba(239,68,68,.32); }
+.badge-green   { background: color-mix(in srgb, var(--low) 15%, transparent);      color: var(--low);      border-color: color-mix(in srgb, var(--low) 34%, transparent); }
+.badge-cyan    { background: color-mix(in srgb, var(--cyan) 15%, transparent);     color: var(--cyan);     border-color: color-mix(in srgb, var(--cyan) 34%, transparent); }
+.badge-quantum { background: color-mix(in srgb, var(--quantum) 16%, transparent);  color: var(--quantum);  border-color: color-mix(in srgb, var(--quantum) 36%, transparent); }
+.badge-yellow  { background: color-mix(in srgb, var(--moderate) 15%, transparent); color: var(--moderate); border-color: color-mix(in srgb, var(--moderate) 34%, transparent); }
+.badge-orange  { background: color-mix(in srgb, var(--heavy) 15%, transparent);    color: var(--heavy);    border-color: color-mix(in srgb, var(--heavy) 34%, transparent); }
+.badge-red     { background: color-mix(in srgb, var(--severe) 15%, transparent);   color: var(--severe);   border-color: color-mix(in srgb, var(--severe) 34%, transparent); }
 .badge-grey    { background: rgba(255,255,255,.06); color: var(--text-dim); border-color: var(--border); }
 
 .btn {
@@ -203,7 +219,7 @@ input, select { font-family: inherit; }
 .btn-primary {
   background: linear-gradient(135deg, var(--blue), var(--cyan));
   border-color: transparent;
-  color: #04121c;
+  color: #06101a;
   box-shadow: var(--glow-cyan);
 }
 .btn-primary:hover:not(:disabled) {

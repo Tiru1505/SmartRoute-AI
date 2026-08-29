@@ -15,12 +15,12 @@ export default function PredictionCard({ series = [], title = 'Congestion Foreca
           <AreaChart data={series} margin={{ top: 4, right: 6, left: -22, bottom: 0 }}>
             <defs>
               <linearGradient id="gActual" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#22d3ee" stopOpacity={0.42} />
-                <stop offset="100%" stopColor="#22d3ee" stopOpacity={0} />
+                <stop offset="0%" stopColor="#2dd4bf" stopOpacity={0.42} />
+                <stop offset="100%" stopColor="#2dd4bf" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="gPred" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#a855f7" stopOpacity={0.36} />
-                <stop offset="100%" stopColor="#a855f7" stopOpacity={0} />
+                <stop offset="0%" stopColor="#e879f9" stopOpacity={0.36} />
+                <stop offset="100%" stopColor="#e879f9" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,.06)" vertical={false} />
@@ -37,11 +37,11 @@ export default function PredictionCard({ series = [], title = 'Congestion Foreca
             />
             <Area
               type="monotone" dataKey="actual" name="Actual"
-              stroke="#22d3ee" strokeWidth={2} fill="url(#gActual)" connectNulls={false}
+              stroke="#2dd4bf" strokeWidth={2} fill="url(#gActual)" connectNulls={false}
             />
             <Area
               type="monotone" dataKey="predicted" name="Predicted"
-              stroke="#a855f7" strokeWidth={2} strokeDasharray="5 4" fill="url(#gPred)"
+              stroke="#e879f9" strokeWidth={2} strokeDasharray="5 4" fill="url(#gPred)"
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -49,10 +49,10 @@ export default function PredictionCard({ series = [], title = 'Congestion Foreca
 
       <div style={{ display: 'flex', gap: 14, marginTop: 8, fontSize: 11 }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-dim)' }}>
-          <span className="legend-swatch" style={{ background: '#22d3ee' }} /> Actual
+          <span className="legend-swatch" style={{ background: '#2dd4bf' }} /> Actual
         </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-dim)' }}>
-          <span className="legend-swatch" style={{ background: '#a855f7' }} /> Predicted
+          <span className="legend-swatch" style={{ background: '#e879f9' }} /> Predicted
         </span>
       </div>
     </div>

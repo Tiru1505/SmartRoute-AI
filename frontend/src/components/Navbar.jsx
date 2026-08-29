@@ -17,6 +17,56 @@ function cityStatus(segments) {
   return { label: 'Severe congestion', level: 'severe' }
 }
 
+/**
+ * Animated brand mark: a nucleus with an electron on an elliptical orbit.
+ *
+ * Drawn as inline SVG rather than shipped as an asset so it inherits the theme
+ * tokens and costs no extra request. Motion is slow and continuous — a logo
+ * that demands attention is a logo you stop noticing.
+ */
+function BrandMark() {
+  return (
+    <span className="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 40 40" width="34" height="34">
+        <defs>
+          <linearGradient id="qrGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--blue)" />
+            <stop offset="55%" stopColor="var(--cyan)" />
+            <stop offset="100%" stopColor="var(--quantum)" />
+          </linearGradient>
+        </defs>
+
+        {/* two crossed orbits */}
+        <ellipse cx="20" cy="20" rx="15" ry="7" fill="none"
+                 stroke="url(#qrGrad)" strokeWidth="1.6" opacity="0.75"
+                 transform="rotate(-28 20 20)" />
+        <ellipse cx="20" cy="20" rx="15" ry="7" fill="none"
+                 stroke="url(#qrGrad)" strokeWidth="1.6" opacity="0.45"
+                 transform="rotate(38 20 20)" />
+
+        {/* nucleus */}
+        <circle cx="20" cy="20" r="4.6" fill="url(#qrGrad)" />
+        <circle cx="20" cy="20" r="4.6" fill="none"
+                stroke="var(--cyan)" strokeWidth="0.8" opacity="0.6">
+          <animate attributeName="r" values="4.6;7.4;4.6" dur="3.4s"
+                   repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.6;0;0.6" dur="3.4s"
+                   repeatCount="indefinite" />
+        </circle>
+
+        {/* orbiting electron */}
+        <g transform="rotate(-28 20 20)">
+          <circle r="2.3" fill="var(--quantum)">
+            <animateMotion dur="4.2s" repeatCount="indefinite"
+                           path="M 5,20 a 15,7 0 1,0 30,0 a 15,7 0 1,0 -30,0" />
+          </circle>
+        </g>
+      </svg>
+    </span>
+  )
+}
+
+
 export default function Navbar() {
   const { alerts, dismissAlert, theme, setTheme, segments, user, signOut } = useApp()
   const [open, setOpen] = useState(false)
@@ -43,13 +93,20 @@ export default function Navbar() {
 
   return (
     <header className="navbar">
-      <div className="navbar-page-title">
-  <h2>{current?.label || 'Dashboard'}</h2>
-</div>
-
-<div className="navbar-brand-center">
-  Quantum Route Optimizer
-</div>
+      {/* Brand and page title live in the SAME flex row as everything else.
+          The previous build centred the brand with position:absolute, which put
+          it out of flow — so the LIVE and traffic chips on the right simply
+          drew on top of it. Nothing here can overlap, because nothing here is
+          out of flow. */}
+      <div className="navbar-left">
+        <BrandMark />
+        <div className="navbar-brand-text">
+          <strong>Q&nbsp;Route</strong>
+          <span>Quantum Route Optimizer</span>
+        </div>
+        <span className="navbar-divider" aria-hidden="true" />
+        <h2 className="navbar-page-title">{current?.label || 'Dashboard'}</h2>
+      </div>
 
       <div className="navbar-right" ref={ref}>
         <div className="live-chip">
