@@ -1,0 +1,48 @@
+{
+  "rows": [
+    {
+      "stops": 3,
+      "orderings": 6,
+      "bruteMs": 0.2,
+      "QPSO": 13.2,
+      "QPSOGap": 0.0,
+      "PSO": 12.8,
+      "PSOGap": 0.0,
+      "GA": 124.7,
+      "GAGap": 0.0
+    },
+    {
+      "stops": 5,
+      "orderings": 120,
+      "bruteMs": 1.7,
+      "QPSO": 14.3,
+      "QPSOGap": 0.0,
+      "PSO": 12.8,
+      "PSOGap": 0.0,
+      "GA": 134.3,
+      "GAGap": 0.0
+    },
+    {
+      "stops": 7,
+      "orderings": 5040,
+      "bruteMs": 132.9,
+      "QPSO": 18.7,
+      "QPSOGap": 0.0,
+      "PSO": 16.6,
+      "PSOGap": 1.171,
+      "GA": 141.2,
+      "GAGap": 1.376
+    },
+    {
+      "stops": 8,
+      "orderings": 40320,
+      "bruteMs": 2597.0,
+      "QPSO": 25.7,
+      "QPSOGap": 0.0,
+      "PSO": 19.1,
+      "PSOGap": 2.882,
+      "GA": 173.4,
+      "GAGap": 0.241
+    }
+  ]
+}

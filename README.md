@@ -25,7 +25,8 @@ supporting modules and never block the routing system.
 | 11 | Traffic prediction | blocked on TomTom collection |
 | 12 | YOLO perception | blocked on DriveIndia/DATS_2022 download |
 | 13 | Dashboard | ✅ done (mock data) — [`frontend/`](frontend/README.md) |
-| 13b | FastAPI backend | owned by another team member — not built here |
+| 13b | FastAPI backend | owned by another team member — contract in [`INTEGRATION.md`](INTEGRATION.md) |
+| — | **Engine integration layer** | ✅ done — `engine.py`, one object the API calls |
 
 ## Setup
 
@@ -45,6 +46,12 @@ python preprocessing/osm_processor.py --city "Hyderabad, Telangana, India" --met
 
 ```bash
 python scripts/collect_tomtom_hyderabad.py --once
+```
+
+Full end-to-end demo (also the integration test):
+
+```bash
+python scripts/run_demo.py --full
 ```
 
 Frontend:

@@ -1,0 +1,60 @@
+{
+  "problem": "6-stop delivery round, peak_hour",
+  "budget": "population 40 x 120 iterations = 4,800 evaluations per trial (identical for all algorithms)",
+  "exactOptimum": 4.093213,
+  "classical": [
+    {
+      "algorithm": "Dijkstra",
+      "note": "cannot solve \u2014 no concept of stop ordering"
+    },
+    {
+      "algorithm": "Dijkstra + Lagrangian",
+      "note": "cannot solve \u2014 handles only two endpoints"
+    }
+  ],
+  "rows": [
+    {
+      "algorithm": "QPSO",
+      "best": 4.093213,
+      "mean": 4.093213,
+      "worst": 4.093213,
+      "std": 0.0,
+      "gapPct": 0.0,
+      "optimalHits": 30,
+      "trials": 30,
+      "runtimeMs": 17.2,
+      "iterations": 81.0,
+      "convergedAt": 0.0,
+      "deterministic": false
+    },
+    {
+      "algorithm": "GA",
+      "best": 4.093213,
+      "mean": 4.117775,
+      "worst": 4.830079,
+      "std": 0.132271,
+      "gapPct": 0.6,
+      "optimalHits": 29,
+      "trials": 30,
+      "runtimeMs": 139.6,
+      "iterations": 84.3,
+      "convergedAt": 3.3,
+      "deterministic": false
+    },
+    {
+      "algorithm": "PSO",
+      "best": 4.093213,
+      "mean": 4.224006,
+      "worst": 4.830079,
+      "std": 0.262111,
+      "gapPct": 3.195,
+      "optimalHits": 24,
+      "trials": 30,
+      "runtimeMs": 17.0,
+      "iterations": 84.5,
+      "convergedAt": 3.5,
+      "deterministic": false
+    }
+  ],
+  "isDemoData": false
+}

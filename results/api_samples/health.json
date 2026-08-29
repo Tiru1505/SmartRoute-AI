@@ -1,0 +1,10 @@
+{
+  "status": "ok",
+  "graph": {
+    "nodes": 286603,
+    "edges": 741203
+  },
+  "scenario": "normal",
+  "loadMs": 20227,
+  "activeTrip": false
+}
