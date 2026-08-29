@@ -8,7 +8,7 @@ import AlternativeRoutes from '../components/AlternativeRoutes'
 import OptimizationAnimation from '../components/OptimizationAnimation'
 import TrafficLegend from '../components/TrafficLegend'
 import { useApp } from '../store/AppContext'
-import { ALGORITHMS, LOCATIONS, OPTIMIZATION_MODES } from '../data/mockData'
+import { ALGORITHMS, OPTIMIZATION_MODES } from '../data/mockData'
 
 export default function RouteOptimizer() {
   const {
@@ -19,8 +19,16 @@ export default function RouteOptimizer() {
   const [animating, setAnimating] = useState(false)
   const [revealed, setRevealed] = useState(routes.length > 0)
 
-  const startPoint = useMemo(() => LOCATIONS.find((l) => l.id === start), [start])
-  const endPoint = useMemo(() => LOCATIONS.find((l) => l.id === end), [end])
+  // start/end are already resolved places from the search box; the map only
+  // needs the [lat, lon] tuple shape alongside them.
+  const startPoint = useMemo(
+    () => (start ? { ...start, coords: start.coords || [start.lat, start.lon] } : null),
+    [start],
+  )
+  const endPoint = useMemo(
+    () => (end ? { ...end, coords: end.coords || [end.lat, end.lon] } : null),
+    [end],
+  )
   const weights = OPTIMIZATION_MODES.find((m) => m.id === mode)?.weights
   const algoName = ALGORITHMS.find((a) => a.id === algorithm)?.name || 'QPSO'
 

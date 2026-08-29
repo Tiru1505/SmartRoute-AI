@@ -1,13 +1,22 @@
 import {
   ArrowUpDown,
+  Flag,
   MapPin,
   Navigation,
   Play,
   RotateCcw,
   Zap,
 } from 'lucide-react'
-import { ALGORITHMS, LOCATIONS, OPTIMIZATION_MODES } from '../data/mockData'
+import PlaceInput from './PlaceInput'
+import { ALGORITHMS, OPTIMIZATION_MODES } from '../data/mockData'
 import { useApp } from '../store/AppContext'
+
+/** Two places are the same trip endpoint if they land on the same spot. */
+const samePlace = (a, b) => {
+  if (!a || !b) return false
+  if (a.id && b.id) return a.id === b.id
+  return Math.abs(a.lat - b.lat) < 1e-6 && Math.abs(a.lon - b.lon) < 1e-6
+}
 
 export default function RouteSelector({ onOptimize, busy }) {
   const {
@@ -32,6 +41,10 @@ export default function RouteSelector({ onOptimize, busy }) {
 
   const activeAlgo = ALGORITHMS.find((a) => a.id === algorithm)
 
+  const incomplete = !start || !end
+  const identical = samePlace(start, end)
+  const ready = !incomplete && !identical
+
   return (
     <div className="card route-selector-card">
 
@@ -42,22 +55,14 @@ export default function RouteSelector({ onOptimize, busy }) {
       </div>
 
       {/* START LOCATION */}
-      <div className="field route-field">
-        <label htmlFor="start">Start location</label>
-
-        <select
-          id="start"
-          className="select route-select"
-          value={start}
-          onChange={(e) => setStart(e.target.value)}
-        >
-          {LOCATIONS.map((l) => (
-            <option key={l.id} value={l.id}>
-              {l.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <PlaceInput
+        id="start"
+        label="Start location"
+        value={start}
+        onChange={setStart}
+        placeholder="Type any place in Hyderabad…"
+        icon={<MapPin size={14} />}
+      />
 
       {/* SWAP BUTTON */}
       <div className="route-swap-wrapper">
@@ -72,22 +77,14 @@ export default function RouteSelector({ onOptimize, busy }) {
       </div>
 
       {/* DESTINATION */}
-      <div className="field route-field">
-        <label htmlFor="end">Destination</label>
-
-        <select
-          id="end"
-          className="select route-select"
-          value={end}
-          onChange={(e) => setEnd(e.target.value)}
-        >
-          {LOCATIONS.map((l) => (
-            <option key={l.id} value={l.id}>
-              {l.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <PlaceInput
+        id="end"
+        label="Destination"
+        value={end}
+        onChange={setEnd}
+        placeholder="Type any place in Hyderabad…"
+        icon={<Flag size={14} />}
+      />
 
       {/* ALGORITHM */}
       <div className="field route-field">
@@ -136,17 +133,22 @@ export default function RouteSelector({ onOptimize, busy }) {
       <button
         className="btn btn-primary btn-block optimize-route-btn"
         onClick={onOptimize}
-        disabled={busy || start === end}
+        disabled={busy || !ready}
       >
-        <MapPin size={15} />
+        <Navigation size={15} />
 
         <span>
           {busy ? 'Optimizing…' : 'Optimize Route'}
         </span>
       </button>
 
-      {/* SAME LOCATION WARNING */}
-      {start === end && (
+      {/* WHY THE BUTTON IS DISABLED */}
+      {!busy && incomplete && (
+        <p className="route-warning">
+          Choose a start and a destination.
+        </p>
+      )}
+      {!busy && !incomplete && identical && (
         <p className="route-warning">
           Start and destination must differ.
         </p>

@@ -11,7 +11,7 @@ import TrafficAlert from '../components/TrafficAlert'
 import ReroutingPanel from '../components/ReroutingPanel'
 import TrafficLegend from '../components/TrafficLegend'
 import { useApp } from '../store/AppContext'
-import { ALGORITHMS, LOCATIONS } from '../data/mockData'
+import { ALGORITHMS } from '../data/mockData'
 
 const DEMO_STEPS = [
   { id: 'optimizing', label: 'Optimize' },
@@ -35,8 +35,16 @@ export default function Dashboard() {
   const [animating, setAnimating] = useState(false)
   const [revealed, setRevealed] = useState(false)
 
-  const startPoint = useMemo(() => LOCATIONS.find((l) => l.id === start), [start])
-  const endPoint = useMemo(() => LOCATIONS.find((l) => l.id === end), [end])
+  // start/end are already resolved places from the search box; the map only
+  // needs the [lat, lon] tuple shape alongside them.
+  const startPoint = useMemo(
+    () => (start ? { ...start, coords: start.coords || [start.lat, start.lon] } : null),
+    [start],
+  )
+  const endPoint = useMemo(
+    () => (end ? { ...end, coords: end.coords || [end.lat, end.lon] } : null),
+    [end],
+  )
   const algoName = ALGORITHMS.find((a) => a.id === algorithm)?.name || 'QPSO'
 
   const handleOptimize = useCallback(async () => {

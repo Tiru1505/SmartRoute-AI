@@ -22,11 +22,21 @@ import {
   mapTrafficResponse,
 } from './backendAdapter'
 
-/** Place id -> {lat, lon}, since the backend routes by coordinate. */
-function coordsFor(id) {
-  const place = LOCATIONS.find((l) => l.id === id)
-  if (!place) throw new ApiError(`Unknown location: ${id}`, 400)
-  return { lat: place.coords[0], lon: place.coords[1] }
+/**
+ * A place -> {lat, lon}, since the backend routes by coordinate.
+ *
+ * Places are now resolved by the search box rather than picked from a fixed
+ * list, so they arrive as objects. The `coords` fallback covers the curated
+ * landmarks in mockData, which still use the [lat, lon] tuple shape.
+ */
+function coordsFor(place) {
+  if (!place) throw new ApiError('No location selected', 400)
+  const lat = place.lat ?? place.coords?.[0]
+  const lon = place.lon ?? place.coords?.[1]
+  if (typeof lat !== 'number' || typeof lon !== 'number') {
+    throw new ApiError(`Location has no coordinates: ${place.name || place.id}`, 400)
+  }
+  return { lat, lon }
 }
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
@@ -59,6 +69,46 @@ async function request(path, options = {}) {
   }
 }
 
+/* ------------------------------------------------------------------ places */
+
+/**
+ * Free-text place search.
+ *
+ * The backend merges the curated Hyderabad landmarks with OpenStreetMap
+ * results and drops anything that is not on the routing graph, so every result
+ * here is safe to route from. In mock mode we filter the curated list locally,
+ * which keeps the UI usable with the backend switched off.
+ *
+ * @returns {Promise<Array<{id, name, address, lat, lon, source}>>}
+ */
+export async function searchPlaces(query = '', limit = 8) {
+  const q = query.trim()
+
+  if (!USE_MOCK) {
+    try {
+      const res = await request(`/places/search?q=${encodeURIComponent(q)}&limit=${limit}`)
+      return Array.isArray(res?.results) ? res.results : []
+    } catch {
+      // A dead geocoder should not empty the box — fall through to the
+      // curated landmarks so the demo still works offline.
+    }
+  }
+
+  await delay(USE_MOCK ? 160 : 0)
+  const ql = q.toLowerCase()
+  return LOCATIONS
+    .filter((l) => !ql || l.name.toLowerCase().includes(ql))
+    .slice(0, limit)
+    .map((l) => ({
+      id: l.id,
+      name: l.name,
+      address: 'Hyderabad, Telangana',
+      lat: l.coords[0],
+      lon: l.coords[1],
+      source: 'preset',
+    }))
+}
+
 /* ------------------------------------------------------------------ routes */
 
 /**
@@ -83,7 +133,11 @@ export async function getRouteOptimization({ start, end, algorithm = 'qpso', mod
       alternatives = []
     }
 
-    const mapped = mapOptimizeResponse(primary, alternatives, { from: start, to: end, mode })
+    const mapped = mapOptimizeResponse(primary, alternatives, {
+      from: start?.name ?? start,
+      to: end?.name ?? end,
+      mode,
+    })
     if (import.meta.env.DEV) window.__qroLast = { primary, alternatives, mapped }
     return mapped
   }

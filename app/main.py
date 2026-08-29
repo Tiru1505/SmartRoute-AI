@@ -13,6 +13,7 @@ from app.api.routes import router as routes_router
 from app.api.alerts import router as alerts_router
 from app.api.benchmark import router as benchmark_router
 from app.api.optimization import router as optimization_router
+from app.api.places import router as places_router
 from app.api.prediction import router as prediction_router
 from app.api.traffic import router as traffic_router
 from app.core.config import get_settings
@@ -128,6 +129,7 @@ app.add_middleware(
 app.include_router(health_router, prefix="/api")
 app.include_router(analytics_router, prefix="/api")
 app.include_router(routes_router, prefix="/api")
+app.include_router(places_router, prefix="/api")
 app.include_router(optimization_router, prefix="/api")
 app.include_router(traffic_router, prefix="/api")
 app.include_router(prediction_router, prefix="/api")

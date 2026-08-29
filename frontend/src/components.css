@@ -3386,3 +3386,268 @@
   .page::before { animation: none; }
   .card:hover { transform: none; }
 }
+
+
+/* ============================================================
+   PLACE SEARCH (free-text start / destination)
+   ------------------------------------------------------------
+   Replaces the old fixed <select> dropdowns. The wrapper is the
+   positioning context for the suggestion menu, so it must not
+   pick up the .route-field hover transform — a transformed
+   ancestor would drag the menu around with it.
+   ============================================================ */
+
+.place-field {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.place-field > label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.place-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, .24);
+  border: 1px solid var(--border);
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.place-input-wrap:hover { border-color: var(--border-strong); }
+
+.place-input-wrap.open {
+  border-color: rgba(45, 212, 191, .55);
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, .09);
+  background: rgba(0, 0, 0, .34);
+}
+
+.place-input-wrap.resolved .place-input-icon { color: var(--cyan); }
+
+.place-input-icon {
+  display: flex;
+  color: var(--text-faint);
+  transition: color .2s ease;
+}
+
+.place-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.place-input::placeholder { color: var(--text-faint); }
+
+.place-input-tail {
+  display: flex;
+  align-items: center;
+  min-width: 15px;
+  justify-content: center;
+}
+
+.place-ok { color: var(--low); }
+
+.place-clear {
+  display: flex;
+  border: 0;
+  padding: 2px;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.place-clear:hover { color: var(--text); background: var(--panel-hover); }
+
+.spin { animation: place-spin .9s linear infinite; color: var(--cyan); }
+
+@keyframes place-spin { to { transform: rotate(360deg); } }
+
+/* ---------------------------------------------------- menu */
+
+.place-menu {
+  position: absolute;
+  z-index: 900;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  padding: 5px;
+  border-radius: var(--radius-sm);
+  background: var(--panel-solid);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .55);
+  animation: place-menu-in .16s ease both;
+}
+
+@keyframes place-menu-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.place-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 232px;
+  overflow-y: auto;
+}
+
+.place-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 8px 9px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.place-option.active { background: rgba(45, 212, 191, .12); }
+
+.place-option-icon {
+  display: flex;
+  margin-top: 2px;
+  color: var(--text-faint);
+}
+
+.place-option.active .place-option-icon { color: var(--cyan); }
+
+.place-option-text { min-width: 0; }
+
+.place-option-text strong {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.place-option-text small {
+  display: block;
+  margin-top: 1px;
+  font-size: 10.5px;
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.place-empty {
+  margin: 0;
+  padding: 12px 10px;
+  font-size: 11.5px;
+  color: var(--text-faint);
+  text-align: center;
+}
+
+.place-hint {
+  margin: 6px 0 0;
+  font-size: 10.5px;
+  color: var(--moderate);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .place-menu { animation: none; }
+  .spin { animation-duration: 2s; }
+}
+
+
+/* ============================================================
+   LOGIN — SPACING
+   ------------------------------------------------------------
+   The earlier full-screen rewrite left the card pinned to a
+   100vh flex box with a translateY nudge, so on a short window
+   the tabs scrolled off the top with no way to reach them, and
+   the card itself had no padding of its own. This block owns
+   the login layout and vertical rhythm; it is last in the file
+   so it wins over the !important overrides above.
+   ============================================================ */
+
+.login {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Fixed, not absolute: the backdrop must keep filling the viewport
+   even when the card makes the page taller than one screen. */
+.login-brand {
+  position: fixed !important;
+  inset: 0 !important;
+}
+
+.login-form-side,
+.login-form-centered {
+  height: auto !important;
+  min-height: 100vh !important;
+  padding: 40px 20px !important;
+  transform: none !important;
+}
+
+.login-card {
+  /* max-width is overridden too: an earlier rule caps the card at 372px,
+     which clamped this width and left the contents feeling boxed in. */
+  width: min(408px, 94vw) !important;
+  max-width: none !important;
+  padding: 26px 26px 22px !important;
+  border-radius: 20px !important;
+  background: rgba(11, 13, 24, .82) !important;
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: 0 26px 70px rgba(0, 0, 0, .55) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+:root[data-theme='light'] .login-card {
+  background: rgba(255, 255, 255, .9) !important;
+}
+
+/* ---- vertical rhythm inside the card ---- */
+
+.qro-mode-tabs { margin-bottom: 20px; }
+
+.qro-animation-headline { margin-bottom: 12px; }
+
+.qro-animation-headline h1 { font-size: 27px; }
+
+.qro-speech-bubble { margin: 0 auto; }
+
+.qro-robot-zone {
+  height: 116px;
+  margin-top: 14px;
+  margin-bottom: 18px;
+}
+
+.qro-animated-field { margin-bottom: 15px; }
+
+.qro-animated-submit { margin-top: 6px; }
+
+.qro-animation-switch { margin-top: 16px; }
+
+.login-divider { margin: 20px 0; }
+
+.login-card > .btn.btn-block { height: 40px; }
+
+.login-card > p:last-child { margin-top: 18px !important; }
+
+@media (max-width: 480px) {
+  .login-form-side,
+  .login-form-centered { padding: 24px 14px !important; }
+  .login-card { padding: 22px 18px 18px !important; }
+  .qro-robot-zone { height: 100px; margin-bottom: 14px; }
+}

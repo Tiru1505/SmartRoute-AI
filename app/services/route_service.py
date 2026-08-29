@@ -82,7 +82,10 @@ class RouteService:
             execution_time_ms=round(elapsed_ms, 3),
             eta=eta,
             metadata={
-                "data_source": "mock",
+                # Reported from the adapter actually in use, not hardcoded: the
+                # services default to the real OSM engine now, and labelling
+                # genuine engine output "mock" is worse than saying nothing.
+                "data_source": getattr(self.graph, "data_source", "unknown"),
                 "optimization_status": "completed" if opt_result else "fallback_baseline",
             },
         )

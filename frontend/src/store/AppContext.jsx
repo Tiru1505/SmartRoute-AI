@@ -158,6 +158,12 @@ export function AppProvider({ children }) {
   /** Runs the optimizer. The staged animation is owned by the Dashboard; this
    *  only resolves the data and flips the loading flag. */
   const optimize = useCallback(async () => {
+    // Endpoints come from a free-text search box now, so "nothing picked yet"
+    // is a real state the optimizer has to refuse rather than crash on.
+    if (!start || !end) {
+      setError('Choose a start and a destination first.')
+      return null
+    }
     setOptimizing(true)
     setError(null)
     setRerouteResult(null)

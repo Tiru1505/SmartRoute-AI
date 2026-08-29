@@ -144,6 +144,10 @@ def _to_graph_route(engine, route) -> GraphRoute:
 class OsmGraphAdapter(BaseGraphAdapter):
     """Real routing on the Hyderabad OpenStreetMap graph."""
 
+    # Surfaced in route metadata so the UI can tell real output from a
+    # placeholder rather than trusting a hardcoded string.
+    data_source = "osm"
+
     def calculate_route(self, request: RouteRequest) -> GraphRoute:
         from optimization.dijkstra import dijkstra_route
 

@@ -37,8 +37,23 @@ export const LOCATIONS = [
   { id: 'airport', name: 'RGIA Airport (Shamshabad)', coords: [17.2403, 78.4294] },
 ]
 
-export const DEFAULT_START = 'hitec'
-export const DEFAULT_END = 'charminar'
+/**
+ * Endpoints are resolved place objects, not ids into LOCATIONS — the search
+ * box can return any OpenStreetMap place, which has no entry in this file.
+ * LOCATIONS survives as the curated suggestion list and the offline fallback.
+ */
+const asPlace = (l) => ({
+  id: l.id,
+  name: l.name,
+  address: 'Hyderabad, Telangana',
+  lat: l.coords[0],
+  lon: l.coords[1],
+  coords: l.coords,
+  source: 'preset',
+})
+
+export const DEFAULT_START = asPlace(LOCATIONS.find((l) => l.id === 'hitec'))
+export const DEFAULT_END = asPlace(LOCATIONS.find((l) => l.id === 'charminar'))
 
 /* ------------------------------------------------------------------ routes */
 /* Three genuinely different corridors between Hitec City and Charminar. */

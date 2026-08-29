@@ -65,6 +65,8 @@ class MockGraphAdapter(BaseGraphAdapter):
     Person 2's OSMnx-based implementation.
     """
 
+    data_source = "mock"
+
     def calculate_route(self, request: RouteRequest) -> GraphRoute:
         src, dst = request.source, request.destination
         distance = haversine_km(src.lat, src.lon, dst.lat, dst.lon)
