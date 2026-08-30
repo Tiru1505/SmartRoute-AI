@@ -1,0 +1,41 @@
+# Vercel hosts the React app only. Everything below is the Python side, and
+# leaving it visible caused a real failure: with no Root Directory set, Vercel
+# saw requirements.txt at the repo root, decided this was a Python project, and
+# deployed the FastAPI app as a serverless function. Every path then returned
+# 500 FUNCTION_INVOCATION_FAILED — the API needs a 1.8 GB road graph that is not
+# in the repo, and its dependencies alone exceed Vercel's function bundle limit.
+#
+# The API is not deployable on Vercel by design. It belongs on Railway or
+# Render, where it can hold the graph in memory. See DEPLOY.md.
+
+app/
+graph/
+optimization/
+traffic/
+routing/
+alerts/
+benchmarking/
+preprocessing/
+scripts/
+tests/
+config/
+data/
+results/
+notebooks/
+
+requirements.txt
+engine.py
+render.yaml
+railway.toml
+docker-compose.yml
+Dockerfile
+pytest.ini
+setup.cfg
+pyproject.toml
+
+*.py
+*.pkl
+*.graphml
+*.ipynb
+.venv/
+__pycache__/
