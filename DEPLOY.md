@@ -1,6 +1,7 @@
 # Deploying Q Route
 
-Two services: the React app on **Vercel**, the FastAPI service on **Render**.
+Two services: the React app on **Vercel**, the FastAPI service on **Railway**
+(or Render, if you prefer — both are configured).
 
 Read the constraint first — it decides what is actually possible.
 
@@ -16,37 +17,56 @@ The API keeps the entire Hyderabad road graph in memory — 286,603 nodes and
 | Resident memory | **1.74 GB** |
 | Peak during graph load | **1.80 GB** |
 
-Render's **Free and Starter instances are 512 MB**. The process is killed
-before it finishes starting. No configuration fixes this; it is a property of
-the data structure, not a setting.
+This is the number that decides where it can be hosted, because platforms
+differ enormously in how they treat it.
 
-| Render plan | RAM | Fits? |
+| Platform / plan | Memory available | Fits? | Cost |
+|---|---|---|---|
+| Render Free / Starter | 512 MB | **No** — killed during startup | $0 |
+| Render Standard | 2 GB | Yes, little headroom | ~$25/mo flat |
+| **Railway Hobby** | **up to 48 GB per service** | **Yes** | **$5/mo + ~2.5 c/hour running** |
+| Hugging Face Spaces (CPU Basic) | 16 GB | Yes | PRO required to create a Docker Space |
+
+**Railway is the best fit, and it is not close.** Two reasons:
+
+1. **No small-instance wall.** Render's free tier hard-caps at 512 MB, so this
+   service cannot start there at all. Railway's Hobby plan allows up to 48 GB
+   per service — you are limited by what you are willing to pay for, not by a
+   tier ceiling.
+2. **Per-second billing.** Railway charges about $10/GB/month, metered by the
+   second, which for a 1.8 GB service is roughly **2.5 cents per hour**. Render
+   charges a flat monthly fee whether or not anyone visits.
+
+For a hackathon that difference is decisive. Judging needs the service up for
+hours, not months:
+
+| Uptime | Railway RAM cost | Render Standard |
 |---|---|---|
-| Free | 512 MB | No |
-| Starter | 512 MB | No |
-| **Standard** | **2 GB** | **Yes** — the realistic minimum, with little headroom |
-| Pro | 4 GB | Comfortable |
+| 8 hours | ~$0.20 | $25 |
+| 48 hours (a judging weekend) | ~$1.20 | $25 |
+| 24/7 for a month | ~$18 | $25 |
 
-The graph is also **not in the repository** — 575 MB as GraphML, 214 MB as a
-pickle, both past GitHub's limit. `render.yaml` therefore rebuilds it from
-OpenStreetMap during the build and stores it on an attached disk so restarts
-do not repeat the download.
+The $5 Hobby plan includes $5 of usage credit, so a few days of demo time is
+covered by the subscription you are already paying.
 
-### If you do not want to pay for Standard
+Hugging Face Spaces is worth knowing about as a third option — CPU Basic
+hardware is 16 GB and costs nothing per hour — but creating a Docker Space
+requires a PRO account ($9/month), and free hardware sleeps when idle, which is
+painful here because waking up means paying the ~30 s graph load again.
 
-Honest options, in order of how much they cost you:
+### If you want to spend nothing at all
 
-1. **Deploy the frontend only, in mock mode.** Free, works today, and gives
-   you a shareable link. Every page renders and every interaction works; the
-   numbers are the built-in demo dataset, and the app says so on screen. Good
-   enough to show the interface, not the engine.
-2. **Run the API locally during the demo** and point the deployed frontend at
-   it through a tunnel (`ngrok http 8010`). Free, real numbers, but only works
-   while your laptop is on and the tunnel URL changes each session.
-3. **Shrink the graph.** Rebuilding with only motorway→tertiary roads would cut
-   node count substantially. Rough arithmetic still lands near 650 MB, so it
-   likely does *not* reach 512 MB, and it degrades door-to-door accuracy on
-   small streets. Mentioned for completeness, not recommended.
+1. **Deploy the frontend only, in mock mode.** Free, works today, gives you a
+   shareable link. Every page and interaction works; the numbers are the
+   built-in demo dataset and the app says so on screen. Shows the interface,
+   not the engine.
+2. **Run the API locally and tunnel it** (`ngrok http 8010`), with the deployed
+   frontend pointed at the tunnel. Free, real numbers, but only while your
+   laptop is on, and the URL changes each session.
+
+Shrinking the graph does not rescue a 512 MB tier. Dropping to major roads only
+would cut node count substantially, but the arithmetic still lands near 650 MB,
+and it degrades door-to-door accuracy on small streets.
 
 Do **not** switch to the `hyderabad-city` graph to save memory. It is half the
 size because it stops at the municipal boundary, which excludes the airport,
@@ -71,7 +91,7 @@ The repo is already on GitHub, so connect it rather than uploading.
 | Variable | Value (mock mode) | Value (live backend) |
 |---|---|---|
 | `VITE_USE_MOCK` | `true` | `false` |
-| `VITE_API_BASE` | *(leave unset)* | `https://<your-render-service>.onrender.com/api` |
+| `VITE_API_BASE` | *(leave unset)* | `https://<your-api-host>/api` |
 
 Start in mock mode. Flip both variables once the API is up, and redeploy —
 Vite bakes env vars in at build time, so a redeploy is required for a change to
@@ -79,38 +99,61 @@ take effect.
 
 ---
 
-## 2. Backend on Render
+## 2. Backend on Railway (recommended)
 
-1. **render.com → New → Blueprint**, point it at the same repo. It reads
-   `render.yaml`.
-2. Confirm the plan is **Standard**. The blueprint requests it; the free tier
-   will not work (see above).
-3. Set the two secrets the blueprint leaves blank:
+`railway.toml` configures the build and start commands. Two things it cannot
+set for you, both in the Railway dashboard:
 
-| Variable | Value |
-|---|---|
-| `ALLOWED_ORIGINS` | Your Vercel URL, e.g. `https://qroute.vercel.app` |
-| `MONGODB_URI` | A MongoDB Atlas connection string |
+1. **Attach a volume**, mounted at `/data`. Without one the graph is fetched
+   again on every deploy, because the container filesystem is ephemeral.
+2. **Set the variables** below.
 
-`MONGODB_URI` is optional. Without it the API still serves routes, traffic,
-analytics and benchmarks; it only loses history persistence, and the History
-page will be empty.
+| Variable | Value | Notes |
+|---|---|---|
+| `QRO_GRAPH_PATH` | `/data/hyderabad/hyderabad_drive.pkl` | Must sit on the volume |
+| `QRO_GRAPH_URL` | URL of a prebuilt `.pkl` | Optional but strongly preferred — see below |
+| `ALLOWED_ORIGINS` | Your Vercel URL | Exact origin, no trailing slash |
+| `MONGODB_URI` | Atlas connection string | Optional; without it only History is empty |
+| `MONGODB_DATABASE` | `smartroute` | |
 
-4. The **first build is slow** — it downloads the Hyderabad road network from
-   OpenStreetMap and reprojects it. Expect tens of minutes. If it times out,
-   build the graph locally, upload `hyderabad_drive.pkl` to any object store,
-   and replace the build command with a `curl` of that file into
-   `/var/data/graphs/hyderabad/`. `QRO_GRAPH_PATH` already points there.
+Then **New Project → Deploy from GitHub repo → `Tiru1505/SmartRoute-AI`**.
 
-5. Health check is `/api/health`. First request after a cold start pays the
-   ~30 s graph load; `app/main.py` warms it during startup so this normally
-   happens before traffic arrives.
+### Get the graph there the fast way
 
-### Why one worker
+On first boot `scripts/ensure_graph.py` runs before uvicorn binds. If
+`QRO_GRAPH_URL` is set it downloads a prebuilt pickle (~214 MB, a couple of
+minutes). If not, it rebuilds the whole metro extract from OpenStreetMap, which
+is slow and briefly uses *more* memory than the API itself.
 
-`--workers 1` is deliberate. Each worker loads its own copy of the graph, so a
-second one would need another 1.7 GB. The expensive calls are CPU-bound and
-already cached, so extra workers would cost memory without buying throughput.
+Prefer the download. You already have the file locally:
+
+```bash
+ls -lh data/processed/hyderabad/hyderabad_drive.pkl
+```
+
+Upload that to any object store — Cloudflare R2, S3, even a GitHub Release
+asset (the 2 GB per-asset limit is well clear of 214 MB) — and point
+`QRO_GRAPH_URL` at it. The script writes to a `.part` file and moves it into
+place, so an interrupted download cannot leave a half-written graph that looks
+valid on the next boot.
+
+After the first successful boot the graph is on the volume and later deploys
+skip all of this.
+
+---
+
+## 2b. Backend on Render (alternative)
+
+`render.yaml` is a working blueprint if you would rather use Render. **New →
+Blueprint**, point it at the repo.
+
+The one thing to check: the blueprint requests `plan: standard`. Do not drop it
+to Free or Starter — at 512 MB the process is killed during startup, and the
+logs will show an unexplained restart loop rather than a clear out-of-memory
+message.
+
+Set `ALLOWED_ORIGINS`, and `QRO_GRAPH_URL` if you have the pickle hosted.
+Everything else the blueprint fills in.
 
 ---
 
@@ -118,10 +161,11 @@ already cached, so extra workers would cost memory without buying throughput.
 
 After both are live:
 
-1. Copy the Render URL into Vercel as `VITE_API_BASE` (with the `/api` suffix),
+1. Copy the API's public URL into Vercel as `VITE_API_BASE` (with the `/api`
+   suffix),
    and set `VITE_USE_MOCK=false`. Redeploy.
-2. Copy the Vercel URL into Render as `ALLOWED_ORIGINS`. Save — Render restarts
-   automatically.
+2. Copy the Vercel URL into the API as `ALLOWED_ORIGINS`. Both platforms
+   restart the service automatically on a variable change.
 
 Getting CORS wrong is the usual failure here: the browser will report a network
 error while the API looks healthy when you curl it. If that happens, check that
@@ -131,7 +175,7 @@ included, no trailing slash.
 Verify:
 
 ```bash
-curl https://<your-render-service>.onrender.com/api/status
+curl https://<your-api-host>/api/status
 ```
 
 `adapters` should read `osm` for graph, optimization and traffic. `prediction`
@@ -142,5 +186,5 @@ correctly reads `mock` — no forecasting model is wired in.
 ## What is deployed vs what is real
 
 In mock mode the deployed site is a faithful interface demo and labels itself
-as one. Only with the Render backend connected are the routes, benchmarks,
-traffic and rerouting computed from the real graph.
+as one. Only with the API connected are the routes, benchmarks, traffic and
+rerouting computed from the real graph.

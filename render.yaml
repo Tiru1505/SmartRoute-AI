@@ -10,10 +10,10 @@
 # even that leaves little headroom.
 #
 # The graph is not in the repository either. The GraphML is 575 MB and the
-# pickle 214 MB, both past GitHub's limit, so the build step below rebuilds it
-# from OpenStreetMap on the server. That download and reprojection is slow and
-# memory-hungry; if the build times out, host the prebuilt .pkl somewhere and
-# replace the build command with a download, pointing QRO_GRAPH_PATH at it.
+# pickle 214 MB, both past GitHub's limit, so scripts/ensure_graph.py fetches it
+# on first boot: it downloads a prebuilt pickle when QRO_GRAPH_URL is set, and
+# otherwise rebuilds from OpenStreetMap. Prefer the download — rebuilding is
+# slow and briefly uses more memory than the API itself.
 #
 # A disk is attached so the built graph survives restarts. Without it every
 # cold start re-downloads the whole city.
@@ -30,14 +30,19 @@ services:
     buildCommand: |
       pip install --upgrade pip
       pip install -r requirements.txt
-      python preprocessing/osm_processor.py \
-        --city "Hyderabad, Telangana, India" --metro \
-        --out /var/data/graphs
 
+    # The graph is fetched at START, not during the build. The disk below is
+    # attached to the running container, not to the builder, so anything a
+    # build step wrote to /var/data would be discarded before first boot.
+    # ensure_graph.py is idempotent: it does real work only on the first boot
+    # after the disk is provisioned.
+    #
     # One worker on purpose. Each worker loads its own copy of the graph, so a
     # second one would need another 1.7 GB. Concurrency comes from the fact that
     # the heavy calls are CPU-bound and already cached, not from more workers.
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1
+    startCommand: >
+      python scripts/ensure_graph.py &&
+      uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1
 
     disk:
       name: qroute-graph
@@ -48,7 +53,11 @@ services:
       - key: PYTHON_VERSION
         value: "3.10.0"
       - key: QRO_GRAPH_PATH
-        value: /var/data/graphs/hyderabad/hyderabad_drive.pkl
+        value: /var/data/hyderabad/hyderabad_drive.pkl
+      # Optional: URL of a prebuilt .pkl. Far faster and less memory-hungry
+      # than rebuilding from OpenStreetMap on the instance itself.
+      - key: QRO_GRAPH_URL
+        sync: false
       - key: APP_ENV
         value: production
       - key: LOG_LEVEL

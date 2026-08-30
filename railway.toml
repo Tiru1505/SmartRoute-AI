@@ -1,0 +1,49 @@
+# Railway config for the Q Route API.
+#
+# WHY RAILWAY RATHER THAN RENDER
+# ------------------------------
+# The API holds the whole Hyderabad graph in memory: 1.74 GB resident, 1.80 GB
+# peak. Render's free and Starter instances cap at 512 MB, so the process is
+# killed during startup and no setting fixes it. Railway's Hobby plan allows up
+# to 48 GB per service and bills for what is actually used, per second, at
+# roughly $10/GB/month — about 2.5 c/hour for this service.
+#
+# That difference matters most for a demo. Render charges a flat monthly fee
+# whether or not anyone visits; Railway charges for the hours the service is
+# actually up, so running it for a few days of judging costs cents rather than
+# a month's subscription.
+#
+# SETUP THIS FILE CANNOT DO
+# -------------------------
+# Attach a volume (Railway dashboard -> service -> Variables/Volumes) mounted at
+# /data, and set QRO_GRAPH_PATH=/data/hyderabad/hyderabad_drive.pkl. Without a
+# volume the graph is rebuilt or re-downloaded on every deploy, because the
+# container filesystem is ephemeral.
+#
+# Set QRO_GRAPH_URL to a prebuilt .pkl if you have one hosted. Building from
+# OpenStreetMap instead works but is slow and briefly uses more memory than the
+# API itself.
+
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+# ensure_graph runs before uvicorn binds, and only does real work on the first
+# boot after a volume is provisioned. It must run here rather than in the build
+# step: the volume is attached to the running container, not to the builder, so
+# anything a build command wrote to /data would be discarded.
+startCommand = "python scripts/ensure_graph.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1"
+
+healthcheckPath = "/api/health"
+
+# Generous, because the first boot may be downloading or building the graph and
+# then spends ~30 s loading it before the health check can pass.
+healthcheckTimeout = 900
+
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+# One worker on purpose: each worker loads its own copy of the graph, so a
+# second would cost another 1.7 GB and buy no throughput — the expensive calls
+# are CPU-bound and already cached.
+numReplicas = 1
