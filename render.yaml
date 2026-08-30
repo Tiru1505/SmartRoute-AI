@@ -1,0 +1,65 @@
+# Render blueprint for the Q Route API.
+#
+# READ THIS BEFORE DEPLOYING — the free tier cannot run this service.
+#
+# The API holds the whole Hyderabad road graph in memory: 286,603 nodes and
+# 741,203 edges. Measured resident size is 1.74 GB, peaking at 1.80 GB during
+# graph load. Render's free and Starter instances are 512 MB, so the process is
+# killed before it finishes starting. This is a property of the problem, not a
+# configuration mistake — `plan: standard` (2 GB) is the smallest that fits, and
+# even that leaves little headroom.
+#
+# The graph is not in the repository either. The GraphML is 575 MB and the
+# pickle 214 MB, both past GitHub's limit, so the build step below rebuilds it
+# from OpenStreetMap on the server. That download and reprojection is slow and
+# memory-hungry; if the build times out, host the prebuilt .pkl somewhere and
+# replace the build command with a download, pointing QRO_GRAPH_PATH at it.
+#
+# A disk is attached so the built graph survives restarts. Without it every
+# cold start re-downloads the whole city.
+
+services:
+  - type: web
+    name: qroute-api
+    runtime: python
+    plan: standard # 2 GB. free/starter (512 MB) will OOM — see note above.
+    region: singapore # closest region to Hyderabad
+    branch: main
+    healthCheckPath: /api/health
+
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python preprocessing/osm_processor.py \
+        --city "Hyderabad, Telangana, India" --metro \
+        --out /var/data/graphs
+
+    # One worker on purpose. Each worker loads its own copy of the graph, so a
+    # second one would need another 1.7 GB. Concurrency comes from the fact that
+    # the heavy calls are CPU-bound and already cached, not from more workers.
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1
+
+    disk:
+      name: qroute-graph
+      mountPath: /var/data
+      sizeGB: 5
+
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.10.0"
+      - key: QRO_GRAPH_PATH
+        value: /var/data/graphs/hyderabad/hyderabad_drive.pkl
+      - key: APP_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      # The Vercel domain, so the browser is allowed to call this API.
+      # Set this to the real URL after the frontend deploys.
+      - key: ALLOWED_ORIGINS
+        sync: false
+      # MongoDB Atlas connection string. Optional: without it the API still
+      # serves routes and traffic, and only loses history persistence.
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DATABASE
+        value: smartroute

@@ -287,5 +287,6 @@ Things a reader — or a judge — should know, rather than discover:
 └── results/                  # Reports and plots
 ```
 
-Further reading: [`DATA.md`](DATA.md) on datasets and what they can and cannot
+Further reading: [`DEPLOY.md`](DEPLOY.md) on hosting this (read the memory constraint
+first), [`DATA.md`](DATA.md) on datasets and what they can and cannot
 support, [`INTEGRATION.md`](INTEGRATION.md) on wiring the layers together.

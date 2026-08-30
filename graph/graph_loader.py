@@ -4,6 +4,7 @@ Load the cached Hyderabad graph and resolve named places to graph nodes.
 Every algorithm gets its problem instance from here, so they all provably work
 on the same graph — which is what makes the benchmark fair.
 """
+import os
 import pickle
 from functools import lru_cache
 from pathlib import Path
@@ -11,7 +12,15 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_GRAPH = ROOT / "data/processed/hyderabad/hyderabad_drive.pkl"
+
+# QRO_GRAPH_PATH lets a deployed instance point at a graph that is not in the
+# repository. The 575 MB GraphML (214 MB as a pickle) is far past GitHub's
+# limit, so a hosted backend has to build it at deploy time or download it to
+# somewhere writable, and neither location is knowable in advance.
+DEFAULT_GRAPH = Path(
+    os.environ.get("QRO_GRAPH_PATH")
+    or ROOT / "data/processed/hyderabad/hyderabad_drive.pkl"
+)
 PLACES_FILE = ROOT / "config/places.yaml"
 
 # Edge fields that must be floats for the cost model to work. GraphML stringifies
