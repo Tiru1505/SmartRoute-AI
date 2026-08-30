@@ -6,7 +6,7 @@ import { CardSkeleton } from '../components/LoadingScreen'
 import {
   RoutePerformanceChart, TrafficDistributionChart, TrafficTrendChart,
 } from '../components/TrafficChart'
-import { getAnalytics } from '../services/api'
+import { getAnalytics, isUsingFallback } from '../services/api'
 
 const ICONS = [Activity, Clock, BarChart3, TrendingUp, AlertOctagon, RouteIcon]
 
@@ -41,10 +41,17 @@ export default function Analytics() {
         <p>Traffic patterns, prediction accuracy and route performance.</p>
       </div>
 
+      {/* Two different reasons this can show, and they need different wording:
+          the build is deliberately in demo mode, or it wanted the real API and
+          could not reach it. Telling someone to "edit api.js" in the second
+          case sends them to the wrong place — the wiring is fine, the backend
+          is just not answering. */}
       {data?.isDemoData && (
         <div className="demo-notice">
           <Activity size={13} />
-          Demo data — replace via <code>src/services/api.js</code> once the backend is live.
+          {isUsingFallback()
+            ? 'Backend unreachable — showing bundled demo data. Start the API, or point VITE_API_BASE at a reachable one.'
+            : 'Demo data. Set VITE_USE_MOCK=false and VITE_API_BASE to run against the real engine.'}
         </div>
       )}
 

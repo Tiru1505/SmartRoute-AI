@@ -69,6 +69,50 @@ async function request(path, options = {}) {
   }
 }
 
+/* ------------------------------------------------- offline fallback */
+
+/**
+ * Whether the backend has been found unreachable this session.
+ *
+ * A deployed build is configured at build time, so a site built to talk to a
+ * live API has no way to know the API is down — it just failed on every page
+ * with "Cannot reach the optimization backend". That is the worst outcome for
+ * a demo: the site looks broken rather than degraded. This is especially easy
+ * to hit when the API runs on localhost, where it is reachable for whoever is
+ * running it and for nobody else.
+ *
+ * So the first unreachable response flips this flag and every later call goes
+ * straight to the bundled demo data, which the UI already labels on screen.
+ * A 404 or 500 is NOT treated this way — those mean the backend answered and
+ * something is genuinely wrong, which should surface rather than be papered
+ * over. Only status 0, a failure to connect at all, triggers the fallback.
+ */
+let backendUnreachable = false
+
+/** True once we have given up on the backend and switched to demo data. */
+export function isUsingFallback() {
+  return backendUnreachable
+}
+
+async function liveOrMock(live, mock) {
+  if (USE_MOCK || backendUnreachable) return mock()
+  try {
+    return await live()
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 0) {
+      if (!backendUnreachable) {
+        backendUnreachable = true
+        console.warn(
+          `[api] ${BASE} is unreachable — serving bundled demo data instead. ` +
+          'Start the backend, or set VITE_API_BASE to a reachable URL.'
+        )
+      }
+      return mock()
+    }
+    throw err
+  }
+}
+
 /* ------------------------------------------------------------------ places */
 
 /**
@@ -116,7 +160,22 @@ export async function searchPlaces(query = '', limit = 8) {
  * @returns {{ routes: Array, recommended: Object, meta: Object }}
  */
 export async function getRouteOptimization({ start, end, algorithm = 'qpso', mode = 'balanced' } = {}) {
-  if (!USE_MOCK) {
+  return liveOrMock(
+    () => optimizeLive({ start, end, algorithm, mode }),
+    async () => {
+      await delay(400)
+      const routes = clone(ROUTES)
+      return {
+        routes,
+        recommended: routes.find((r) => r.recommended) || routes[0],
+        meta: { algorithm, mode, isDemoData: true, computedAt: new Date().toISOString() },
+      }
+    },
+  )
+}
+
+async function optimizeLive({ start, end, algorithm, mode }) {
+  {
     const body = JSON.stringify({
       source: coordsFor(start),
       destination: coordsFor(end),
@@ -145,18 +204,6 @@ export async function getRouteOptimization({ start, end, algorithm = 'qpso', mod
     })
     if (import.meta.env.DEV) window.__qroLast = { primary, alternatives, mapped }
     return mapped
-  }
-  await delay(400)
-  const routes = clone(ROUTES)
-  return {
-    routes,
-    recommended: routes.find((r) => r.recommended) || routes[0],
-    meta: {
-      algorithm,
-      mode,
-      isDemoData: true,
-      computedAt: new Date().toISOString(),
-    },
   }
 }
 
@@ -211,68 +258,100 @@ export async function reroute({ progress = 0.4, spike = true, force = false, old
 /* ----------------------------------------------------------------- traffic */
 
 export async function getTrafficData() {
-  if (!USE_MOCK) return mapTrafficResponse(await request('/traffic/current'))
-  await delay(300)
-  return {
-    segments: clone(TRAFFIC_SEGMENTS),
-    incidents: clone(INCIDENTS),
-    updatedAt: new Date().toISOString(),
-    isDemoData: true,
-  }
+  return liveOrMock(
+    async () => mapTrafficResponse(await request('/traffic/current')),
+    async () => {
+      await delay(300)
+      return {
+        segments: clone(TRAFFIC_SEGMENTS),
+        incidents: clone(INCIDENTS),
+        updatedAt: new Date().toISOString(),
+        isDemoData: true,
+      }
+    },
+  )
 }
 
 export async function getPrediction() {
-  if (!USE_MOCK) return request('/prediction/status')
-  await delay(300)
-  return { series: clone(PREDICTION_SERIES), isDemoData: true }
+  return liveOrMock(
+    () => request('/prediction/status'),
+    async () => {
+      await delay(300)
+      return { series: clone(PREDICTION_SERIES), isDemoData: true }
+    },
+  )
 }
 
 export async function getAlerts() {
-  if (!USE_MOCK) return mapAlertsResponse(await request('/alerts/'))
-  await delay(250)
-  return clone(ALERTS)
+  return liveOrMock(
+    async () => mapAlertsResponse(await request('/alerts/')),
+    async () => {
+      await delay(250)
+      return clone(ALERTS)
+    },
+  )
 }
 
 /* --------------------------------------------------------------- analytics */
 
 export async function getAnalytics() {
-  if (!USE_MOCK) return mapAnalyticsResponse(await request('/analytics'))
-  await delay(350)
-  return {
-    stats: clone(ANALYTICS_STATS),
-    trend: clone(TRAFFIC_TREND),
-    prediction: clone(PREDICTION_SERIES),
-    performance: clone(ROUTE_PERFORMANCE),
-    distribution: clone(TRAFFIC_DISTRIBUTION),
-    isDemoData: true,
-  }
+  return liveOrMock(
+    async () => mapAnalyticsResponse(await request('/analytics')),
+    async () => {
+      await delay(350)
+      return {
+        stats: clone(ANALYTICS_STATS),
+        trend: clone(TRAFFIC_TREND),
+        prediction: clone(PREDICTION_SERIES),
+        performance: clone(ROUTE_PERFORMANCE),
+        distribution: clone(TRAFFIC_DISTRIBUTION),
+        isDemoData: true,
+      }
+    },
+  )
 }
 
 export async function getBenchmark() {
-  if (!USE_MOCK) return mapBenchmarkResponse(await request('/benchmark/results'))
-  await delay(400)
-  return clone(BENCHMARK)
+  return liveOrMock(
+    async () => mapBenchmarkResponse(await request('/benchmark/results')),
+    async () => {
+      await delay(400)
+      return clone(BENCHMARK)
+    },
+  )
 }
 
 export async function getConvergence() {
-  if (!USE_MOCK) return mapConvergenceResponse(await request('/benchmark/convergence/all'))
-  await delay(400)
-  return {
-    ...clone(CONVERGENCE),
-    chartData: clone(CONVERGENCE_CHART_DATA),
-  }
+  return liveOrMock(
+    async () => mapConvergenceResponse(await request('/benchmark/convergence/all')),
+    async () => {
+      await delay(400)
+      return {
+        ...clone(CONVERGENCE),
+        chartData: clone(CONVERGENCE_CHART_DATA),
+      }
+    },
+  )
 }
 
 export async function getScalability() {
-  if (!USE_MOCK) return await request('/analytics/scalability')
-  await delay(400)
-  return clone(SCALABILITY)
+  return liveOrMock(
+    () => request('/analytics/scalability'),
+    async () => {
+      await delay(400)
+      return clone(SCALABILITY)
+    },
+  )
 }
 
 export async function getRouteHistory() {
-  if (!USE_MOCK) return mapHistoryResponse(await request('/routes/history'))
-  await delay(250)
-  return clone(ROUTE_HISTORY)
+  return liveOrMock(
+    async () => mapHistoryResponse(await request('/routes/history')),
+    async () => {
+      await delay(250)
+      return clone(ROUTE_HISTORY)
+    },
+  )
 }
 
 export async function getHealth() {
