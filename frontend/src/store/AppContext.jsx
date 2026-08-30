@@ -114,6 +114,10 @@ export function AppProvider({ children }) {
   const [selectedRouteId, setSelectedRouteId] = useState(null)
   const [optimizing, setOptimizing] = useState(false)
   const [error, setError] = useState(null)
+  // Ticks on every successful optimisation. Analytics watches it so the
+  // charts re-read the server after a new route is stored, instead of
+  // showing whatever was true when the page first mounted.
+  const [routesVersion, setRoutesVersion] = useState(0)
 
   /* --- live traffic + alerts ------------------------------------------- */
   const [segments, setSegments] = useState(TRAFFIC_SEGMENTS)
@@ -172,6 +176,7 @@ export function AppProvider({ children }) {
       const res = await api.getRouteOptimization({ start, end, algorithm, mode })
       setRoutes(res.routes)
       setSelectedRouteId(res.recommended.id)
+      setRoutesVersion((v) => v + 1)
       return res
     } catch (err) {
       setError(err.message || 'Optimization failed.')
@@ -285,6 +290,43 @@ export function AppProvider({ children }) {
     setDemoStep(null)
   }, [clearTimers])
 
+  /** Re-read alerts from the backend. */
+  const refreshAlerts = useCallback(async () => {
+    try {
+      setAlerts(await api.getAlerts())
+    } catch {
+      /* leave what is on screen — a failed refresh should not empty the list */
+    }
+  }, [])
+
+  /**
+   * Raise an alert deliberately.
+   *
+   * The alert engine only fires when traffic actually degrades past its policy
+   * gates, which cannot be scheduled for a live demonstration. This asks the
+   * backend for a real one and then re-reads the list, so what appears came
+   * back from the server rather than being faked in the browser.
+   */
+  const raiseAlert = useCallback(async (scenario) => {
+    try {
+      await api.triggerAlert(scenario)
+      await refreshAlerts()
+      return true
+    } catch (err) {
+      setError(err.message || 'Could not raise the alert.')
+      return false
+    }
+  }, [refreshAlerts])
+
+  /** Clear every stored alert, so a demonstration can be replayed. */
+  const wipeAlerts = useCallback(async () => {
+    try {
+      await api.clearAlerts()
+    } catch { /* clearing is best-effort */ }
+    setAlerts([])
+    setPredictiveAlert(null)
+  }, [])
+
   const dismissAlert = useCallback((id) => {
     setAlerts((prev) => prev.filter((a) => a.id !== id))
   }, [])
@@ -298,7 +340,9 @@ export function AppProvider({ children }) {
     algorithm, setAlgorithm, mode, setMode,
     routes, selectedRoute, selectedRouteId, setSelectedRouteId,
     optimizing, optimize, error,
+    routesVersion,
     segments, incidents, alerts, dismissAlert,
+    refreshAlerts, raiseAlert, wipeAlerts,
     predictiveAlert, injectCongestion,
     rerouting, rerouteResult, runReroute,
     demoMode, demoStep, startDemo, stopDemo, resetScenario,

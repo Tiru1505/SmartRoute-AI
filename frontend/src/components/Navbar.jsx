@@ -109,17 +109,21 @@ export default function Navbar() {
       </div>
 
       <div className="navbar-right" ref={ref}>
+        {/* The labels are wrapped so a narrow screen can drop the words and
+            keep the coloured dots. As bare text nodes they could not be
+            targeted, which is why the navbar overflowed on a phone. */}
         <div className="live-chip">
           <span className="dot pulse" style={{ background: 'currentColor' }} />
-          LIVE
+          <span className="chip-text">LIVE</span>
         </div>
 
         <div
           className="badge badge-grey"
           style={{ color: TRAFFIC_COLORS[status.level], borderColor: 'var(--border)' }}
+          title={status.label}
         >
           <span className="dot" style={{ background: TRAFFIC_COLORS[status.level] }} />
-          {status.label}
+          <span className="chip-text">{status.label}</span>
         </div>
 
         <button

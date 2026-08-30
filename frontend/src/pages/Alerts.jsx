@@ -1,8 +1,16 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import { BellOff, Filter } from 'lucide-react'
+import { BellOff, CloudRain, Construction, Filter, Radio, TrafficCone, Waypoints } from 'lucide-react'
 import TrafficAlert from '../components/TrafficAlert'
 import { useApp } from '../store/AppContext'
+
+const TRIGGERS = [
+  { id: 'congestion', label: 'Congestion',  icon: TrafficCone,  hint: 'Congestion building at Mehdipatnam – Masab Tank' },
+  { id: 'incident',   label: 'Accident',    icon: Construction, hint: 'Accident on the PVNR Expressway, two lanes blocked' },
+  { id: 'closure',    label: 'Road closed', icon: Construction, hint: 'Tank Bund Road closed for an event' },
+  { id: 'reroute',    label: 'Better route',icon: Waypoints,    hint: 'A faster route is available' },
+  { id: 'weather',    label: 'Heavy rain',  icon: CloudRain,    hint: 'Heavy rain across the city, speeds down 30%' },
+]
 
 const FILTERS = [
   { id: 'all', label: 'All' },
@@ -12,8 +20,15 @@ const FILTERS = [
 ]
 
 export default function Alerts() {
-  const { alerts, dismissAlert, runReroute } = useApp()
+  const { alerts, dismissAlert, runReroute, raiseAlert, wipeAlerts } = useApp()
   const [filter, setFilter] = useState('all')
+  const [raising, setRaising] = useState(null)
+
+  const fire = async (id) => {
+    setRaising(id)
+    await raiseAlert(id)
+    setRaising(null)
+  }
 
   const visible = useMemo(
     () => (filter === 'all' ? alerts : alerts.filter((a) => a.kind === filter)),
@@ -37,6 +52,45 @@ export default function Alerts() {
           <span className="badge badge-red">{counts.severe} severe</span>
           <span className="badge badge-orange">{counts.heavy} heavy</span>
           <span className="badge badge-yellow">{counts.moderate} moderate</span>
+        </div>
+      </div>
+
+      {/* Raising an alert on demand.
+
+          The alert engine only fires when traffic genuinely degrades past its
+          policy gates — correct behaviour, and impossible to schedule for a
+          live demonstration. These buttons ask the backend to raise a real
+          alert through the same service and storage, so what appears came back
+          from the server. It is recorded as manually triggered, which is why
+          this panel says so on its face rather than pretending otherwise. */}
+      <div className="card trigger-panel">
+        <div className="trigger-head">
+          <Radio size={13} />
+          <strong>Raise an alert</strong>
+          <span>manually triggered, for demonstration</span>
+        </div>
+        <div className="trigger-grid">
+          {TRIGGERS.map((t) => (
+            <button
+              key={t.id}
+              className="btn btn-sm trigger-btn"
+              onClick={() => fire(t.id)}
+              disabled={raising !== null}
+              title={t.hint}
+            >
+              <t.icon size={13} />
+              <span>{raising === t.id ? 'Raising…' : t.label}</span>
+            </button>
+          ))}
+          <button
+            className="btn btn-sm trigger-btn trigger-clear"
+            onClick={wipeAlerts}
+            disabled={raising !== null}
+            title="Remove every alert so the demonstration can be replayed"
+          >
+            <BellOff size={13} />
+            <span>Clear all</span>
+          </button>
         </div>
       </div>
 

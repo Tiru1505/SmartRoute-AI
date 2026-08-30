@@ -295,6 +295,33 @@ export async function getPrediction() {
   )
 }
 
+/**
+ * Raise an alert on demand.
+ *
+ * The alerting path only fires when traffic genuinely deteriorates past the
+ * policy gates, which is correct and impossible to schedule for a live
+ * demonstration. This asks the backend to raise a real one through the same
+ * service and storage; it is recorded as manually triggered so it can never be
+ * mistaken later for something the system detected.
+ */
+export async function triggerAlert(scenario = 'congestion') {
+  if (!USE_MOCK) {
+    return request('/alerts/trigger', {
+      method: 'POST',
+      body: JSON.stringify({ scenario }),
+    })
+  }
+  await delay(200)
+  return { trigger: 'manual', scenario, alert: null }
+}
+
+/** Wipe stored alerts so a demonstration can be replayed from a clean slate. */
+export async function clearAlerts() {
+  if (!USE_MOCK) return request('/alerts/clear', { method: 'POST' })
+  await delay(150)
+  return { cleared: 0 }
+}
+
 export async function getAlerts() {
   return liveOrMock(
     async () => mapAlertsResponse(await request('/alerts/')),

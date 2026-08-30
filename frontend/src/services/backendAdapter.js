@@ -233,16 +233,74 @@ export function mapConvergenceResponse(payload) {
   return { chartData, summary, isDemoData: false }
 }
 
+
+
+/** A readable heading per alert type — "Traffic alert" for everything is noise. */
+const ALERT_TITLES = {
+  congestion: 'Congestion building',
+  incident: 'Incident reported',
+  weather: 'Weather warning',
+  route_deviation: 'Faster route available',
+  general: 'Traffic alert',
+}
+
+/** The Alerts page filters on kind, so map the API's types onto those tabs. */
+function alertKind(a) {
+  if (a.kind) return a.kind
+  if (a.alert_type === 'route_deviation') return 'reroute'
+  if (a.alert_type === 'congestion' || a.alert_type === 'weather') return 'predictive'
+  return 'incident'
+}
+
+/**
+ * "4 min ago" rather than "2026-08-30T17:51:36.298612+00:00".
+ *
+ * The raw ISO string was being rendered straight into the card, where it wrapped
+ * across three lines and told the reader nothing they wanted to know.
+ */
+function relativeTime(value) {
+  if (!value) return 'just now'
+  const then = new Date(value)
+  if (Number.isNaN(then.getTime())) return String(value)
+
+  const secs = Math.max(0, Math.round((Date.now() - then.getTime()) / 1000))
+  if (secs < 45) return 'just now'
+  if (secs < 5400) {
+    const mins = Math.round(secs / 60)
+    return `${mins} min ago`
+  }
+  const hrs = Math.round(secs / 3600)
+  if (hrs < 24) return `${hrs} hr ago`
+  return then.toLocaleDateString([], { day: 'numeric', month: 'short' })
+}
+
+/** A readable place for an alert: a name if the API gave one, else coordinates. */
+function placeLabel(a) {
+  const named = a.location_name ?? a.road_name ?? a.locationName
+  if (typeof named === 'string' && named.trim()) return named
+  if (typeof a.location === 'string' && a.location.trim()) return a.location
+  const lat = a.location?.lat
+  const lon = a.location?.lon
+  if (Number.isFinite(lat) && Number.isFinite(lon)) {
+    return `${lat.toFixed(4)}, ${lon.toFixed(4)}`
+  }
+  return 'Hyderabad'
+}
+
 /** GET /api/alerts/ -> alert cards. */
 export function mapAlertsResponse(payload) {
   const list = payload?.alerts ?? payload ?? []
   return (Array.isArray(list) ? list : []).map((a, i) => ({
     id: a.id ?? a.alert_id ?? `a${i}`,
-    kind: a.kind ?? a.type ?? 'incident',
+    kind: alertKind(a),
     severity: a.severity ?? 'moderate',
-    title: a.title ?? 'Traffic alert',
-    location: a.location ?? a.road_name ?? 'Hyderabad',
-    time: a.created_at ?? a.time ?? 'just now',
+    title: a.title ?? ALERT_TITLES[a.alert_type] ?? 'Traffic alert',
+    // location arrives as a {lat, lon} object from the API. Rendering that
+    // straight into JSX crashes the page with "Objects are not valid as a
+    // React child", so it is resolved to a string here — a place name when we
+    // have one, otherwise formatted coordinates.
+    location: placeLabel(a),
+    time: relativeTime(a.created_at ?? a.time),
     description: a.message ?? a.description ?? '',
     action: a.action ?? a.recommended_action ?? '',
     current: a.current_congestion ?? a.current,

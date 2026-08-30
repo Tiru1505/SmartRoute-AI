@@ -66,11 +66,30 @@ export function RoutePerformanceChart({ data = [], height = 260 }) {
   return (
     <div style={{ width: '100%', height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 6, right: 8, left: -20, bottom: 0 }}>
+        {/* Angled labels are anchored at their right end, so they extend to the
+            LEFT of their tick. A negative left margin clipped the first one to
+            "…d - RGIA Airport"; this gives them the room they need. */}
+        <BarChart data={data} margin={{ top: 6, right: 8, left: 4, bottom: 4 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,.06)" vertical={false} />
-          <XAxis dataKey="route" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} interval={0} angle={-12} height={44} />
+          {/* Route names are "Hitec City → Charminar", not short codes, so they
+              need real room. Angled at 30 degrees with a taller axis and an
+              explicit anchor, otherwise the labels overlap and get clipped. */}
+          <XAxis
+            dataKey="route"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fontSize: 10 }}
+            interval={0}
+            angle={-30}
+            textAnchor="end"
+            height={86}
+          />
           <YAxis axisLine={false} tickLine={false} />
-          <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,.04)' }} />
+          <Tooltip
+            contentStyle={tooltipStyle}
+            cursor={{ fill: 'rgba(255,255,255,.04)' }}
+            labelFormatter={(v) => v}
+          />
           <Legend wrapperStyle={legendStyle} />
           <Bar dataKey="distance" name="Distance (km)" fill="#6366f1" radius={[4, 4, 0, 0]} animationDuration={900} />
           <Bar dataKey="time" name="Time (min)" fill="#e879f9" radius={[4, 4, 0, 0]} animationDuration={900} animationBegin={160} />

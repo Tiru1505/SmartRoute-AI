@@ -3651,3 +3651,118 @@
   .login-card { padding: 22px 18px 18px !important; }
   .qro-robot-zone { height: 100px; margin-bottom: 14px; }
 }
+
+
+/* ============================================================
+   MANUAL ALERT TRIGGERS
+   ------------------------------------------------------------
+   The alert engine fires only when traffic really degrades, so
+   there is no way to schedule one for a live demonstration.
+   This panel raises a real alert on demand and says plainly
+   that it was triggered by hand.
+   ============================================================ */
+
+.trigger-panel { padding: 12px 14px; margin-bottom: 14px; }
+
+.trigger-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  color: var(--quantum);
+}
+.trigger-head strong { font-size: 12px; color: var(--text); }
+.trigger-head span {
+  font-size: 10.5px;
+  color: var(--text-faint);
+  letter-spacing: .03em;
+}
+
+.trigger-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+
+.trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-color: rgba(232, 121, 249, .3);
+}
+.trigger-btn:hover:not(:disabled) {
+  border-color: var(--quantum);
+  background: rgba(232, 121, 249, .1);
+}
+.trigger-btn:disabled { opacity: .5; cursor: default; }
+
+.trigger-clear { margin-left: auto; border-color: var(--border); }
+.trigger-clear:hover:not(:disabled) {
+  border-color: var(--severe);
+  background: rgba(244, 63, 94, .1);
+}
+
+@media (max-width: 560px) {
+  .trigger-grid { gap: 6px; }
+  .trigger-btn { flex: 1 1 calc(50% - 3px); justify-content: center; }
+  .trigger-clear { margin-left: 0; flex-basis: 100%; }
+}
+
+
+/* ---- analytics header actions ---- */
+.analytics-actions { display: flex; align-items: center; gap: 10px; }
+.analytics-stamp {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 560px) {
+  .analytics-actions { width: 100%; justify-content: space-between; margin-top: 10px; }
+}
+
+
+/* ============================================================
+   PHONE LAYOUT
+   ------------------------------------------------------------
+   Findings from testing at 375px, each fixed below:
+   - the brand name vanished entirely, so the product had no
+     name on screen on a phone;
+   - .navbar-right could not shrink, pushing the row 2px past
+     the viewport and clipping the avatar;
+   - the status chips' labels were bare text nodes, so the rule
+     meant to hide them on small screens could never match.
+   ============================================================ */
+
+@media (max-width: 720px) {
+  /* Keep the name. Only the subtitle goes — a product with no name on
+     screen is worse than a slightly tighter row. */
+  .navbar-brand-text { display: flex; }
+  .navbar-brand-text span { display: none; }
+  .navbar-brand-text strong { font-size: 14.5px; }
+
+  /* Let the right-hand cluster give way instead of overflowing. */
+  .navbar { gap: 8px; padding-left: 12px; padding-right: 12px; }
+  .navbar-right { flex-shrink: 1; min-width: 0; gap: 6px; }
+}
+
+@media (max-width: 560px) {
+  /* Below this the words cost more than they say: the dots still carry
+     live-status and severity by colour. */
+  .chip-text { display: none; }
+  .live-chip, .navbar-right .badge { padding-left: 7px; padding-right: 7px; }
+
+  .page { padding-left: 12px; padding-right: 12px; }
+  .page-head h1 { font-size: 21px; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+
+  /* Charts need a floor, or the labels collapse into each other. */
+  .chart-box-sm, .chart-card { min-height: 0; }
+
+  /* The map is the point of the page — give it real height rather than
+     letting it collapse to a strip. */
+  .map-shell { min-height: 340px; }
+
+  /* Clear the fixed bottom navigation so the last card is reachable. */
+  .page { padding-bottom: 78px; }
+}
+
+@media (max-width: 400px) {
+  .navbar-brand-text strong { font-size: 13.5px; }
+  .brand-mark { width: 28px; height: 28px; }
+}
