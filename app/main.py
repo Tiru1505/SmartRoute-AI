@@ -122,6 +122,29 @@ app.add_middleware(
 )
 
 
+@app.middleware("http")
+async def allow_private_network(request: Request, call_next):
+    """
+    Let an HTTPS page reach this API on localhost.
+
+    Chrome's Private Network Access rules block a request from a public site to
+    a private address — which includes localhost — unless the server explicitly
+    opts in. The browser sends a preflight carrying
+    Access-Control-Request-Private-Network: true and refuses the real request
+    unless the response grants it. Without this, a frontend deployed on Vercel
+    and pointed at http://localhost:8010 fails with an opaque CORS error even
+    though the API is running and its origin list is correct.
+
+    Only answered when the browser actually asks, and CORS still applies on top:
+    this widens nothing on its own, because an origin outside ALLOWED_ORIGINS is
+    still refused by the middleware above.
+    """
+    response = await call_next(request)
+    if request.headers.get("access-control-request-private-network") == "true":
+        response.headers["Access-Control-Allow-Private-Network"] = "true"
+    return response
+
+
 # ---------------------------------------------------------------------------
 # Routers
 # ---------------------------------------------------------------------------

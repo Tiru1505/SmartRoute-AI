@@ -35,3 +35,11 @@
 /docker-compose.yml
 /Dockerfile
 /pytest.ini
+
+# Local env files must not ride along. `vercel deploy` uploads the working
+# directory rather than what git tracks, so frontend/.env — gitignored, and set
+# to whatever suits local work — was being baked into production builds. The
+# project's own environment variables are the single source of truth.
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.*.local
