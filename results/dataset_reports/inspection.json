@@ -512,11 +512,286 @@
     },
     "path": "data\\synthetic",
     "exists": true,
-    "size": "0.0 B",
+    "size": "4.6 MB",
     "inspection": {
       "kind": "tabular",
-      "n_files": 0,
-      "frames": []
+      "n_files": 2,
+      "frames": [
+        {
+          "name": "hyderabad_synthetic_traffic.parquet::hyderabad_synthetic_traffic",
+          "rows": 206728,
+          "cols": 17,
+          "columns": [
+            {
+              "name": "scenario_id",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 8
+            },
+            {
+              "name": "timestamp",
+              "dtype": "datetime64[ns]",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 7
+            },
+            {
+              "name": "road_id",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 25841
+            },
+            {
+              "name": "u",
+              "dtype": "int64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 17261
+            },
+            {
+              "name": "v",
+              "dtype": "int64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 17269
+            },
+            {
+              "name": "key",
+              "dtype": "int64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 2
+            },
+            {
+              "name": "road_type",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 8
+            },
+            {
+              "name": "length_m",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4484
+            },
+            {
+              "name": "traffic_density",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 27526
+            },
+            {
+              "name": "vehicle_count",
+              "dtype": "int64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 848
+            },
+            {
+              "name": "average_speed",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 917
+            },
+            {
+              "name": "free_flow_speed",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 16
+            },
+            {
+              "name": "congestion",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 8696
+            },
+            {
+              "name": "congestion_level",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4
+            },
+            {
+              "name": "flow_pcu_h",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 31775
+            },
+            {
+              "name": "road_status",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 1
+            },
+            {
+              "name": "incident_type",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 2
+            }
+          ],
+          "duplicate_rows": 0,
+          "temporal": {
+            "column": "timestamp",
+            "start": "2026-08-27 14:00:00",
+            "end": "2026-08-27 21:00:00",
+            "span_days": 0.29,
+            "n_timestamps": 7,
+            "median_gap_s": 0.0,
+            "regular": false
+          },
+          "geographic": null
+        },
+        {
+          "name": "hyderabad_synthetic_traffic_sample.csv::hyderabad_synthetic_traffic_sample",
+          "rows": 5000,
+          "cols": 17,
+          "columns": [
+            {
+              "name": "scenario_id",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 8
+            },
+            {
+              "name": "timestamp",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 7
+            },
+            {
+              "name": "road_id",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4607
+            },
+            {
+              "name": "u",
+              "dtype": "int64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4332
+            },
+            {
+              "name": "v",
+              "dtype": "int64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4325
+            },
+            {
+              "name": "key",
+              "dtype": "int64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 2
+            },
+            {
+              "name": "road_type",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 8
+            },
+            {
+              "name": "length_m",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 2044
+            },
+            {
+              "name": "traffic_density",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4239
+            },
+            {
+              "name": "vehicle_count",
+              "dtype": "int64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 238
+            },
+            {
+              "name": "average_speed",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 517
+            },
+            {
+              "name": "free_flow_speed",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 14
+            },
+            {
+              "name": "congestion",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 3428
+            },
+            {
+              "name": "congestion_level",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4
+            },
+            {
+              "name": "flow_pcu_h",
+              "dtype": "float64",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 4253
+            },
+            {
+              "name": "road_status",
+              "dtype": "object",
+              "missing": 0,
+              "missing_pct": 0.0,
+              "unique": 1
+            },
+            {
+              "name": "incident_type",
+              "dtype": "float64",
+              "missing": 5000,
+              "missing_pct": 100.0,
+              "unique": 0
+            }
+          ],
+          "duplicate_rows": 0,
+          "temporal": {
+            "column": "timestamp",
+            "start": "2026-08-27 14:00:00",
+            "end": "2026-08-27 21:00:00",
+            "span_days": 0.29,
+            "n_timestamps": 7,
+            "median_gap_s": 0.0,
+            "regular": false
+          },
+          "geographic": null
+        }
+      ]
     }
   }
 }
