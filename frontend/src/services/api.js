@@ -61,7 +61,20 @@ async function request(path, options = {}) {
       headers: { 'Content-Type': 'application/json' },
       ...options,
     })
-    if (!res.ok) throw new ApiError(`Request failed: ${res.statusText}`, res.status)
+    if (!res.ok) {
+      // A failing response that is not JSON did not come from our API at all —
+      // it is the static host answering. Deploying the frontend with
+      // VITE_USE_MOCK=false but no VITE_API_BASE makes every call resolve to
+      // the site's own origin, where Vercel returns a text/plain 404. Reporting
+      // that as a backend error is wrong and unfixable by the visitor, so it is
+      // reported as "no backend here" (status 0) and handled by the fallback.
+      // A JSON error body means the API really did answer, and that surfaces.
+      const type = res.headers.get('content-type') || ''
+      if (!type.includes('json')) {
+        throw new ApiError(`No API at ${BASE} (host returned ${res.status}).`, 0)
+      }
+      throw new ApiError(`Request failed: ${res.statusText}`, res.status)
+    }
     return await res.json()
   } catch (err) {
     if (err instanceof ApiError) throw err

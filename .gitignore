@@ -57,3 +57,6 @@ data/vision/
 !data/raw/india/tomtom_*/**
 !data/processed/*/*_stats.json
 !results/**
+
+.vercel
+.env*
